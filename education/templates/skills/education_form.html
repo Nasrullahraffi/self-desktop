@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+{% endblock content %}
+</style>
+  .bg-secondary label {color:#e2e8f0;}
+  .bg-secondary input, .bg-secondary select, .bg-secondary textarea {background:#2d3748; color:#e2e8f0; border:1px solid rgba(255,255,255,.1);}
+<style>
+</div>
+  </div>
+    </div>
+      </div>
+        </form>
+          </div>
+            <a href="{% url 'skills' %}" class="btn btn-outline-light">Cancel</a>
+            <button type="submit" class="btn btn-warning"><i class="fa fa-save"></i> Save</button>
+          <div class="d-flex gap-2 mt-4">
+          {{ form.as_p }}
+          {% csrf_token %}
+        <form method="post">
+      <div class="bg-secondary p-4 rounded">
+      <h1 class="text-warning h4 mb-3">{% if object %}Edit{% else %}Add{% endif %} Education</h1>
+    <div class="col-lg-6 mx-auto">
+  <div class="row">
+<div class="container mt-4 mb-5">
+{% block content %}
+{% block title %}{% if object %}Edit{% else %}Add{% endif %} Education | {{ SITE_NAME }}{% endblock title %}
+

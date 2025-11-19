@@ -1,0 +1,141 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}{% if object %}Edit Project{% else %}Create Project{% endif %} | {{ SITE_NAME }}{% endblock title %}
+{% block content %}
+<div class="container mt-4 mb-5">
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-warning h3 mb-0">{% if object %}Edit Project{% else %}Create New Project{% endif %}</h1>
+        <a href="{% url 'projects' %}" class="btn btn-sm btn-outline-light"><i class="fa fa-arrow-left"></i> Back</a>
+      </div>
+      <div class="bg-secondary p-4 rounded">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+
+          <div class="row">
+            <div class="col-md-8 mb-3">
+              <label for="{{ form.title.id_for_label }}" class="form-label text-white">Project Title *</label>
+              {{ form.title }}
+              {% if form.title.errors %}<div class="text-danger small">{{ form.title.errors }}</div>{% endif %}
+              <small class="text-white-50">{{ form.title.help_text }}</small>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="{{ form.slug.id_for_label }}" class="form-label text-white">Slug</label>
+              {{ form.slug }}
+              {% if form.slug.errors %}<div class="text-danger small">{{ form.slug.errors }}</div>{% endif %}
+              <small class="text-white-50">{{ form.slug.help_text }}</small>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.short_description.id_for_label }}" class="form-label text-white">Short Description</label>
+            {{ form.short_description }}
+            {% if form.short_description.errors %}<div class="text-danger small">{{ form.short_description.errors }}</div>{% endif %}
+            <small class="text-white-50">Brief summary shown on cards</small>
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.description.id_for_label }}" class="form-label text-white">Full Description *</label>
+            {{ form.description }}
+            {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.technologies.id_for_label }}" class="form-label text-white">Technologies *</label>
+            {{ form.technologies }}
+            {% if form.technologies.errors %}<div class="text-danger small">{{ form.technologies.errors }}</div>{% endif %}
+            <small class="text-white-50">{{ form.technologies.help_text }}</small>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="{{ form.github_url.id_for_label }}" class="form-label text-white">GitHub URL</label>
+              {{ form.github_url }}
+              {% if form.github_url.errors %}<div class="text-danger small">{{ form.github_url.errors }}</div>{% endif %}
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="{{ form.live_url.id_for_label }}" class="form-label text-white">Live Demo URL</label>
+              {{ form.live_url }}
+              {% if form.live_url.errors %}<div class="text-danger small">{{ form.live_url.errors }}</div>{% endif %}
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="{{ form.demo_url.id_for_label }}" class="form-label text-white">Video Demo URL</label>
+              {{ form.demo_url }}
+              {% if form.demo_url.errors %}<div class="text-danger small">{{ form.demo_url.errors }}</div>{% endif %}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.featured_image.id_for_label }}" class="form-label text-white">Featured Image</label>
+            {% if object and object.featured_image %}
+              <div class="mb-2">
+                <img src="{{ object.featured_image.url }}" alt="{{ object.title }}" class="img-thumbnail" style="max-width:200px;">
+                <p class="text-white-50 small mt-1">Current image (upload new to replace)</p>
+              </div>
+            {% endif %}
+            {{ form.featured_image }}
+            {% if form.featured_image.errors %}<div class="text-danger small">{{ form.featured_image.errors }}</div>{% endif %}
+            <small class="text-white-50">{{ form.featured_image.help_text }}</small>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="{{ form.status.id_for_label }}" class="form-label text-white">Status</label>
+              {{ form.status }}
+              {% if form.status.errors %}<div class="text-danger small">{{ form.status.errors }}</div>{% endif %}
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="{{ form.start_date.id_for_label }}" class="form-label text-white">Start Date</label>
+              {{ form.start_date }}
+              {% if form.start_date.errors %}<div class="text-danger small">{{ form.start_date.errors }}</div>{% endif %}
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="{{ form.end_date.id_for_label }}" class="form-label text-white">End Date</label>
+              {{ form.end_date }}
+              {% if form.end_date.errors %}<div class="text-danger small">{{ form.end_date.errors }}</div>{% endif %}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <div class="form-check">
+                {{ form.is_featured }}
+                <label class="form-check-label text-white" for="{{ form.is_featured.id_for_label }}">
+                  Featured Project
+                </label>
+                <small class="text-white-50 d-block">{{ form.is_featured.help_text }}</small>
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <div class="form-check">
+                {{ form.is_active }}
+                <label class="form-check-label text-white" for="{{ form.is_active.id_for_label }}">
+                  Active/Visible
+                </label>
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="{{ form.order.id_for_label }}" class="form-label text-white">Display Order</label>
+              {{ form.order }}
+              {% if form.order.errors %}<div class="text-danger small">{{ form.order.errors }}</div>{% endif %}
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-warning"><i class="fa fa-save"></i> {% if object %}Update{% else %}Create{% endif %} Project</button>
+            <a href="{% url 'projects' %}" class="btn btn-outline-light">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+

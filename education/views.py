@@ -2,9 +2,13 @@
 Education App Views
 """
 
-from django.shortcuts import render
-from django.views.generic import ListView
+from django.shortcuts import render, redirect
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
+from django.urls import reverse_lazy
 from .models import Skill, Education, Certification
+from .forms import SkillForm, EducationForm, CertificationForm
 
 
 def skills_pro(request):
@@ -61,3 +65,118 @@ class SkillsListView(ListView):
         context['certifications'] = Certification.objects.filter(is_active=True)
         return context
 
+# =============================================================================
+# SKILL CRUD VIEWS
+# ==============================================================================
+
+class SkillCreateView(LoginRequiredMixin, CreateView):
+    """Create new skill"""
+    model = Skill
+    form_class = SkillForm
+    template_name = 'skills/skill_form.html'
+    success_url = reverse_lazy('skills')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Skill added successfully!')
+        return super().form_valid(form)
+
+
+class SkillUpdateView(LoginRequiredMixin, UpdateView):
+    """Update existing skill"""
+    model = Skill
+    form_class = SkillForm
+    template_name = 'skills/skill_form.html'
+    success_url = reverse_lazy('skills')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Skill updated successfully!')
+        return super().form_valid(form)
+
+
+class SkillDeleteView(LoginRequiredMixin, DeleteView):
+    """Delete skill"""
+    model = Skill
+    template_name = 'skills/skill_confirm_delete.html'
+    success_url = reverse_lazy('skills')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Skill deleted successfully!')
+        return super().delete(request, *args, **kwargs)
+
+
+# ==============================================================================
+# EDUCATION CRUD VIEWS
+# ==============================================================================
+
+class EducationCreateView(LoginRequiredMixin, CreateView):
+    """Create new education record"""
+    model = Education
+    form_class = EducationForm
+    template_name = 'skills/education_form.html'
+    success_url = reverse_lazy('skills')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Education record added successfully!')
+        return super().form_valid(form)
+
+
+class EducationUpdateView(LoginRequiredMixin, UpdateView):
+    """Update education record"""
+    model = Education
+    form_class = EducationForm
+    template_name = 'skills/education_form.html'
+    success_url = reverse_lazy('skills')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Education record updated successfully!')
+        return super().form_valid(form)
+
+
+class EducationDeleteView(LoginRequiredMixin, DeleteView):
+    """Delete education record"""
+    model = Education
+    template_name = 'skills/education_confirm_delete.html'
+    success_url = reverse_lazy('skills')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Education record deleted successfully!')
+        return super().delete(request, *args, **kwargs)
+
+
+# ==============================================================================
+# CERTIFICATION CRUD VIEWS
+# ==============================================================================
+
+class CertificationCreateView(LoginRequiredMixin, CreateView):
+    """Create new certification"""
+    model = Certification
+    form_class = CertificationForm
+    template_name = 'skills/certification_form.html'
+    success_url = reverse_lazy('skills')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Certification added successfully!')
+        return super().form_valid(form)
+
+
+class CertificationUpdateView(LoginRequiredMixin, UpdateView):
+    """Update certification"""
+    model = Certification
+    form_class = CertificationForm
+    template_name = 'skills/certification_form.html'
+    success_url = reverse_lazy('skills')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Certification updated successfully!')
+        return super().form_valid(form)
+
+
+class CertificationDeleteView(LoginRequiredMixin, DeleteView):
+    """Delete certification"""
+    model = Certification
+    template_name = 'skills/certification_confirm_delete.html'
+    success_url = reverse_lazy('skills')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Certification deleted successfully!')
+        return super().delete(request, *args, **kwargs)

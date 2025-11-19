@@ -1,0 +1,29 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top" style="box-shadow:0 4px 12px rgba(0,0,0,.4);">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
+      <img src="{% static 'core/images/profile.png' %}" alt="logo" width="40" height="40" class="rounded-circle border border-secondary">
+      <span class="fw-semibold">{{ SITE_NAME|default:'Portfolio' }}</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link {% if request.path|slice:'0:9' == '/projects' %}active{% endif %}" href="{% url 'projects' %}">Projects</a></li>
+        <li class="nav-item"><a class="nav-link {% if '/services' in request.path %}active{% endif %}" href="{% url 'services' %}">Services</a></li>
+        <li class="nav-item"><a class="nav-link {% if '/skills' in request.path %}active{% endif %}" href="{% url 'skills' %}">Skills</a></li>
+        <li class="nav-item"><a class="nav-link {% if '/about' in request.path %}active{% endif %}" href="{% url 'about' %}">About</a></li>
+        <li class="nav-item"><a class="nav-link {% if '/contact' in request.path %}active{% endif %}" href="{% url 'contactus' %}">Contact</a></li>
+      </ul>
+      <div class="d-flex gap-2">
+        {% if profile and profile.resume %}
+          <a href="{{ profile.resume.url }}" target="_blank" class="btn btn-sm btn-outline-light"><i class="fa fa-download"></i> Resume</a>
+        {% endif %}
+        <a href="{% url 'contactus' %}" class="btn btn-sm btn-warning">Hire Me</a>
+      </div>
+    </div>
+  </div>
+</nav>
+

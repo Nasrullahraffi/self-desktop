@@ -4,12 +4,20 @@
 <div class="container mt-4 mb-5">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="text-warning h3 mb-0">Projects</h1>
-    <a href="{% url 'contactus' %}" class="btn btn-sm btn-outline-warning">Start a Project</a>
+    <div class="d-flex gap-2">
+      {% if user.is_authenticated %}
+        <a href="{% url 'project_create' %}" class="btn btn-sm btn-warning"><i class="fa fa-plus"></i> Add Project</a>
+      {% endif %}
+      <a href="{% url 'contactus' %}" class="btn btn-sm btn-outline-warning">Start a Project</a>
+    </div>
   </div>
   <div class="row g-4">
     {% for proj in projects %}
       <div class="col-sm-6 col-lg-4">
         <div class="project-card h-100">
+          {% if proj.featured_image %}
+            <img src="{{ proj.featured_image.url }}" alt="{{ proj.title }}" class="img-fluid rounded mb-2" style="max-height:180px; width:100%; object-fit:cover;">
+          {% endif %}
           <h5 class="text-white mb-1">{{ proj.title }}</h5>
           <small class="text-muted d-block mb-2">{{ proj.status|title }}</small>
           <p class="text-white-50 small">{{ proj.short_description|default:proj.description|truncatechars:110 }}</p>
@@ -18,11 +26,20 @@
             {% if proj.github_url %}<a href="{{ proj.github_url }}" target="_blank" class="btn btn-sm btn-outline-light"><i class="fab fa-github"></i></a>{% endif %}
             {% if proj.live_url %}<a href="{{ proj.live_url }}" target="_blank" class="btn btn-sm btn-outline-success">Live</a>{% endif %}
             <a href="{{ proj.get_absolute_url }}" class="btn btn-sm btn-outline-warning">Details</a>
+            {% if user.is_authenticated %}
+              <a href="{% url 'project_edit' proj.slug %}" class="btn btn-sm btn-outline-info"><i class="fa fa-edit"></i></a>
+              <a href="{% url 'project_delete' proj.slug %}" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></a>
+            {% endif %}
           </div>
         </div>
       </div>
     {% empty %}
-      <div class="col-12"><p class="text-white-50">No projects yet.</p></div>
+      <div class="col-12">
+        <p class="text-white-50">No projects yet.</p>
+        {% if user.is_authenticated %}
+          <a href="{% url 'project_create' %}" class="btn btn-sm btn-warning">Create your first project</a>
+        {% endif %}
+      </div>
     {% endfor %}
   </div>
   {% if is_paginated %}
@@ -42,4 +59,3 @@
   {% endif %}
 </div>
 {% endblock content %}
-

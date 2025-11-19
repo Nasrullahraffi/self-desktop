@@ -2,52 +2,233 @@
 {% block title %}Skills & Education | {{ SITE_NAME }}{% endblock title %}
 {% block content %}
 <div class="container mb-5 mt-4">
-  <h1 class="text-warning border-bottom border-warning pb-2 h3">Skills & Education</h1>
+  <div class="d-flex justify-content-between align-items-center border-bottom border-warning pb-2 mb-4">
+    <h1 class="text-warning h3 mb-0">Skills & Education</h1>
+    {% if user.is_authenticated %}
+      <div class="dropdown">
+        <button class="btn btn-sm btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="fa fa-plus"></i> Add New</button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="{% url 'skill_create' %}"><i class="fa fa-code"></i> Add Skill</a></li>
+          <li><a class="dropdown-item" href="{% url 'education_create' %}"><i class="fa fa-graduation-cap"></i> Add Education</a></li>
+          <li><a class="dropdown-item" href="{% url 'certification_create' %}"><i class="fa fa-certificate"></i> Add Certification</a></li>
+        </ul>
+      </div>
+    {% endif %}
+  </div>
   <div class="row mt-4">
     <div class="col-lg-7">
-      <h5 class="text-white-50">Technical Skills</h5>
-      <div class="accordion" id="skillsAccordion">
-        {% for cat in 'frontend,backend,database,devops,design,soft,other'.split(',') %}
-          {% with cat_skills=skills|dictsort %}{% endwith %}
-          {% if skills %}
-          <div class="accordion-item bg-secondary mb-2 border-0">
-            <h2 class="accordion-header" id="heading-{{ cat }}">
-              <button class="accordion-button py-2 bg-secondary text-white small" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ cat }}" aria-expanded="true" aria-controls="collapse-{{ cat }}">
-                {{ cat|title }} {% if cat == 'soft' %} Skills{% endif %}
-              </button>
-            </h2>
-            <div id="collapse-{{ cat }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading-{{ cat }}" data-bs-parent="#skillsAccordion">
-              <div class="accordion-body pt-2 pb-3">
-                <div class="row g-3">
-                  {% for s in skills %}
-                    {% if s.category == cat %}
-                      <div class="col-sm-6">
-                        <div class="bg-dark p-3 rounded h-100">
-                          <div class="d-flex justify-content-between align-items-center mb-1">
-                            <strong class="text-white small">{{ s.name }}</strong>
-                            {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
-                          </div>
-                          <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
-                          <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
-                        </div>
-                      </div>
-                    {% endif %}
-                  {% empty %}
-                    <p class="text-white-50">No skills available.</p>
-                  {% endfor %}
+      <h5 class="text-white-50 mb-3">Technical Skills</h5>
+
+      {# Frontend #}
+      {% if frontend_skills %}
+      <div class="mb-3">
+        <h6 class="text-warning small fw-semibold mb-2">Frontend</h6>
+        <div class="row g-3">
+          {% for s in frontend_skills %}
+            <div class="col-sm-6">
+              <div class="bg-secondary p-3 rounded h-100 position-relative">
+                {% if user.is_authenticated %}
+                  <div class="position-absolute top-0 end-0 mt-2 me-2">
+                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
+                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
+                  </div>
+                {% endif %}
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <strong class="text-white small">{{ s.name }}</strong>
+                  {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
                 </div>
+                <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
+                <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
               </div>
             </div>
-          </div>
-          {% endif %}
-        {% endfor %}
+          {% endfor %}
+        </div>
       </div>
+      {% endif %}
+
+      {# Backend #}
+      {% if backend_skills %}
+      <div class="mb-3">
+        <h6 class="text-warning small fw-semibold mb-2">Backend</h6>
+        <div class="row g-3">
+          {% for s in backend_skills %}
+            <div class="col-sm-6">
+              <div class="bg-secondary p-3 rounded h-100 position-relative">
+                {% if user.is_authenticated %}
+                  <div class="position-absolute top-0 end-0 mt-2 me-2">
+                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
+                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
+                  </div>
+                {% endif %}
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <strong class="text-white small">{{ s.name }}</strong>
+                  {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
+                </div>
+                <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
+                <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {# Database #}
+      {% if database_skills %}
+      <div class="mb-3">
+        <h6 class="text-warning small fw-semibold mb-2">Database</h6>
+        <div class="row g-3">
+          {% for s in database_skills %}
+            <div class="col-sm-6">
+              <div class="bg-secondary p-3 rounded h-100 position-relative">
+                {% if user.is_authenticated %}
+                  <div class="position-absolute top-0 end-0 mt-2 me-2">
+                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
+                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
+                  </div>
+                {% endif %}
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <strong class="text-white small">{{ s.name }}</strong>
+                  {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
+                </div>
+                <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
+                <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {# DevOps & Tools #}
+      {% if devops_skills %}
+      <div class="mb-3">
+        <h6 class="text-warning small fw-semibold mb-2">DevOps &amp; Tools</h6>
+        <div class="row g-3">
+          {% for s in devops_skills %}
+            <div class="col-sm-6">
+              <div class="bg-secondary p-3 rounded h-100 position-relative">
+                {% if user.is_authenticated %}
+                  <div class="position-absolute top-0 end-0 mt-2 me-2">
+                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
+                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
+                  </div>
+                {% endif %}
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <strong class="text-white small">{{ s.name }}</strong>
+                  {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
+                </div>
+                <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
+                <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {# Design #}
+      {% if design_skills %}
+      <div class="mb-3">
+        <h6 class="text-warning small fw-semibold mb-2">Design</h6>
+        <div class="row g-3">
+          {% for s in design_skills %}
+            <div class="col-sm-6">
+              <div class="bg-secondary p-3 rounded h-100 position-relative">
+                {% if user.is_authenticated %}
+                  <div class="position-absolute top-0 end-0 mt-2 me-2">
+                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
+                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
+                  </div>
+                {% endif %}
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <strong class="text-white small">{{ s.name }}</strong>
+                  {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
+                </div>
+                <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
+                <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {# Soft Skills #}
+      {% if soft_skills %}
+      <div class="mb-3">
+        <h6 class="text-warning small fw-semibold mb-2">Soft Skills</h6>
+        <div class="row g-3">
+          {% for s in soft_skills %}
+            <div class="col-sm-6">
+              <div class="bg-secondary p-3 rounded h-100 position-relative">
+                {% if user.is_authenticated %}
+                  <div class="position-absolute top-0 end-0 mt-2 me-2">
+                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
+                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
+                  </div>
+                {% endif %}
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <strong class="text-white small">{{ s.name }}</strong>
+                  {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
+                </div>
+                <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
+                <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {# Other #}
+      {% if other_skills %}
+      <div class="mb-3">
+        <h6 class="text-warning small fw-semibold mb-2">Other</h6>
+        <div class="row g-3">
+          {% for s in other_skills %}
+            <div class="col-sm-6">
+              <div class="bg-secondary p-3 rounded h-100 position-relative">
+                {% if user.is_authenticated %}
+                  <div class="position-absolute top-0 end-0 mt-2 me-2">
+                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
+                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
+                  </div>
+                {% endif %}
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <strong class="text-white small">{{ s.name }}</strong>
+                  {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
+                </div>
+                <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
+                <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if not skills %}
+        <p class="text-white-50">No skills added yet.</p>
+        {% if user.is_authenticated %}<a href="{% url 'skill_create' %}" class="btn btn-sm btn-warning">Add your first skill</a>{% endif %}
+      {% endif %}
     </div>
+
     <div class="col-lg-5 mt-4 mt-lg-0">
-      <h5 class="text-white-50">Education</h5>
+      <!-- Education Section -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="text-white-50 mb-0">Education</h5>
+        {% if user.is_authenticated %}<a href="{% url 'education_create' %}" class="btn btn-sm btn-outline-warning"><i class="fa fa-plus"></i></a>{% endif %}
+      </div>
       <div class="timeline list-unstyled">
         {% for e in education %}
-          <div class="mb-3 p-3 bg-secondary rounded">
+          <div class="mb-3 p-3 bg-secondary rounded position-relative">
+            {% if user.is_authenticated %}
+              <div class="position-absolute top-0 end-0 mt-2 me-2">
+                <a href="{% url 'education_edit' e.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
+                <a href="{% url 'education_delete' e.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
+              </div>
+            {% endif %}
             <div class="d-flex justify-content-between">
               <strong class="text-white">{{ e.institution }}</strong>
               <small class="text-white-50">{{ e.start_date|date:'Y' }}{% if e.is_current %} - Present{% elif e.end_date %} - {{ e.end_date|date:'Y' }}{% endif %}</small>
@@ -58,13 +239,25 @@
           </div>
         {% empty %}
           <p class="text-white-50">No education records available.</p>
+          {% if user.is_authenticated %}<a href="{% url 'education_create' %}" class="btn btn-sm btn.warning">Add education</a>{% endif %}
         {% endfor %}
       </div>
-      <h5 class="text-white-50 mt-4">Certifications</h5>
+
+      <!-- Certifications Section -->
+      <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+        <h5 class="text-white-50 mb-0">Certifications</h5>
+        {% if user.is_authenticated %}<a href="{% url 'certification_create' %}" class="btn btn-sm btn-outline-warning"><i class="fa fa-plus"></i></a>{% endif %}
+      </div>
       <div class="row g-3">
         {% for c in certifications %}
           <div class="col-sm-6">
-            <div class="bg-secondary p-3 rounded h-100">
+            <div class="bg-secondary p-3 rounded h-100 position-relative">
+              {% if user.is_authenticated %}
+                <div class="position-absolute top-0 end-0 mt-2 me-2">
+                  <a href="{% url 'certification_edit' c.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
+                  <a href="{% url 'certification_delete' c.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
+                </div>
+              {% endif %}
               <strong class="text-white small d-block">{{ c.name }}</strong>
               <small class="text-white-50 d-block mb-1">{{ c.issuing_organization }}</small>
               {% if c.credential_url %}<a href="{{ c.credential_url }}" target="_blank" class="small text-info">Verify <i class="fa fa-external-link-alt"></i></a>{% endif %}
@@ -73,9 +266,11 @@
           </div>
         {% empty %}
           <p class="text-white-50">No certifications yet.</p>
+          {% if user.is_authenticated %}<a href="{% url 'certification_create' %}" class="btn btn-sm btn-warning">Add certification</a>{% endif %}
         {% endfor %}
       </div>
     </div>
   </div>
 </div>
 {% endblock content %}
+

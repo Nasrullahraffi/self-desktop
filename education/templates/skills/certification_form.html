@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+{% block title %}{% if object %}Edit{% else %}Add{% endif %} Certification | {{ SITE_NAME }}{% endblock title %}
+{% block content %}
+<div class="container mt-4 mb-5">
+  <div class="row">
+    <div class="col-lg-6 mx-auto">
+      <h1 class="text-warning h4 mb-3">{% if object %}Edit{% else %}Add{% endif %} Certification</h1>
+      <div class="bg-secondary p-4 rounded">
+        <form method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-warning"><i class="fa fa-save"></i> Save</button>
+            <a href="{% url 'skills' %}" class="btn btn-outline-light">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  .bg-secondary input, .bg-secondary select, .bg-secondary textarea {background:#2d3748; color:#e2e8f0; border:1px solid rgba(255,255,255,.1);}
+  .bg-secondary label {color:#e2e8f0;}
+</style>
+{% endblock content %}
+

@@ -2,10 +2,14 @@
 Core App Views
 """
 
-from django.shortcuts import render, get_object_or_404
-from django.views.generic import ListView, DetailView
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
+from django.urls import reverse_lazy
 from django.conf import settings
 from .models import Profile, Project, SocialLink, Testimonial
+from .forms import ProjectForm
 
 
 def home_page(request):
@@ -73,6 +77,45 @@ def about_page(request):
     return render(request, 'core/about.html', context)
 
 
+# ==============================================================================
+# PROJECT CRUD VIEWS
+# ==============================================================================
+
+class ProjectCreateView(LoginRequiredMixin, CreateView):
+    """Create new project"""
+    model = Project
+    form_class = ProjectForm
+    template_name = 'core/project_form.html'
+    success_url = reverse_lazy('projects')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Project created successfully!')
+        return super().form_valid(form)
+
+
+class ProjectUpdateView(LoginRequiredMixin, UpdateView):
+    """Update existing project"""
+    model = Project
+    form_class = ProjectForm
+    template_name = 'core/project_form.html'
+    success_url = reverse_lazy('projects')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Project updated successfully!')
+        return super().form_valid(form)
+
+
+class ProjectDeleteView(LoginRequiredMixin, DeleteView):
+    """Delete project"""
+    model = Project
+    template_name = 'core/project_confirm_delete.html'
+    success_url = reverse_lazy('projects')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Project deleted successfully!')
+        return super().delete(request, *args, **kwargs)
+
+
 # Error handlers
 def handler404(request, exception):
     """Custom 404 error page"""
@@ -82,5 +125,3 @@ def handler404(request, exception):
 def handler500(request):
     """Custom 500 error page"""
     return render(request, 'errors/500.html', status=500)
-
-

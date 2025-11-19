@@ -1,0 +1,22 @@
+{% extends 'core/base.html' %}
+{% block title %}Delete Certification | {{ SITE_NAME }}{% endblock title %}
+{% block content %}
+<div class="container mt-4 mb-5">
+  <div class="row">
+    <div class="col-lg-6 mx-auto">
+      <div class="bg-secondary p-4 rounded">
+        <h1 class="text-warning h4 mb-3"><i class="fa fa-exclamation-triangle"></i> Confirm Deletion</h1>
+        <p class="text-white">Delete certification <strong>"{{ object.name }}"</strong>?</p>
+        <form method="post">
+          {% csrf_token %}
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> Delete</button>
+            <a href="{% url 'skills' %}" class="btn btn-outline-light">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+

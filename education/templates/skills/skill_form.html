@@ -1,0 +1,79 @@
+{% extends 'core/base.html' %}
+{% endblock content %}
+</div>
+  </div>
+    </div>
+      </div>
+        </form>
+          </div>
+            <a href="{% url 'skills' %}" class="btn btn-outline-light">Cancel</a>
+            <button type="submit" class="btn btn-warning"><i class="fa fa-save"></i> {% if object %}Update{% else %}Add{% endif %} Skill</button>
+          <div class="d-flex gap-2 mt-4">
+
+          </div>
+            </div>
+              {{ form.order }}
+              <label for="{{ form.order.id_for_label }}" class="form-label text-white">Display Order</label>
+            <div class="col-md-6 mb-3">
+            </div>
+              </div>
+                <label class="form-check-label text-white" for="{{ form.is_active.id_for_label }}">Active/Visible</label>
+                {{ form.is_active }}
+              <div class="form-check">
+            <div class="col-md-6 mb-3">
+          <div class="row">
+
+          </div>
+            {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+            {{ form.description }}
+            <label for="{{ form.description.id_for_label }}" class="form-label text-white">Description</label>
+          <div class="mb-3">
+
+          </div>
+            <small class="text-white-50">{{ form.icon_class.help_text }}</small>
+            {% if form.icon_class.errors %}<div class="text-danger small">{{ form.icon_class.errors }}</div>{% endif %}
+            {{ form.icon_class }}
+            <label for="{{ form.icon_class.id_for_label }}" class="form-label text-white">Icon Class</label>
+          <div class="mb-3">
+
+          </div>
+            </div>
+              <small class="text-white-50">{{ form.years_experience.help_text }}</small>
+              {% if form.years_experience.errors %}<div class="text-danger small">{{ form.years_experience.errors }}</div>{% endif %}
+              {{ form.years_experience }}
+              <label for="{{ form.years_experience.id_for_label }}" class="form-label text-white">Years Experience</label>
+            <div class="col-md-6 mb-3">
+            </div>
+              <small class="text-white-50">{{ form.proficiency.help_text }}</small>
+              {% if form.proficiency.errors %}<div class="text-danger small">{{ form.proficiency.errors }}</div>{% endif %}
+              {{ form.proficiency }}
+              <label for="{{ form.proficiency.id_for_label }}" class="form-label text-white">Proficiency (%) *</label>
+            <div class="col-md-6 mb-3">
+          <div class="row">
+
+          </div>
+            {% if form.category.errors %}<div class="text-danger small">{{ form.category.errors }}</div>{% endif %}
+            {{ form.category }}
+            <label for="{{ form.category.id_for_label }}" class="form-label text-white">Category *</label>
+          <div class="mb-3">
+
+          </div>
+            {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors }}</div>{% endif %}
+            {{ form.name }}
+            <label for="{{ form.name.id_for_label }}" class="form-label text-white">Skill Name *</label>
+          <div class="mb-3">
+
+          {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+          {% csrf_token %}
+        <form method="post">
+      <div class="bg-secondary p-4 rounded">
+      </div>
+        <a href="{% url 'skills' %}" class="btn btn-sm btn-outline-light"><i class="fa fa-arrow-left"></i> Back</a>
+        <h1 class="text-warning h3 mb-0">{% if object %}Edit Skill{% else %}Add New Skill{% endif %}</h1>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="col-lg-6 mx-auto">
+  <div class="row">
+<div class="container mt-4 mb-5">
+{% block content %}
+{% block title %}{% if object %}Edit Skill{% else %}Add Skill{% endif %} | {{ SITE_NAME }}{% endblock title %}
+
