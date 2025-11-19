@@ -1,0 +1,52 @@
+{% extends 'core/base.html' %}
+{% block content %} 
+<div>
+    {% load static %}
+
+    <div class="text-center">
+        <img src="{% static 'core/images/nasru.jpg' %}" alt="pro3"
+        class="img-thumbnail mt-5" width='200px' height='150px'>
+    </div>
+
+    <div>
+        <h1 class='text-white mx-2 satisfy-regular'>Seniorita,</h1>
+    </div>
+
+    <div class='text-white mx-5 ' style="text-indent:5px Satisfy f">
+        My name is <b class='text-warning'>Rosita Cafe</b> and i am going to make you experience  the new features of web develpment that will make you and your work look sophisticated and easy.
+        I have made my way through a more advance and with the with exploration of new ways and inovative features that were introduce into market.
+        So let your valuable work be done by an expert.
+        I have featured all  the following sectors.
+
+        <div><b>In front-end i have covered</b></div>
+        <ul><div class='text-danger'>
+            <li>CSS (Cascading stylesheet)</li>
+            <li>HTML (hyper text markup lanaguage)</li>
+            <li>Bootstrape (library)</li>
+            <li>Java script (basic front end related langauge)</li>
+            <li>Jqeury (library)</li>
+        </div>
+        </ul>
+
+        <b>In back-end i covered </b>   
+        
+        <ul>
+            <div class='text-info'>
+            <li>Data-Base (For compiling data)</li>
+            <li>SQL (For sequencing data tables)</li>
+            <li>Python</li>
+            <li>Django (Framework where we complie all the cycles)</li>
+            </div>
+        </ul>
+
+        
+    </div>
+    <div class='text-center'>
+        <a href="{% url 'contactus' %}" class="btn btn-outline-warning my-3   " >Contact</a>
+        <a href="{% url 'contactus' %}" class="btn btn-outline-success my-3 ">Hire Me</a>
+
+
+    </div>
+</div>
+
+{% endblock content %}

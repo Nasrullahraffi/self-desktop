@@ -1,0 +1,15 @@
+.satisfy-regular {
+    font-family: "Satisfy", cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+a.nav-link {
+    color: whitesmoke;
+}
+
+a.nav-link:hover {
+    color: black;
+    background: rgb(249, 79, 79);
+    font-weight: bolder;
+}

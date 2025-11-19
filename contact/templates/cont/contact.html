@@ -1,0 +1,51 @@
+{% extends 'core/base.html' %}
+{% block content %} 
+
+<div class="container mt-5 mb-5">
+    <h1 class="text-warning border-bottom border-warning">Contact Us</h1>
+    <div class="row">
+        <div class="col-sm-5">
+            <h5 class= 'text-white mt-5 mx-5'> Full-Name</h5>
+            <input type="text" class=' mx-5  rounded ' style='width: 400px; height:30px; border:none;'>
+            
+        </div>
+
+        <div class="col-sm-5">
+            <h5 class='text-white mt-5 '>Email-adress</h5>
+            <input type="text" class='   rounded ' style='width: 370px; height:30px; border:none;'>
+            
+        </div>
+
+        <div class="col-sm-5">
+            <h5 class='text-white mt-5 mx-5'>Your Subject</h5>
+            <input type="text" class=' mx-5  rounded ' style='width: 800px; height:30px; border:none;'>
+            
+        </div>
+
+    </div>
+    
+    <div class="col-sm-5">
+        <h5 class='text-white mt-5 mx-5 '>Your Massege</h5>
+        <input type="text" class=' mx-5  rounded ' style='width: 800px; height: 50px; border:none;'>
+        
+    </div>
+
+    <div href="" class="btn btn-success mt-5 mx-5 " onclick="forButton();" >Send</div>
+
+    <div class=' text-center mt-5'>
+        <a href="{% url "fb" %}">
+            <i class="fa-brands fa-facebook fa-1x text-danger-emphasis mx-1">            
+        </i></a>
+        <a href="{% url "inst" %}">
+            <i class="fa-brands fa-instagram fa-1x text-danger mx-1"></i>
+        </a>
+        <a href="{% url "linkedin" %}">
+            <i class="fa-brands fa-linkedin fa-1x text-primary mx-1"></i>
+        </a>
+        <i class="fa-brands fa-twitter fa-1x text-primary mx-1"></i>
+        
+        
+    </div>
+    
+</div>
+{% endblock content %}

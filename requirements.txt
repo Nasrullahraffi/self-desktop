@@ -1,0 +1,66 @@
+# Core Django
+Django==5.0.6
+asgiref==3.8.1
+sqlparse==0.5.0
+tzdata==2024.1
+
+# Environment variables
+python-decouple==3.8
+python-dotenv==1.0.0
+
+# Database
+psycopg2-binary==2.9.9  # PostgreSQL adapter for production
+
+# Forms and Validation
+django-crispy-forms==2.1
+crispy-bootstrap5==2.0.0
+
+# Image Processing
+Pillow==10.3.0
+
+# GitHub API Integration
+PyGithub==2.3.0
+requests==2.31.0
+
+# Email
+django-mail-templated==2.6.5
+
+# Admin Enhancements
+django-admin-interface==0.28.6
+django-colorfield==0.11.0
+
+# Security
+django-cors-headers==4.3.1
+
+# SEO
+django-meta==2.3.0
+django-sitemap==2.3
+
+# Caching (optional for production)
+django-redis==5.4.0
+redis==5.0.4
+
+# API (for future enhancements)
+djangorestframework==3.15.1
+
+# Utilities
+django-extensions==3.2.3
+django-debug-toolbar==4.3.0  # Development only
+
+# Production Server
+gunicorn==22.0.0
+whitenoise==6.6.0  # Static file serving
+
+# Monitoring (optional)
+sentry-sdk==2.1.1
+
+# Testing
+pytest==8.2.0
+pytest-django==4.8.0
+coverage==7.5.1
+
+# Code Quality
+black==24.4.2
+flake8==7.0.0
+isort==5.13.2
+

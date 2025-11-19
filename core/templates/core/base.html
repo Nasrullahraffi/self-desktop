@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+<link rel="stylesheet" href="{% static 'core/css/bootstrap.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+<link rel="shortcut icon" href="{% static "core/images/old.png" %}" type="image/x-icon">
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet">    
+    
+    <title>{{p}}</title>
+</head>
+<body>
+     <div class="container-fluid bg-dark" >
+        <div class="row">   
+            <div class="col-sm-2">
+                
+                {% include "core/side_bar.html" %}
+                <div class="col-sm-10">
+                    {% block content %} {% endblock content %}
+                </div>
+        </div>
+     </div>
+     
+
+     <script>
+        function forButton(){
+            alert(" Your massege has been recieved ")
+        }
+     </script> 
+    
+    
+    <script src = "{% static 'core/javascript/bootstrap.js' %}"></script>
+    <script src = "{% static 'core/javascript/jqeury.js' %}"></script>
+    <script src = "{% static 'core/javascript/pooper.js' %}"></script>
+    <script src = "{% static 'core/javascript/core.js' %}"></script>
+</body>
+</html> 

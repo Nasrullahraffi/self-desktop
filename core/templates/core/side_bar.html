@@ -1,0 +1,16 @@
+{% load static %}
+<div class="border-right border-warning h-100  ">
+<div class = "text-center">
+<img src="{% static 'core/images/profile.png' %}"
+alt="propic" class="img-fluid rounded-circle mt-5" width="100px" height = "100px" >
+</div>
+<h3 class="text-success mt-2 mx-2 satisfy-regular ">Rosita Cafe'</h3>
+<hr class="border-light" >
+<div class="nav flex-column text-center">
+<a href={% url 'home' %} class="nav-link active  {{home}}">Home</a>
+<a href="{% url 'services' %}" class="nav-link ">Services</a>
+<a href="{% url 'skills' %}" class="nav-link">Skills</a>
+<a href="{% url 'contactus' %}" class="nav-link active ">Contact</a>
+</div>
+</div>
+</div>
