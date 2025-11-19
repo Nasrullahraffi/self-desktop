@@ -1,84 +1,81 @@
 {% extends 'core/base.html' %}
-{% block content %} 
-<div class="container mb-5 mt-5 ">
-    <h1 class='text-warning border-bottom border-warning'>Skills</h1>
-    
-        <div class="row text-white">
-            <div class="col-sm-5 mt-5 ">
-                <h3 class="mt-5">HTML/CSS</h3>
-                <div class="progress">
-                    <div class="progress-bar bg-danger role='progressbar"
-                    style='width:100% ' aria-valuenow='100%' aria-valuemin='0%' aria-ariamax='100%'
-                    >100%</div>
-
+{% block title %}Skills & Education | {{ SITE_NAME }}{% endblock title %}
+{% block content %}
+<div class="container mb-5 mt-4">
+  <h1 class="text-warning border-bottom border-warning pb-2 h3">Skills & Education</h1>
+  <div class="row mt-4">
+    <div class="col-lg-7">
+      <h5 class="text-white-50">Technical Skills</h5>
+      <div class="accordion" id="skillsAccordion">
+        {% for cat in 'frontend,backend,database,devops,design,soft,other'.split(',') %}
+          {% with cat_skills=skills|dictsort %}{% endwith %}
+          {% if skills %}
+          <div class="accordion-item bg-secondary mb-2 border-0">
+            <h2 class="accordion-header" id="heading-{{ cat }}">
+              <button class="accordion-button py-2 bg-secondary text-white small" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ cat }}" aria-expanded="true" aria-controls="collapse-{{ cat }}">
+                {{ cat|title }} {% if cat == 'soft' %} Skills{% endif %}
+              </button>
+            </h2>
+            <div id="collapse-{{ cat }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading-{{ cat }}" data-bs-parent="#skillsAccordion">
+              <div class="accordion-body pt-2 pb-3">
+                <div class="row g-3">
+                  {% for s in skills %}
+                    {% if s.category == cat %}
+                      <div class="col-sm-6">
+                        <div class="bg-dark p-3 rounded h-100">
+                          <div class="d-flex justify-content-between align-items-center mb-1">
+                            <strong class="text-white small">{{ s.name }}</strong>
+                            {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
+                          </div>
+                          <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
+                          <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% empty %}
+                    <p class="text-white-50">No skills available.</p>
+                  {% endfor %}
                 </div>
+              </div>
             </div>
-            <div class="col-sm-5 mt-5 offset-sm-2">
-                <h3 class='mt-5'>Java Script</h3>
-                <div class="progress">
-                    <div class="progress-bar bg-success progress-bar-animated progress-bar-striped role='progressbar" style='width :75%'' aria-valuenow="75%" aria-valuemin="0%" aria-valuemax="100%"
-                    >75%</div>
-                </div>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-lg-5 mt-4 mt-lg-0">
+      <h5 class="text-white-50">Education</h5>
+      <div class="timeline list-unstyled">
+        {% for e in education %}
+          <div class="mb-3 p-3 bg-secondary rounded">
+            <div class="d-flex justify-content-between">
+              <strong class="text-white">{{ e.institution }}</strong>
+              <small class="text-white-50">{{ e.start_date|date:'Y' }}{% if e.is_current %} - Present{% elif e.end_date %} - {{ e.end_date|date:'Y' }}{% endif %}</small>
             </div>
-
-            <div class="col-sm-5 mt-5 ">
-                <h3 class='mt-5'>Jqeury</h3>
-                <div class="progress">
-                    <div class="progress-bar bg-success progress-bar-animated progress-bar-striped role='progressbar" style='width :89%' aria-valuenow="89%" aria-valuemin="0%" aria-valuemax="100%"
-                    >98%</div>
-                </div>
+            <div class="text-warning small mb-1">{{ e.get_degree_display }} in {{ e.field_of_study }}</div>
+            {% if e.gpa %}<div class="small text-info mb-1">GPA: {{ e.gpa }}</div>{% endif %}
+            <p class="text-white-50 small mb-0">{{ e.description|truncatechars:140 }}</p>
+          </div>
+        {% empty %}
+          <p class="text-white-50">No education records available.</p>
+        {% endfor %}
+      </div>
+      <h5 class="text-white-50 mt-4">Certifications</h5>
+      <div class="row g-3">
+        {% for c in certifications %}
+          <div class="col-sm-6">
+            <div class="bg-secondary p-3 rounded h-100">
+              <strong class="text-white small d-block">{{ c.name }}</strong>
+              <small class="text-white-50 d-block mb-1">{{ c.issuing_organization }}</small>
+              {% if c.credential_url %}<a href="{{ c.credential_url }}" target="_blank" class="small text-info">Verify <i class="fa fa-external-link-alt"></i></a>{% endif %}
+              <div class="small mt-1 {% if c.is_expired %}text-danger{% else %}text-success{% endif %}">{% if c.is_expired %}Expired{% else %}Valid{% endif %}</div>
             </div>
-
-  
-            <div class="col-sm-5 mt-5 offset-sm-2">
-                <h3 class='mt-5'>Data Base</h3>
-                <div class="progress">
-                    <div class="progress-bar bg-success progress-bar-animated progress-bar-striped role='progressbar" style='width :70%'' aria-valuenow="70%" aria-valuemin="0%" aria-valuemax="100%"
-                    >70%</div>
-                </div>
-            </div>
-  
-
-            <div class="col-sm-5 mt-5 ">
-                <h3 class='mt-5'>SQL</h3>
-                <div class="progress">
-                    <div class="progress-bar bg-success progress-bar-animated progress-bar-striped role='progressbar" style='width :90%'' aria-valuenow="90%" aria-valuemin="0%" aria-valuemax="100%"
-                    >90%</div>
-                </div>
-            </div>
-
-            <div class="col-sm-5 mt-5 offset-sm-2">
-                <h3 class='mt-5'>Python</h3>
-                <div class="progress">
-                    <div class="progress-bar bg-success progress-bar-animated progress-bar-striped role='progressbar" style='width :75%'' aria-valuenow="75%" aria-valuemin="0%" aria-valuemax="100%"
-                    >75%</div>
-                </div>
-            </div>
-
-
-            <div class="col-sm-5 mt-5 ">
-                <h3 class='mt-5'>Django</h3>
-                <div class="progress">
-                    <div class="progress-bar bg-success progress-bar-animated progress-bar-striped role='progressbar" style='width :70%'' aria-valuenow="70%" aria-valuemin="0%" aria-valuemax="100%"
-                    >70%</div>
-                </div>
-            </div>
-
-
-            <div class="col-sm-5 mt-5 offset-sm-2">
-                <h3 class='mt-5'>Practical work</h3>
-                <div class="progress">
-                    <div class="progress-bar bg-success progress-bar-animated progress-bar-striped role='progressbar" style='width :0%'' aria-valuenow="0%" aria-valuemin="0%" aria-valuemax="100%"
-                    >%</div>
-                </div>
-            </div>
-
-
-        </div>
-        
-    
-    
-
+          </div>
+        {% empty %}
+          <p class="text-white-50">No certifications yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
 </div>
-
 {% endblock content %}

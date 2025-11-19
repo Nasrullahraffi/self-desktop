@@ -1,0 +1,87 @@
+{% extends 'core/base.html' %}
+{% block title %}About | {{ SITE_NAME }}{% endblock title %}
+{% block content %}
+<div class="container mt-4 mb-5">
+  <h1 class="text-warning h3 mb-3">About Me</h1>
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="bg-secondary rounded p-4 mb-4">
+        <h5 class="text-white mb-3">Who I Am</h5>
+        <p class="text-white-50" style="line-height:1.6">
+          {% if profile %}{{ profile.bio|linebreaks }}{% else %}Add your profile in admin (Core → Profile) to show biography here.{% endif %}
+        </p>
+        {% if profile %}
+        <div class="row mt-3 g-3">
+          <div class="col-6 col-md-4">
+            <div class="p-3 bg-dark rounded text-center">
+              <h3 class="text-warning mb-0">{{ profile.years_experience }}</h3>
+              <small class="text-white-50">Years Experience</small>
+            </div>
+          </div>
+          <div class="col-6 col-md-4">
+            <div class="p-3 bg-dark rounded text-center">
+              <h3 class="text-warning mb-0">{{ profile.projects_completed }}</h3>
+              <small class="text-white-50">Projects Done</small>
+            </div>
+          </div>
+          <div class="col-6 col-md-4">
+            <div class="p-3 bg-dark rounded text-center">
+              <h3 class="text-warning mb-0">{{ profile.happy_clients }}</h3>
+              <small class="text-white-50">Happy Clients</small>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      <div class="bg-secondary rounded p-4">
+        <h5 class="text-white mb-3">Testimonials</h5>
+        <div class="row g-3">
+          {% for t in testimonials %}
+            <div class="col-md-6">
+              <div class="testimonial h-100">
+                <div class="d-flex align-items-center mb-2">
+                  {% if t.avatar %}<img src="{{ t.avatar.url }}" class="avatar-sm me-2" alt="{{ t.name }}">{% endif %}
+                  <div>
+                    <strong class="text-white">{{ t.name }}</strong><br>
+                    <small class="text-white-50">{{ t.position }} {% if t.company %}@ {{ t.company }}{% endif %}</small>
+                  </div>
+                </div>
+                <p class="text-white-50 small mb-0">{{ t.testimonial|truncatechars:140 }}</p>
+              </div>
+            </div>
+          {% empty %}
+            <p class="text-white-50 small">No testimonials yet. Add via admin (Core → Testimonials).</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="bg-secondary rounded p-4 mb-4">
+        <h5 class="text-white mb-3">Skills Snapshot</h5>
+        {% if skills %}
+          {% for s in skills|slice:':6' %}
+            <div class="mb-2">
+              <div class="d-flex justify-content-between small text-white-50"><span>{{ s.name }}</span><span>{{ s.proficiency }}%</span></div>
+              <div class="skill-bar"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
+            </div>
+          {% endfor %}
+          <a href="{% url 'skills' %}" class="btn btn-sm btn-outline-light mt-2">View All Skills</a>
+        {% else %}
+          <p class="text-white-50 small">No skills yet. Add via admin (Education → Skills).</p>
+        {% endif %}
+      </div>
+      <div class="bg-secondary rounded p-4">
+        <h5 class="text-white mb-3">Quick Links</h5>
+        <div class="d-flex flex-wrap gap-2">
+          {% for link in social_links %}
+            <a href="{{ link.url }}" target="_blank" class="btn btn-sm btn-outline-info" aria-label="{{ link.platform|title }}"><i class="{{ link.icon_class }}"></i></a>
+          {% empty %}
+            <p class="text-white-50 small">Add social links in admin (Core → Social Links).</p>
+          {% endfor %}
+        </div>
+        <a href="{% url 'contactus' %}" class="btn btn-sm btn-outline-warning mt-3">Contact Me</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

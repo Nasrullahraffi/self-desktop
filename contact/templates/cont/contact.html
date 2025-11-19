@@ -1,51 +1,56 @@
 {% extends 'core/base.html' %}
-{% block content %} 
-
-<div class="container mt-5 mb-5">
-    <h1 class="text-warning border-bottom border-warning">Contact Us</h1>
-    <div class="row">
-        <div class="col-sm-5">
-            <h5 class= 'text-white mt-5 mx-5'> Full-Name</h5>
-            <input type="text" class=' mx-5  rounded ' style='width: 400px; height:30px; border:none;'>
-            
-        </div>
-
-        <div class="col-sm-5">
-            <h5 class='text-white mt-5 '>Email-adress</h5>
-            <input type="text" class='   rounded ' style='width: 370px; height:30px; border:none;'>
-            
-        </div>
-
-        <div class="col-sm-5">
-            <h5 class='text-white mt-5 mx-5'>Your Subject</h5>
-            <input type="text" class=' mx-5  rounded ' style='width: 800px; height:30px; border:none;'>
-            
-        </div>
-
+{% load crispy_forms_tags %}
+{% block title %}Contact | {{ SITE_NAME }}{% endblock title %}
+{% block content %}
+<div class="container mt-4 mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="text-warning h3 mb-0">Get In Touch</h1>
+    <small class="text-white-50">I'd love to hear from you</small>
+  </div>
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="bg-secondary p-4 rounded">
+        <h5 class="text-white mb-3">Send a Message</h5>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {{ form|crispy }}
+          <button type="submit" class="btn btn-warning mt-2"><i class="fa fa-paper-plane"></i> Send</button>
+        </form>
+      </div>
+      <div class="bg-secondary p-4 rounded mt-4">
+        <h5 class="text-white mb-3">Subscribe to Newsletter</h5>
+        <form method="post" action="{% url 'newsletter_subscribe' %}">
+          {% csrf_token %}
+          <div class="row g-2">
+            <div class="col-sm-8"><input type="email" name="email" required placeholder="Email" class="form-control form-control-sm"></div>
+            <div class="col-sm-4"><button class="btn btn-sm btn-outline-info w-100" type="submit">Subscribe</button></div>
+          </div>
+          <small class="text-white-50 d-block mt-2">You can unsubscribe anytime.</small>
+        </form>
+      </div>
     </div>
-    
-    <div class="col-sm-5">
-        <h5 class='text-white mt-5 mx-5 '>Your Massege</h5>
-        <input type="text" class=' mx-5  rounded ' style='width: 800px; height: 50px; border:none;'>
-        
+    <div class="col-lg-5">
+      <div class="bg-secondary p-4 rounded h-100">
+        <h5 class="text-white mb-3">Contact Details</h5>
+        <ul class="list-unstyled mb-3 text-white-50 small">
+          {% if site_profile.email %}<li><i class="fa fa-envelope text-warning"></i> {{ site_profile.email }}</li>{% endif %}
+          {% if site_profile.phone %}<li><i class="fa fa-phone text-warning"></i> {{ site_profile.phone }}</li>{% endif %}
+          {% if site_profile.location %}<li><i class="fa fa-location-dot text-warning"></i> {{ site_profile.location }}</li>{% endif %}
+        </ul>
+        <h6 class="text-white">Social Links</h6>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          {% for link in social_links %}
+            <a href="{{ link.url }}" target="_blank" class="btn btn-sm btn-outline-light" title="{{ link.platform|title }}"><i class="{{ link.icon_class }}"></i></a>
+          {% endfor %}
+        </div>
+        <h6 class="text-white">Why Reach Out?</h6>
+        <p class="text-white-50 small">Whether you have a question, a project idea, collaboration proposal, or just want to say hi — feel free to send a message. I respond within 24 hours.</p>
+        <div class="mt-3">
+          <a href="{% url 'services' %}" class="btn btn-sm btn-outline-warning me-2">View Services</a>
+          <a href="{% url 'projects' %}" class="btn btn-sm btn-outline-info">View Projects</a>
+        </div>
+      </div>
     </div>
-
-    <div href="" class="btn btn-success mt-5 mx-5 " onclick="forButton();" >Send</div>
-
-    <div class=' text-center mt-5'>
-        <a href="{% url "fb" %}">
-            <i class="fa-brands fa-facebook fa-1x text-danger-emphasis mx-1">            
-        </i></a>
-        <a href="{% url "inst" %}">
-            <i class="fa-brands fa-instagram fa-1x text-danger mx-1"></i>
-        </a>
-        <a href="{% url "linkedin" %}">
-            <i class="fa-brands fa-linkedin fa-1x text-primary mx-1"></i>
-        </a>
-        <i class="fa-brands fa-twitter fa-1x text-primary mx-1"></i>
-        
-        
-    </div>
-    
+  </div>
 </div>
 {% endblock content %}

@@ -4,46 +4,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-
-<link rel="stylesheet" href="{% static 'core/css/bootstrap.css' %}">
-<link rel="stylesheet" href="{% static 'core/css/style.css' %}">
-<link rel="shortcut icon" href="{% static "core/images/old.png" %}" type="image/x-icon">
-
-
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet">    
-    
-    <title>{{p}}</title>
+    {% block meta %}{% endblock meta %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{% static 'core/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <link rel="shortcut icon" href="{% static 'core/images/old.png' %}" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet">
+    <title>{% block title %}{{ SITE_NAME }}{% endblock title %}</title>
+    <style>
+        .sidebar-fixed {position:sticky; top:0;}
+        .project-card, .service-card {background:#1e1e1e; border-radius:10px; padding:18px; height:100%; transition:all .25s ease;}
+        .project-card:hover, .service-card:hover {transform:translateY(-6px); box-shadow:0 10px 28px rgba(0,0,0,.4);}
+        .skill-bar {background:#2d2d2d; border-radius:6px; overflow:hidden;}
+        .skill-bar-fill {height:14px; background:linear-gradient(90deg,#ffb347,#ffcc33);}
+        .testimonial {background:#242424; border-left:4px solid #ffb347; padding:16px; border-radius:8px; font-size:.95rem;}
+        .avatar-sm {width:48px; height:48px; object-fit:cover; border-radius:50%;}
+    </style>
 </head>
-<body>
-     <div class="container-fluid bg-dark" >
-        <div class="row">   
-            <div class="col-sm-2">
-                
-                {% include "core/side_bar.html" %}
-                <div class="col-sm-10">
-                    {% block content %} {% endblock content %}
-                </div>
+<body class="bg-dark">
+    <div class="container-fluid">
+        <div class="row">
+            <aside class="col-12 col-md-3 col-lg-2 pt-3 sidebar-fixed">
+                {% include 'core/side_bar.html' %}
+            </aside>
+            <main class="col-12 col-md-9 col-lg-10 py-4">
+                {% if messages %}
+                  <div class="container mb-3">
+                    {% for message in messages %}
+                      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+                {% block content %}{% endblock content %}
+            </main>
         </div>
-     </div>
-     
-
-     <script>
-        function forButton(){
-            alert(" Your massege has been recieved ")
-        }
-     </script> 
-    
-    
-    <script src = "{% static 'core/javascript/bootstrap.js' %}"></script>
-    <script src = "{% static 'core/javascript/jqeury.js' %}"></script>
-    <script src = "{% static 'core/javascript/pooper.js' %}"></script>
-    <script src = "{% static 'core/javascript/core.js' %}"></script>
+    </div>
+    <script>
+      function forButton(){ alert("Your message has been received"); }
+    </script>
+    <script src="{% static 'core/javascript/bootstrap.js' %}"></script>
+    <script src="{% static 'core/javascript/jqeury.js' %}"></script>
+    <script src="{% static 'core/javascript/pooper.js' %}"></script>
+    <script src="{% static 'core/javascript/core.js' %}"></script>
 </body>
-</html> 
+</html>

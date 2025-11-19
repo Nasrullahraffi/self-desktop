@@ -1,67 +1,61 @@
 {% extends 'core/base.html' %}
-{% block content %} 
-<div class=' container mt-5 '>
-    <h1 class="text-warning mx-3 border-bottom border-warning">Services</h1>
-    <div class="row text-center mb-3 mt-5">
-        <div class="col-sm-4   mb-3 text-white">
-            <i class="fa-solid fa-user fa-2x text-primary"></i>
-            <h3>SEO</h3>
-            <p>Hey it's where you can find new <b class="text-success">inovative ideas</b> that i have  captured from the cyber world.</p>            
-
-            
+{% load static %}
+{% block title %}Services | {{ SITE_NAME }}{% endblock title %}
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="text-warning h3 mb-0">Services</h1>
+    <a href="{% url 'contactus' %}" class="btn btn-sm btn-outline-warning">Request a Quote</a>
+  </div>
+  {% if featured_services %}
+    <h5 class="text-white-50 mt-3">Featured</h5>
+    <div class="row g-4 mb-4">
+      {% for svc in featured_services %}
+        <div class="col-sm-6 col-lg-4">
+          <div class="service-card h-100">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+              <h5 class="text-white mb-0">{{ svc.title }}</h5>
+              <i class="{{ svc.icon_class }} text-warning"></i>
+            </div>
+            <p class="text-white-50 small">{{ svc.short_description|truncatechars:120 }}</p>
+            {% if svc.features %}
+            <ul class="small text-info mb-2" style="list-style:none; padding-left:0;">
+              {% for f in svc.get_features_list|slice:':4' %}
+                <li><i class="fa fa-check text-success"></i> {{ f }}</li>
+              {% endfor %}
+              {% if svc.get_features_list|length > 4 %}<li class="text-white-50">+ more</li>{% endif %}
+            </ul>
+            {% endif %}
+            <div class="d-flex flex-wrap gap-2 mt-auto">
+              <a href="{{ svc.get_absolute_url }}" class="btn btn-sm btn-outline-warning">Details</a>
+              <a href="{% url 'contactus' %}" class="btn btn-sm btn-outline-success">Hire</a>
+            </div>
+          </div>
         </div>
-        <div class="col-sm-4 text-white">
-        
-            <i class="fa-solid fa-envelope fa-2x text-primary"></i>
-        <h3>Mail Box</h3>
-        <p>We have a proper system of comunication through mail system where we provide <b class='text-success'>24/7 service</b> </p>
-        </div>
-        
-
-        <div class="col-sm-4 text-white">
-        
-            <i class="fa-brands fa-github fa-2x text-primary"></i>
-        <h3>Git hub</h3>
-        <p>As being one of the best company we have also contributed alot into the  <b class='text-success'>newly developed and fast moving </b> development software git hub </p>
-        </div>
-        
-        <div class="col-sm-4 text-white">
-        
-            <i class="fa-brands fa-discord fa-2x text-primary"></i>
-        <h3>Discord</h3>
-        <p>As having friends at distance we regularly communicate with them through the same plateforms created by our own industry  </p>
-        </div>
-        <div class="col-sm-4 text-white">
-        
-            <i class="fa-solid fa-cloud fa-2x text-primary"></i>
-        <h3>Cloud Storage</h3>
-        <p>Our data is kept safe and away from being monitored or used wrongly through other means  </p>
-        </div>
-        <div class="col-sm-4 text-white">
-        
-            <i class="fa-solid fa-clipboard fa-2x text-primary"></i>
-        <h3>Check</h3>
-        <p>We check a balance on the work time of our workers who are equally invloved in the same struggle. </p>
-        </div>
-        <div class="col-sm-4 text-white">
-        
-            <i class="fa-solid fa-circle-info fa-2x text-primary"></i>
-        <h3>Circle info</h3>
-        <p>our plateform regularly keep an eye on the new enovative ideas that our team work on and <b class='text-success'>applause them for their creativity .</b> </p>
-        </div>
-        <div class="col-sm-4 text-white">
-        
-            <i class="fa-solid fa-tag fa-2x text-primary"></i>
-        <h3>Tag</h3>
-        <p>We have a proper system of comunication through mail system where we provide <b class='text-success'>24/7 service</b> </p>
-        </div>
-        <div class="col-sm-4 text-white">
-        
-            <i class="fa-solid fa-magnet fa-2x text-primary"></i>
-        <h3>Megnate</h3>
-        <p>This plateforms include those workers who are  <b class='text-success'>creative and prosphrous</b> by genertaing new idea that enhance this field </p>
-        </div>
-        
+      {% endfor %}
     </div>
+  {% endif %}
+
+  <h5 class="text-white-50 mt-4">All Services</h5>
+  <div class="row g-4">
+    {% for svc in services %}
+      <div class="col-sm-6 col-lg-4">
+        <div class="service-card h-100">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <h5 class="text-white mb-0">{{ svc.title }}</h5>
+            <i class="{{ svc.icon_class }} text-primary"></i>
+          </div>
+          <p class="text-white-50 small">{{ svc.short_description|truncatechars:110 }}</p>
+          {% if svc.price_starting %}<div class="text-warning small mb-2">From {{ svc.get_price_display }}</div>{% endif %}
+          <div class="d-flex flex-wrap gap-2 mt-auto">
+            <a href="{{ svc.get_absolute_url }}" class="btn btn-sm btn-outline-light">Details</a>
+            <a href="{% url 'contactus' %}" class="btn btn-sm btn-outline-success">Start</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12"><p class="text-white-50">No services added yet.</p></div>
+    {% endfor %}
+  </div>
 </div>
 {% endblock content %}
