@@ -5,8 +5,6 @@ Contact App URLs
 from django.urls import path
 from . import views
 
-app_name = 'contact'
-
 urlpatterns = [
     # Contact page
     path('', views.contact_pro, name='contactus'),

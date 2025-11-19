@@ -8,18 +8,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.sitemaps.views import sitemap
-from core import views as core_views
 
 urlpatterns = [
     # Admin
     path("admin/", admin.site.urls),
 
-    # Core pages
-    path('', core_views.home_page, name="home"),
-    path('about/', core_views.about_page, name="about"),
-    path('projects/', core_views.ProjectListView.as_view(), name="projects"),
-    path('project/<slug:slug>/', core_views.ProjectDetailView.as_view(), name="project_detail"),
+    # Core pages (home, about, projects)
+    path('', include('core.urls')),
 
     # App URLs
     path('services/', include('services.urls')),
