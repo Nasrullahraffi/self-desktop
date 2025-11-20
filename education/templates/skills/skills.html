@@ -407,6 +407,19 @@
     .stats-grid { grid-template-columns: 1fr; }
     .section-header-premium { flex-direction: column; align-items: flex-start; }
   }
+
+  /* Action Buttons Hover Effects */
+  .btn-warning:hover,
+  .btn-info:hover,
+  .btn-success:hover {
+    transform: translateY(-3px);
+  }
+
+  .btn-warning:active,
+  .btn-info:active,
+  .btn-success:active {
+    transform: translateY(0);
+  }
 </style>
 
 <!-- Skills Hero Section -->
@@ -421,6 +434,21 @@
 
 <!-- Skills Content -->
 <div class="container py-5">
+  <!-- Action Buttons Section -->
+  {% if user.is_authenticated %}
+  <div class="d-flex justify-content-center gap-3 mb-5 flex-wrap">
+    <a href="{% url 'skill_create' %}" class="btn btn-warning btn-lg" style="min-width: 200px; border-radius: 15px; font-weight: 600; box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4); transition: all 0.3s ease;">
+      <i class="fa fa-plus-circle me-2"></i>Add New Skill
+    </a>
+    <a href="{% url 'education_create' %}" class="btn btn-info btn-lg" style="min-width: 200px; border-radius: 15px; font-weight: 600; box-shadow: 0 5px 15px rgba(66, 153, 225, 0.4); transition: all 0.3s ease;">
+      <i class="fa fa-graduation-cap me-2"></i>Add Education
+    </a>
+    <a href="{% url 'certification_create' %}" class="btn btn-success btn-lg" style="min-width: 200px; border-radius: 15px; font-weight: 600; box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4); transition: all 0.3s ease;">
+      <i class="fa fa-award me-2"></i>Add Certification
+    </a>
+  </div>
+  {% endif %}
+
   <!-- Stats Overview -->
   <div class="stats-grid">
     <div class="stat-card-premium">
