@@ -1,68 +1,565 @@
 {% load static %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top" style="box-shadow:0 4px 12px rgba(0,0,0,.4);">
+<style>
+  :root {
+    --primary: #ff6b35;
+    --primary-light: #ff8e53;
+    --primary-dark: #e55a2b;
+    --secondary: #1a1a1a;
+    --accent: #2d3748;
+    --text-primary: #ffffff;
+    --text-secondary: #a0aec0;
+    --gradient-primary: linear-gradient(135deg, #ff6b35, #ff8e53);
+    --gradient-dark: linear-gradient(135deg, #1a1a1a, #2d1b1b);
+    --shadow-primary: 0 10px 30px rgba(255, 107, 53, 0.3);
+    --shadow-dark: 0 15px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .navbar-premium {
+    background: rgba(26, 26, 26, 0.95) !important;
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 107, 53, 0.2) !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5) !important;
+    padding: 0.75rem 0;
+    transition: all 0.3s ease;
+  }
+
+  .navbar-premium.scrolled {
+    background: rgba(26, 26, 26, 0.98) !important;
+    backdrop-filter: blur(30px);
+    padding: 0.5rem 0;
+  }
+
+  .brand-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .brand-logo {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    background: var(--gradient-primary);
+    padding: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .brand-logo img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .brand-text {
+    font-family: 'Satisfy', cursive;
+    font-size: 1.5rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .brand-container:hover .brand-logo {
+    transform: scale(1.1);
+    border-color: var(--primary-light);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .brand-container:hover .brand-text {
+    transform: translateX(5px);
+  }
+
+  .nav-link-premium {
+    color: var(--text-secondary) !important;
+    font-weight: 500;
+    padding: 0.75rem 1.25rem !important;
+    margin: 0 0.15rem;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .nav-link-premium:hover {
+    color: var(--text-primary) !important;
+    background: rgba(255, 107, 53, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 53, 0.2);
+  }
+
+  .nav-link-premium.active {
+    color: var(--text-primary) !important;
+    background: rgba(255, 107, 53, 0.2);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.25);
+  }
+
+  .nav-icon {
+    width: 20px;
+    text-align: center;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+
+  .nav-link-premium:hover .nav-icon {
+    transform: scale(1.2);
+    color: var(--primary-light);
+  }
+
+  .nav-link-premium.active .nav-icon {
+    color: var(--primary-light);
+  }
+
+  .btn-nav-primary {
+    background: var(--gradient-primary);
+    border: none;
+    color: white !important;
+    padding: 0.6rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-nav-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn-nav-primary:hover::before {
+    left: 100%;
+  }
+
+  .btn-nav-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .btn-nav-outline {
+    border: 2px solid var(--primary);
+    color: var(--primary) !important;
+    background: transparent;
+    padding: 0.6rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-nav-outline:hover {
+    background: var(--primary);
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .dropdown-premium {
+    background: rgba(45, 55, 72, 0.95) !important;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 107, 53, 0.2);
+    border-radius: 15px;
+    box-shadow: var(--shadow-dark);
+    padding: 0.5rem;
+    min-width: 280px;
+  }
+
+  .dropdown-item-premium {
+    color: var(--text-primary) !important;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    margin: 0.25rem 0;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .dropdown-item-premium:hover {
+    background: rgba(255, 107, 53, 0.15) !important;
+    transform: translateX(5px);
+    color: var(--text-primary) !important;
+  }
+
+  .dropdown-divider-premium {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    margin: 0.5rem 0;
+  }
+
+  .user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .nav-badge {
+    background: var(--gradient-primary);
+    color: white;
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 8px;
+    margin-left: 0.5rem;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  .navbar-toggler-premium {
+    border: 2px solid rgba(255, 107, 53, 0.3);
+    border-radius: 8px;
+    padding: 0.25rem 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .navbar-toggler-premium:hover {
+    border-color: var(--primary);
+    background: rgba(255, 107, 53, 0.1);
+  }
+
+  .navbar-toggler-premium .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 107, 53, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  }
+
+  .nav-user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .user-welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .username {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+  }
+
+  .user-role {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 991.98px) {
+    .navbar-collapse-premium {
+      background: rgba(26, 26, 26, 0.98);
+      backdrop-filter: blur(30px);
+      border-radius: 15px;
+      margin-top: 1rem;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 107, 53, 0.2);
+    }
+
+    .nav-link-premium {
+      margin: 0.5rem 0;
+      text-align: center;
+      justify-content: center;
+      padding: 1rem 1.5rem !important;
+    }
+
+    .nav-buttons-mobile {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .nav-buttons-mobile .btn {
+      width: 100%;
+      justify-content: center;
+      padding: 0.8rem 1.5rem;
+    }
+
+    .nav-user-info {
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+  }
+
+  /* Desktop specific enhancements */
+  @media (min-width: 992px) {
+    .nav-link-premium {
+      font-size: 0.95rem;
+    }
+
+    .navbar-nav {
+      gap: 0.25rem;
+    }
+  }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-premium sticky-top">
   <div class="container-fluid">
-    <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
-      <img src="{% static 'core/images/profile.png' %}" alt="logo" width="40" height="40" class="rounded-circle border border-secondary">
-      <span class="fw-semibold">{{ SITE_NAME|default:'Portfolio' }}</span>
+    <!-- Brand Logo -->
+    <a class="navbar-brand" href="{% url 'home' %}">
+      <div class="brand-container">
+        <div class="brand-logo">
+          <img src="{% static 'core/images/profile.png' %}" alt="{{ SITE_NAME|default:'Portfolio' }}">
+        </div>
+        <span class="brand-text">{{ SITE_NAME|default:'Portfolio' }}</span>
+      </div>
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+
+    <!-- Mobile Toggle -->
+    <button class="navbar-toggler navbar-toggler-premium" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="mainNav">
+
+    <!-- Navigation Content -->
+    <div class="collapse navbar-collapse navbar-collapse-premium" id="mainNav">
+      <!-- Navigation Links -->
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
-        <li class="nav-item"><a class="nav-link {% if request.path|slice:'0:9' == '/projects' %}active{% endif %}" href="{% url 'projects' %}">Projects</a></li>
-        <li class="nav-item"><a class="nav-link {% if '/services' in request.path %}active{% endif %}" href="{% url 'services' %}">Services</a></li>
-        <li class="nav-item"><a class="nav-link {% if '/skills' in request.path %}active{% endif %}" href="{% url 'skills' %}">Skills</a></li>
-        <li class="nav-item"><a class="nav-link {% if '/about' in request.path %}active{% endif %}" href="{% url 'about' %}">About</a></li>
-        <li class="nav-item"><a class="nav-link {% if '/contact' in request.path %}active{% endif %}" href="{% url 'contactus' %}">Contact</a></li>
+        <li class="nav-item">
+          <a class="nav-link-premium {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">
+            <i class="nav-icon fa fa-home"></i>
+            <span>Home</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link-premium {% if request.path|slice:'0:9' == '/projects' %}active{% endif %}" href="{% url 'projects' %}">
+            <i class="nav-icon fa fa-folder"></i>
+            <span>Projects</span>
+            {% if featured_projects %}<span class="nav-badge">New</span>{% endif %}
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link-premium {% if '/services' in request.path %}active{% endif %}" href="{% url 'services' %}">
+            <i class="nav-icon fa fa-briefcase"></i>
+            <span>Services</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link-premium {% if '/skills' in request.path %}active{% endif %}" href="{% url 'skills' %}">
+            <i class="nav-icon fa fa-code"></i>
+            <span>Skills</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link-premium {% if '/about' in request.path %}active{% endif %}" href="{% url 'about' %}">
+            <i class="nav-icon fa fa-user"></i>
+            <span>About</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link-premium {% if '/contact' in request.path %}active{% endif %}" href="{% url 'contactus' %}">
+            <i class="nav-icon fa fa-envelope"></i>
+            <span>Contact</span>
+          </a>
+        </li>
       </ul>
-      <div class="d-flex gap-2">
+
+      <!-- Action Buttons & User Menu -->
+      <div class="d-flex gap-3 align-items-center">
         {% if user.is_authenticated %}
           <!-- Logged-in User Menu -->
           <div class="dropdown">
-            <button class="btn btn-sm btn-outline-warning dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fa fa-user-circle"></i> {{ user.username }}
+            <button class="btn btn-nav-outline dropdown-toggle d-flex align-items-center gap-2" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+              <div class="nav-user-info">
+                <div class="user-avatar">
+                  {{ user.username|first|upper }}
+                </div>
+                <div class="user-welcome d-none d-lg-block">
+                  <div class="username">{{ user.username }}</div>
+                  <div class="user-role">Admin</div>
+                </div>
+              </div>
             </button>
-            <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary" aria-labelledby="userMenu">
-              <li><a class="dropdown-item text-white" href="{% url 'dashboard' %}">
-                <i class="fa fa-tachometer-alt text-warning"></i> Dashboard
-              </a></li>
-              <li><a class="dropdown-item text-white" href="{% url 'profile_settings' %}">
-                <i class="fa fa-user-edit text-info"></i> Settings
-              </a></li>
-              <li><hr class="dropdown-divider bg-secondary"></li>
-              <li><a class="dropdown-item text-white" href="{% url 'project_create' %}">
-                <i class="fa fa-folder-plus text-warning"></i> Add Project
-              </a></li>
-              <li><a class="dropdown-item text-white" href="{% url 'skill_create' %}">
-                <i class="fa fa-code text-success"></i> Add Skill
-              </a></li>
-              <li><a class="dropdown-item text-white" href="{% url 'service_create' %}">
-                <i class="fa fa-briefcase text-info"></i> Add Service
-              </a></li>
-              <li><hr class="dropdown-divider bg-secondary"></li>
-              <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">
-                <i class="fa fa-sign-out-alt"></i> Logout
-              </a></li>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-premium" aria-labelledby="userMenu">
+              <li>
+                <a class="dropdown-item-premium" href="{% url 'dashboard' %}">
+                  <i class="fa fa-tachometer-alt text-warning"></i>
+                  <div>
+                    <div>Dashboard</div>
+                    <small class="text-white-50">Manage your content</small>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item-premium" href="{% url 'profile_settings' %}">
+                  <i class="fa fa-user-edit text-info"></i>
+                  <div>
+                    <div>Profile Settings</div>
+                    <small class="text-white-50">Update your information</small>
+                  </div>
+                </a>
+              </li>
+              <li><hr class="dropdown-divider-premium"></li>
+              <li>
+                <a class="dropdown-item-premium" href="{% url 'project_create' %}">
+                  <i class="fa fa-folder-plus text-warning"></i>
+                  <div>
+                    <div>Add Project</div>
+                    <small class="text-white-50">Showcase your work</small>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item-premium" href="{% url 'skill_create' %}">
+                  <i class="fa fa-code text-success"></i>
+                  <div>
+                    <div>Add Skill</div>
+                    <small class="text-white-50">Update your skills</small>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item-premium" href="{% url 'service_create' %}">
+                  <i class="fa fa-briefcase text-info"></i>
+                  <div>
+                    <div>Add Service</div>
+                    <small class="text-white-50">Offer new services</small>
+                  </div>
+                </a>
+              </li>
+              <li><hr class="dropdown-divider-premium"></li>
+              <li>
+                <a class="dropdown-item-premium text-danger" href="{% url 'logout' %}">
+                  <i class="fa fa-sign-out-alt"></i>
+                  <div>
+                    <div>Logout</div>
+                    <small class="text-danger">Sign out of your account</small>
+                  </div>
+                </a>
+              </li>
             </ul>
           </div>
         {% else %}
           <!-- Guest User Links -->
-          <a href="{% url 'login' %}" class="btn btn-sm btn-outline-light">
-            <i class="fa fa-sign-in-alt"></i> Login
+          <div class="d-flex gap-2">
+            <a href="{% url 'login' %}" class="btn btn-nav-outline">
+              <i class="fa fa-sign-in-alt"></i>
+              <span>Login</span>
+            </a>
+            <a href="{% url 'register' %}" class="btn btn-nav-primary">
+              <i class="fa fa-user-plus"></i>
+              <span>Sign Up</span>
+            </a>
+          </div>
+        {% endif %}
+
+        <!-- Additional Action Buttons -->
+        <div class="d-flex gap-2">
+          {% if profile and profile.resume %}
+            <a href="{{ profile.resume.url }}" target="_blank" class="btn btn-nav-outline d-none d-md-flex">
+              <i class="fa fa-download"></i>
+              <span>Resume</span>
+            </a>
+          {% endif %}
+          <a href="{% url 'contactus' %}" class="btn btn-nav-primary">
+            <i class="fa fa-rocket"></i>
+            <span>Hire Me</span>
           </a>
-          <a href="{% url 'register' %}" class="btn btn-sm btn-warning">
-            <i class="fa fa-user-plus"></i> Sign Up
-          </a>
+        </div>
+      </div>
+
+      <!-- Mobile-specific buttons -->
+      <div class="nav-buttons-mobile d-lg-none">
+        {% if user.is_authenticated %}
+          <div class="nav-user-info">
+            <div class="user-avatar">
+              {{ user.username|first|upper }}
+            </div>
+            <div class="user-welcome">
+              <div class="username">Welcome, {{ user.username }}</div>
+              <div class="user-role">Administrator</div>
+            </div>
+          </div>
         {% endif %}
 
         {% if profile and profile.resume %}
-          <a href="{{ profile.resume.url }}" target="_blank" class="btn btn-sm btn-outline-light"><i class="fa fa-download"></i> Resume</a>
+          <a href="{{ profile.resume.url }}" target="_blank" class="btn btn-nav-outline">
+            <i class="fa fa-download me-2"></i> Download Resume
+          </a>
         {% endif %}
-        <a href="{% url 'contactus' %}" class="btn btn-sm btn-warning">Hire Me</a>
+        <a href="{% url 'contactus' %}" class="btn btn-nav-primary">
+          <i class="fa fa-rocket me-2"></i> Start Project
+        </a>
       </div>
     </div>
   </div>
 </nav>
 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const navbar = document.querySelector('.navbar-premium');
+
+    // Scroll effect
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // Add hover effects to dropdown items
+    const dropdownItems = document.querySelectorAll('.dropdown-item-premium');
+    dropdownItems.forEach(item => {
+      item.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateX(8px)';
+      });
+
+      item.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateX(0)';
+      });
+    });
+
+    // Smooth closing for mobile menu
+    const navLinks = document.querySelectorAll('.nav-link-premium');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 992) {
+          const bsCollapse = new bootstrap.Collapse(navbarCollapse);
+          bsCollapse.hide();
+        }
+      });
+    });
+
+    // Add loading animation to brand
+    const brandContainer = document.querySelector('.brand-container');
+    brandContainer.style.opacity = '0';
+    brandContainer.style.transform = 'translateY(-20px)';
+
+    setTimeout(() => {
+      brandContainer.style.transition = 'all 0.5s ease';
+      brandContainer.style.opacity = '1';
+      brandContainer.style.transform = 'translateY(0)';
+    }, 100);
+  });
+</script>

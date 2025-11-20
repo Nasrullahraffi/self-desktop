@@ -1,61 +1,516 @@
 {% extends 'core/base.html' %}
 {% block title %}Projects | {{ SITE_NAME }}{% endblock title %}
 {% block content %}
-<div class="container mt-4 mb-5">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="text-warning h3 mb-0">Projects</h1>
-    <div class="d-flex gap-2">
-      {% if user.is_authenticated %}
-        <a href="{% url 'project_create' %}" class="btn btn-sm btn-warning"><i class="fa fa-plus"></i> Add Project</a>
-      {% endif %}
-      <a href="{% url 'contactus' %}" class="btn btn-sm btn-outline-warning">Start a Project</a>
+<style>
+  :root {
+    --primary: #ff6b35;
+    --primary-light: #ff8e53;
+    --primary-dark: #e55a2b;
+    --secondary: #1a1a1a;
+    --accent: #2d3748;
+    --text-primary: #ffffff;
+    --text-secondary: #a0aec0;
+    --gradient-primary: linear-gradient(135deg, #ff6b35, #ff8e53);
+    --gradient-dark: linear-gradient(135deg, #1a1a1a, #2d1b1b);
+    --shadow-primary: 0 10px 30px rgba(255, 107, 53, 0.3);
+    --shadow-dark: 0 15px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .projects-hero {
+    background: var(--gradient-dark);
+    padding: 3rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .projects-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+      radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+  }
+
+  .page-title {
+    font-size: 3rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+    animation: slideInUp 1s ease;
+  }
+
+  .page-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    animation: slideInUp 1s ease 0.2s both;
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .project-card-premium {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+  }
+
+  .project-card-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .project-card-premium:hover::before {
+    transform: scaleX(1);
+  }
+
+  .project-card-premium:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-dark);
+  }
+
+  .project-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .project-content {
+    padding: 1.5rem;
+  }
+
+  .project-title {
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .project-status {
+    display: inline-block;
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .status-completed { background: rgba(72, 187, 120, 0.2); color: #48bb78; }
+  .status-in-progress { background: rgba(237, 137, 54, 0.2); color: #ed8936; }
+  .status-planning { background: rgba(66, 153, 225, 0.2); color: #4299e1; }
+  .status-on-hold { background: rgba(160, 174, 192, 0.2); color: #a0aec0; }
+
+  .project-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tech-tag {
+    background: rgba(255, 107, 53, 0.1);
+    color: var(--primary-light);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    border: 1px solid rgba(255, 107, 53, 0.3);
+  }
+
+  .project-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-project-primary {
+    background: var(--gradient-primary);
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-project-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+    color: white;
+  }
+
+  .btn-project-outline {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-project-outline:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .btn-project-ghost {
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-secondary);
+    background: transparent;
+    padding: 0.5rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-project-ghost:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-2px);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    margin: 2rem 0;
+  }
+
+  .empty-state-icon {
+    font-size: 4rem;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    opacity: 0.7;
+  }
+
+  .pagination-premium {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 3rem;
+  }
+
+  .page-link-premium {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .page-link-premium:hover {
+    background: rgba(255, 107, 53, 0.1);
+    border-color: var(--primary);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+  }
+
+  .page-link-premium.active {
+    background: var(--gradient-primary);
+    border-color: var(--primary);
+    color: white;
+    box-shadow: var(--shadow-primary);
+  }
+
+  .filter-section {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .filter-title {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  .filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .filter-tag {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .filter-tag:hover, .filter-tag.active {
+    background: rgba(255, 107, 53, 0.15);
+    border-color: var(--primary);
+    color: var(--primary-light);
+  }
+
+  @media (max-width: 768px) {
+    .page-title { font-size: 2.5rem; }
+    .project-actions { justify-content: center; }
+    .filter-tags { justify-content: center; }
+  }
+</style>
+
+<!-- Projects Hero Section -->
+<section class="projects-hero">
+  <div class="container">
+    <div class="text-center text-white">
+      <h1 class="page-title">My Projects</h1>
+      <p class="page-subtitle">Showcasing my latest work and creative solutions</p>
     </div>
   </div>
+</section>
+
+<!-- Projects Content -->
+<div class="container py-5">
+  <!-- Header Actions -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="text-white h4 mb-1">Project Portfolio</h2>
+      <p class="text-white-50 mb-0">{{ projects|length }} project{{ projects|length|pluralize }} completed</p>
+    </div>
+    <div class="d-flex gap-2">
+      {% if user.is_authenticated %}
+        <a href="{% url 'project_create' %}" class="btn-project-primary">
+          <i class="fa fa-plus"></i> Add Project
+        </a>
+      {% endif %}
+      <a href="{% url 'contactus' %}" class="btn-project-outline">
+        <i class="fa fa-rocket"></i> Start Project
+      </a>
+    </div>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <h3 class="filter-title">Filter by Technology</h3>
+    <div class="filter-tags">
+      <span class="filter-tag active">All</span>
+      <span class="filter-tag">Python</span>
+      <span class="filter-tag">Django</span>
+      <span class="filter-tag">React</span>
+      <span class="filter-tag">JavaScript</span>
+      <span class="filter-tag">Vue.js</span>
+      <span class="filter-tag">PostgreSQL</span>
+      <span class="filter-tag">Docker</span>
+    </div>
+  </div>
+
+  <!-- Projects Grid -->
   <div class="row g-4">
     {% for proj in projects %}
       <div class="col-sm-6 col-lg-4">
-        <div class="project-card h-100">
+        <div class="project-card-premium">
           {% if proj.featured_image %}
-            <img src="{{ proj.featured_image.url }}" alt="{{ proj.title }}" class="img-fluid rounded mb-2" style="max-height:180px; width:100%; object-fit:cover;">
+            <img src="{{ proj.featured_image.url }}" alt="{{ proj.title }}" class="project-image">
+          {% else %}
+            <div class="project-image" style="background: var(--gradient-primary); display: flex; align-items: center; justify-content: center;">
+              <i class="fa fa-folder-open text-white" style="font-size: 3rem;"></i>
+            </div>
           {% endif %}
-          <h5 class="text-white mb-1">{{ proj.title }}</h5>
-          <small class="text-muted d-block mb-2">{{ proj.status|title }}</small>
-          <p class="text-white-50 small">{{ proj.short_description|default:proj.description|truncatechars:110 }}</p>
-          <div class="small text-info mb-2">{% for tech in proj.get_technologies_list %}<span>{{ tech }}</span>{% if not forloop.last %}, {% endif %}{% endfor %}</div>
-          <div class="d-flex gap-2 flex-wrap mt-auto">
-            {% if proj.github_url %}<a href="{{ proj.github_url }}" target="_blank" class="btn btn-sm btn-outline-light"><i class="fab fa-github"></i></a>{% endif %}
-            {% if proj.live_url %}<a href="{{ proj.live_url }}" target="_blank" class="btn btn-sm btn-outline-success">Live</a>{% endif %}
-            <a href="{{ proj.get_absolute_url }}" class="btn btn-sm btn-outline-warning">Details</a>
-            {% if user.is_authenticated %}
-              <a href="{% url 'project_edit' proj.slug %}" class="btn btn-sm btn-outline-info"><i class="fa fa-edit"></i></a>
-              <a href="{% url 'project_delete' proj.slug %}" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></a>
-            {% endif %}
+
+          <div class="project-content">
+            <h3 class="project-title">{{ proj.title }}</h3>
+            <span class="project-status status-{{ proj.status|lower|slugify }}">{{ proj.status|title }}</span>
+
+            <p class="project-description">
+              {{ proj.short_description|default:proj.description|truncatechars:120 }}
+            </p>
+
+            <div class="tech-tags">
+              {% for tech in proj.get_technologies_list %}
+                <span class="tech-tag">{{ tech }}</span>
+              {% endfor %}
+            </div>
+
+            <div class="project-actions">
+              {% if proj.github_url %}
+                <a href="{{ proj.github_url }}" target="_blank" class="btn-project-ghost" title="View Code">
+                  <i class="fab fa-github"></i>
+                </a>
+              {% endif %}
+              {% if proj.live_url %}
+                <a href="{{ proj.live_url }}" target="_blank" class="btn-project-primary">
+                  <i class="fa fa-external-link-alt"></i> Live Demo
+                </a>
+              {% endif %}
+              <a href="{{ proj.get_absolute_url }}" class="btn-project-outline">
+                <i class="fa fa-info-circle"></i> Details
+              </a>
+              {% if user.is_authenticated %}
+                <a href="{% url 'project_edit' proj.slug %}" class="btn-project-ghost" title="Edit">
+                  <i class="fa fa-edit"></i>
+                </a>
+                <a href="{% url 'project_delete' proj.slug %}" class="btn-project-ghost" title="Delete">
+                  <i class="fa fa-trash"></i>
+                </a>
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
     {% empty %}
       <div class="col-12">
-        <p class="text-white-50">No projects yet.</p>
-        {% if user.is_authenticated %}
-          <a href="{% url 'project_create' %}" class="btn btn-sm btn-warning">Create your first project</a>
-        {% endif %}
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fa fa-folder-plus"></i>
+          </div>
+          <h3 class="text-white mb-3">No Projects Yet</h3>
+          <p class="text-white-50 mb-4">Start showcasing your amazing work by adding your first project!</p>
+          {% if user.is_authenticated %}
+            <a href="{% url 'project_create' %}" class="btn-project-primary">
+              <i class="fa fa-plus-circle"></i> Create Your First Project
+            </a>
+          {% else %}
+            <a href="{% url 'login' %}" class="btn-project-outline">
+              <i class="fa fa-sign-in-alt"></i> Login to Add Projects
+            </a>
+          {% endif %}
+        </div>
       </div>
     {% endfor %}
   </div>
+
+  <!-- Pagination -->
   {% if is_paginated %}
-    <nav class="mt-4">
-      <ul class="pagination pagination-sm">
-        {% if page_obj.has_previous %}
-          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">«</a></li>
-        {% endif %}
-        {% for num in page_obj.paginator.page_range %}
-          <li class="page-item {% if page_obj.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-        {% endfor %}
-        {% if page_obj.has_next %}
-          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">»</a></li>
-        {% endif %}
-      </ul>
-    </nav>
+    <div class="pagination-premium">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="page-link-premium">
+          <i class="fa fa-chevron-left"></i>
+        </a>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        <a href="?page={{ num }}" class="page-link-premium {% if page_obj.number == num %}active{% endif %}">
+          {{ num }}
+        </a>
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="page-link-premium">
+          <i class="fa fa-chevron-right"></i>
+        </a>
+      {% endif %}
+    </div>
   {% endif %}
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add scroll animations to project cards
+    const projectCards = document.querySelectorAll('.project-card-premium');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    projectCards.forEach(card => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(30px)';
+      card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(card);
+    });
+
+    // Filter functionality
+    const filterTags = document.querySelectorAll('.filter-tag');
+    filterTags.forEach(tag => {
+      tag.addEventListener('click', function() {
+        // Remove active class from all tags
+        filterTags.forEach(t => t.classList.remove('active'));
+        // Add active class to clicked tag
+        this.classList.add('active');
+
+        // Here you would typically filter the projects
+        // For now, we'll just show a simple animation
+        projectCards.forEach(card => {
+          card.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            card.style.transform = 'scale(1)';
+          }, 300);
+        });
+      });
+    });
+
+    // Add hover effects to action buttons
+    const actionButtons = document.querySelectorAll('.btn-project-primary, .btn-project-outline, .btn-project-ghost');
+    actionButtons.forEach(btn => {
+      btn.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-3px)';
+      });
+
+      btn.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+      });
+    });
+  });
+</script>
 {% endblock content %}

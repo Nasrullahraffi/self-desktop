@@ -3,74 +3,404 @@
 {% block title %}Services | {{ SITE_NAME }}{% endblock title %}
 {% block content %}
 <style>
-  .add-service-btn {
-    background: linear-gradient(135deg, #ff6b35, #ff8e53);
-    border: none;
-    box-shadow: 0 4px 15px rgba(255,107,53,0.3);
+  :root {
+    --primary: #ff6b35;
+    --primary-light: #ff8e53;
+    --primary-dark: #e55a2b;
+    --secondary: #1a1a1a;
+    --accent: #2d3748;
+    --text-primary: #ffffff;
+    --text-secondary: #a0aec0;
+    --gradient-primary: linear-gradient(135deg, #ff6b35, #ff8e53);
+    --gradient-dark: linear-gradient(135deg, #1a1a1a, #2d1b1b);
+    --shadow-primary: 0 10px 30px rgba(255, 107, 53, 0.3);
+    --shadow-dark: 0 15px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .services-hero {
+    background: var(--gradient-dark);
+    padding: 3rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .services-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+      radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+  }
+
+  .page-title {
+    font-size: 3rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+    animation: slideInUp 1s ease;
+  }
+
+  .page-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    animation: slideInUp 1s ease 0.2s both;
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .service-card-premium {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+  }
+
+  .service-card-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .service-card-premium:hover::before {
+    transform: scaleX(1);
+  }
+
+  .service-card-premium:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-dark);
+  }
+
+  .service-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 20px;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: white;
+    font-size: 1.8rem;
     transition: all 0.3s ease;
   }
-  .add-service-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255,107,53,0.5);
+
+  .service-card-premium:hover .service-icon {
+    transform: scale(1.1) rotate(5deg);
   }
+
+  .service-title {
+    font-size: 1.3rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  .service-description {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .service-features {
+    margin: 1.5rem 0;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .feature-icon {
+    color: #48bb78;
+    font-size: 0.8rem;
+  }
+
+  .service-price {
+    background: rgba(255, 107, 53, 0.1);
+    color: var(--primary-light);
+    padding: 0.5rem 1rem;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    display: inline-block;
+    margin-bottom: 1.5rem;
+  }
+
+  .service-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: auto;
+  }
+
+  .btn-service-primary {
+    background: var(--gradient-primary);
+    border: none;
+    color: white;
+    padding: 0.6rem 1.25rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .btn-service-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+    color: white;
+  }
+
+  .btn-service-outline {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+    padding: 0.6rem 1.25rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .btn-service-outline:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .btn-service-ghost {
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-secondary);
+    background: transparent;
+    padding: 0.5rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-service-ghost:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-2px);
+  }
+
+  .admin-actions {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .service-card-premium:hover .admin-actions {
+    opacity: 1;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    margin: 2rem 0;
+  }
+
+  .empty-state-icon {
+    font-size: 4rem;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    opacity: 0.7;
+  }
+
   .floating-add-service {
     position: fixed;
     bottom: 30px;
     right: 30px;
     z-index: 1000;
+    box-shadow: var(--shadow-primary);
+    transition: all 0.3s ease;
+  }
+
+  .floating-add-service:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.5);
+  }
+
+  .section-title {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    margin: 2rem 0 1rem 0;
+    position: relative;
+    display: inline-block;
+  }
+
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    .page-title { font-size: 2.5rem; }
+    .service-actions { flex-direction: column; }
+    .header-actions { flex-direction: column; align-items: flex-start; }
+    .service-card-premium { padding: 1.5rem; }
   }
 </style>
 
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-warning pb-3">
-    <div>
-      <h1 class="text-warning h3 mb-1"><i class="fa fa-briefcase"></i> Services</h1>
-      <p class="text-white-50 small mb-0">Professional services I offer to clients</p>
+<!-- Services Hero Section -->
+<section class="services-hero">
+  <div class="container">
+    <div class="text-center text-white">
+      <h1 class="page-title">My Services</h1>
+      <p class="page-subtitle">Professional solutions tailored to your business needs</p>
     </div>
-    <div class="d-flex gap-2">
-      <a href="{% url 'service_create' %}" class="btn btn-warning add-service-btn">
-        <i class="fa fa-plus-circle"></i> Add New Service
-      </a>
-      <a href="{% url 'contactus' %}" class="btn btn-outline-warning">
+  </div>
+</section>
+
+<!-- Services Content -->
+<div class="container py-5">
+  <!-- Header Actions -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="text-white h4 mb-1">Service Portfolio</h2>
+      <p class="text-white-50 mb-0">{{ services|length }} service{{ services|length|pluralize }} available</p>
+    </div>
+    <div class="header-actions">
+      {% if user.is_authenticated %}
+        <a href="{% url 'service_create' %}" class="btn-service-primary">
+          <i class="fa fa-plus-circle"></i> Add New Service
+        </a>
+      {% endif %}
+      <a href="{% url 'contactus' %}" class="btn-service-outline">
         <i class="fa fa-envelope"></i> Request Quote
       </a>
     </div>
   </div>
 
-  <!-- Floating Add Button (Mobile) -->
-  <a href="{% url 'service_create' %}" class="btn btn-warning rounded-circle floating-add-service d-lg-none" style="width:60px; height:60px; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
-    <i class="fa fa-plus"></i>
-  </a>
+  <!-- Featured Services -->
   {% if featured_services %}
-    <h5 class="text-white-50 mt-3">Featured</h5>
-    <div class="row g-4 mb-4">
+    <h3 class="section-title">Featured Services</h3>
+    <div class="row g-4 mb-5">
       {% for svc in featured_services %}
         <div class="col-sm-6 col-lg-4">
-          <div class="service-card h-100 position-relative">
-            <div class="position-absolute top-0 end-0 mt-2 me-2">
-              <a href="{% url 'service_edit' svc.slug %}" class="btn btn-sm btn-outline-info py-0 px-1" title="Edit Service">
-                <i class="fa fa-edit"></i>
-              </a>
-              <a href="{% url 'service_delete' svc.slug %}" class="btn btn-sm btn-outline-danger py-0 px-1" title="Delete Service">
-                <i class="fa fa-trash"></i>
-              </a>
-            </div>
-            <div class="d-flex justify-content-between align-items-start mb-1">
-              <h5 class="text-white mb-0">{{ svc.title }}</h5>
-              <i class="{{ svc.icon_class }} text-warning"></i>
-            </div>
-            <p class="text-white-50 small">{{ svc.short_description|truncatechars:120 }}</p>
-            {% if svc.features %}
-            <ul class="small text-info mb-2" style="list-style:none; padding-left:0;">
-              {% for f in svc.get_features_list|slice:':4' %}
-                <li><i class="fa fa-check text-success"></i> {{ f }}</li>
-              {% endfor %}
-              {% if svc.get_features_list|length > 4 %}<li class="text-white-50">+ more</li>{% endif %}
-            </ul>
+          <div class="service-card-premium">
+            <!-- Admin Actions -->
+            {% if user.is_authenticated %}
+              <div class="admin-actions">
+                <a href="{% url 'service_edit' svc.slug %}" class="btn-service-ghost" title="Edit Service">
+                  <i class="fa fa-edit"></i>
+                </a>
+                <a href="{% url 'service_delete' svc.slug %}" class="btn-service-ghost" title="Delete Service">
+                  <i class="fa fa-trash"></i>
+                </a>
+              </div>
             {% endif %}
-            <div class="d-flex flex-wrap gap-2 mt-auto">
-              <a href="{{ svc.get_absolute_url }}" class="btn btn-sm btn-outline-warning">Details</a>
-              <a href="{% url 'contactus' %}" class="btn btn-sm btn-outline-success">Hire</a>
+
+            <!-- Service Icon -->
+            <div class="service-icon">
+              <i class="{{ svc.icon_class }}"></i>
+            </div>
+
+            <!-- Service Content -->
+            <h3 class="service-title">{{ svc.title }}</h3>
+            <p class="service-description">
+              {{ svc.short_description|truncatechars:120 }}
+            </p>
+
+            <!-- Service Features -->
+            {% if svc.features %}
+              <div class="service-features">
+                {% for f in svc.get_features_list|slice:':3' %}
+                  <div class="feature-item">
+                    <i class="fa fa-check feature-icon"></i>
+                    <span>{{ f }}</span>
+                  </div>
+                {% endfor %}
+                {% if svc.get_features_list|length > 3 %}
+                  <div class="feature-item">
+                    <i class="fa fa-plus feature-icon"></i>
+                    <span class="text-white-50">+{{ svc.get_features_list|length|add:"-3" }} more features</span>
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            <!-- Service Price -->
+            {% if svc.price_starting %}
+              <div class="service-price">
+                {{ svc.get_price_display }}
+              </div>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="service-actions">
+              <a href="{{ svc.get_absolute_url }}" class="btn-service-outline">
+                <i class="fa fa-info-circle"></i> Details
+              </a>
+              <a href="{% url 'contactus' %}" class="btn-service-primary">
+                <i class="fa fa-rocket"></i> Hire Now
+              </a>
             </div>
           </div>
         </div>
@@ -78,43 +408,125 @@
     </div>
   {% endif %}
 
-  <h5 class="text-white-50 mt-4">All Services</h5>
+  <!-- All Services -->
+  <h3 class="section-title">All Services</h3>
   <div class="row g-4">
     {% for svc in services %}
       <div class="col-sm-6 col-lg-4">
-        <div class="service-card h-100 position-relative">
-          <div class="position-absolute top-0 end-0 mt-2 me-2">
-            <a href="{% url 'service_edit' svc.slug %}" class="btn btn-sm btn-outline-info py-0 px-1" title="Edit Service">
-              <i class="fa fa-edit"></i>
-            </a>
-            <a href="{% url 'service_delete' svc.slug %}" class="btn btn-sm btn-outline-danger py-0 px-1" title="Delete Service">
-              <i class="fa fa-trash"></i>
-            </a>
+        <div class="service-card-premium">
+          <!-- Admin Actions -->
+          {% if user.is_authenticated %}
+            <div class="admin-actions">
+              <a href="{% url 'service_edit' svc.slug %}" class="btn-service-ghost" title="Edit Service">
+                <i class="fa fa-edit"></i>
+              </a>
+              <a href="{% url 'service_delete' svc.slug %}" class="btn-service-ghost" title="Delete Service">
+                <i class="fa fa-trash"></i>
+              </a>
+            </div>
+          {% endif %}
+
+          <!-- Service Icon -->
+          <div class="service-icon">
+            <i class="{{ svc.icon_class }}"></i>
           </div>
-          <div class="d-flex justify-content-between align-items-start mb-1">
-            <h5 class="text-white mb-0">{{ svc.title }}</h5>
-            <i class="{{ svc.icon_class }} text-primary"></i>
-          </div>
-          <p class="text-white-50 small">{{ svc.short_description|truncatechars:110 }}</p>
-          {% if svc.price_starting %}<div class="text-warning small mb-2">From {{ svc.get_price_display }}</div>{% endif %}
-          <div class="d-flex flex-wrap gap-2 mt-auto">
-            <a href="{{ svc.get_absolute_url }}" class="btn btn-sm btn-outline-light">Details</a>
-            <a href="{% url 'contactus' %}" class="btn btn-sm btn-outline-success">Start</a>
+
+          <!-- Service Content -->
+          <h3 class="service-title">{{ svc.title }}</h3>
+          <p class="service-description">
+            {{ svc.short_description|truncatechars:120 }}
+          </p>
+
+          <!-- Service Price -->
+          {% if svc.price_starting %}
+            <div class="service-price">
+              {{ svc.get_price_display }}
+            </div>
+          {% endif %}
+
+          <!-- Action Buttons -->
+          <div class="service-actions">
+            <a href="{{ svc.get_absolute_url }}" class="btn-service-outline">
+              <i class="fa fa-info-circle"></i> Details
+            </a>
+            <a href="{% url 'contactus' %}" class="btn-service-primary">
+              <i class="fa fa-rocket"></i> Get Started
+            </a>
           </div>
         </div>
       </div>
     {% empty %}
       <div class="col-12">
-        <div class="text-center p-5 bg-secondary rounded">
-          <i class="fa fa-briefcase text-warning mb-3" style="font-size: 4rem;"></i>
-          <h4 class="text-white mb-3">No Services Yet</h4>
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fa fa-briefcase"></i>
+          </div>
+          <h3 class="text-white mb-3">No Services Yet</h3>
           <p class="text-white-50 mb-4">Start showcasing the amazing services you offer by adding your first service!</p>
-          <a href="{% url 'service_create' %}" class="btn btn-warning btn-lg">
-            <i class="fa fa-plus-circle"></i> Add Your First Service
-          </a>
+          {% if user.is_authenticated %}
+            <a href="{% url 'service_create' %}" class="btn-service-primary">
+              <i class="fa fa-plus-circle"></i> Add Your First Service
+            </a>
+          {% else %}
+            <a href="{% url 'login' %}" class="btn-service-outline">
+              <i class="fa fa-sign-in-alt"></i> Login to Add Services
+            </a>
+          {% endif %}
         </div>
       </div>
     {% endfor %}
   </div>
 </div>
+
+<!-- Floating Add Button (Mobile) -->
+{% if user.is_authenticated %}
+  <a href="{% url 'service_create' %}" class="btn-service-primary floating-add-service d-lg-none" style="width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
+    <i class="fa fa-plus"></i>
+  </a>
+{% endif %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add scroll animations to service cards
+    const serviceCards = document.querySelectorAll('.service-card-premium');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    serviceCards.forEach(card => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(30px)';
+      card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(card);
+    });
+
+    // Add hover effects to action buttons
+    const actionButtons = document.querySelectorAll('.btn-service-primary, .btn-service-outline, .btn-service-ghost');
+    actionButtons.forEach(btn => {
+      btn.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-3px)';
+      });
+
+      btn.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+      });
+    });
+
+    // Add click animation to service icons
+    const serviceIcons = document.querySelectorAll('.service-icon');
+    serviceIcons.forEach(icon => {
+      icon.addEventListener('click', function() {
+        this.style.transform = 'scale(1.2) rotate(10deg)';
+        setTimeout(() => {
+          this.style.transform = 'scale(1.1) rotate(5deg)';
+        }, 300);
+      });
+    });
+  });
+</script>
 {% endblock content %}

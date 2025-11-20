@@ -1,56 +1,602 @@
 {% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 {% block title %}Contact | {{ SITE_NAME }}{% endblock title %}
 {% block content %}
-<div class="container mt-4 mb-5">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="text-warning h3 mb-0">Get In Touch</h1>
-    <small class="text-white-50">I'd love to hear from you</small>
+<style>
+  :root {
+    --primary: #ff6b35;
+    --primary-light: #ff8e53;
+    --primary-dark: #e55a2b;
+    --secondary: #1a1a1a;
+    --accent: #2d3748;
+    --text-primary: #ffffff;
+    --text-secondary: #a0aec0;
+    --gradient-primary: linear-gradient(135deg, #ff6b35, #ff8e53);
+    --gradient-dark: linear-gradient(135deg, #1a1a1a, #2d1b1b);
+    --shadow-primary: 0 10px 30px rgba(255, 107, 53, 0.3);
+    --shadow-dark: 0 15px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .contact-hero {
+    background: var(--gradient-dark);
+    padding: 3rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+      radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+  }
+
+  .page-title {
+    font-size: 3rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+    animation: slideInUp 1s ease;
+  }
+
+  .page-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    animation: slideInUp 1s ease 0.2s both;
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .contact-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .contact-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .contact-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-dark);
+  }
+
+  .card-title {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    position: relative;
+    display: inline-block;
+  }
+
+  .card-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+  }
+
+  .form-control-custom {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: var(--text-primary);
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .form-control-custom:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+  }
+
+  .form-control-custom::placeholder {
+    color: var(--text-secondary);
+  }
+
+  .btn-primary-custom {
+    background: var(--gradient-primary);
+    border: none;
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary-custom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn-primary-custom:hover::before {
+    left: 100%;
+  }
+
+  .btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .btn-outline-custom {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-custom:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .contact-info-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .contact-info-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(5px);
+  }
+
+  .contact-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .contact-details {
+    flex: 1;
+  }
+
+  .contact-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .contact-value {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .social-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .social-link {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .social-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .social-link i {
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s ease;
+    font-size: 1.2rem;
+  }
+
+  .social-link:hover::before {
+    opacity: 1;
+  }
+
+  .social-link:hover {
+    transform: translateY(-3px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .social-link:hover i {
+    color: white;
+  }
+
+  .feature-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+  }
+
+  .feature-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-3px);
+    border-color: rgba(255, 107, 53, 0.3);
+  }
+
+  .feature-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: white;
+    font-size: 1.5rem;
+  }
+
+  .feature-title {
+    color: var(--text-primary);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .feature-description {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  .newsletter-form {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .input-group-custom {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .input-group-custom .form-control-custom {
+    flex: 1;
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 768px) {
+    .page-title { font-size: 2.5rem; }
+    .contact-card { padding: 2rem; }
+    .input-group-custom { flex-direction: column; }
+    .social-links-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  /* Crispy Forms Customization */
+  .form-group label {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .help-block {
+    color: var(--text-secondary) !important;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+
+  .error-block {
+    color: #fc8181 !important;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+</style>
+
+<!-- Contact Hero Section -->
+<section class="contact-hero">
+  <div class="container">
+    <div class="text-center text-white">
+      <h1 class="page-title">Get In Touch</h1>
+      <p class="page-subtitle">Let's start a conversation and create something amazing together</p>
+    </div>
   </div>
+</section>
+
+<!-- Contact Content -->
+<div class="container py-5">
   <div class="row g-4">
+    <!-- Contact Form Section -->
     <div class="col-lg-7">
-      <div class="bg-secondary p-4 rounded">
-        <h5 class="text-white mb-3">Send a Message</h5>
+      <div class="contact-card">
+        <h3 class="card-title">Send a Message</h3>
         <form method="post" novalidate>
           {% csrf_token %}
-          {{ form|crispy }}
-          <button type="submit" class="btn btn-warning mt-2"><i class="fa fa-paper-plane"></i> Send</button>
+
+          <!-- Custom form rendering to match our design -->
+          <div class="row g-3">
+            {% for field in form %}
+              <div class="col-md-{% if field.name == 'name' or field.name == 'email' %}6{% else %}12{% endif %}">
+                <div class="form-group">
+                  <label for="{{ field.id_for_label }}" class="form-label">
+                    {{ field.label }}{% if field.field.required %} <span class="text-warning">*</span>{% endif %}
+                  </label>
+                  {{ field }}
+                  {% if field.help_text %}
+                    <small class="help-block">{{ field.help_text }}</small>
+                  {% endif %}
+                  {% if field.errors %}
+                    <div class="error-block">
+                      {% for error in field.errors %}
+                        {{ error }}
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="text-end mt-4">
+            <button type="submit" class="btn-primary-custom">
+              <i class="fa fa-paper-plane me-2"></i> Send Message
+            </button>
+          </div>
         </form>
       </div>
-      <div class="bg-secondary p-4 rounded mt-4">
-        <h5 class="text-white mb-3">Subscribe to Newsletter</h5>
+
+      <!-- Newsletter Section -->
+      <div class="newsletter-form">
+        <h4 class="text-white mb-3">Stay Updated</h4>
+        <p class="text-white-50 mb-3">Subscribe to my newsletter for updates on new projects, articles, and insights.</p>
         <form method="post" action="{% url 'newsletter_subscribe' %}">
           {% csrf_token %}
-          <div class="row g-2">
-            <div class="col-sm-8"><input type="email" name="email" required placeholder="Email" class="form-control form-control-sm"></div>
-            <div class="col-sm-4"><button class="btn btn-sm btn-outline-info w-100" type="submit">Subscribe</button></div>
+          <div class="input-group-custom">
+            <input type="email" name="email" required placeholder="Enter your email address" class="form-control-custom">
+            <button class="btn-primary-custom" type="submit" style="white-space: nowrap;">
+              <i class="fa fa-bell me-1"></i> Subscribe
+            </button>
           </div>
-          <small class="text-white-50 d-block mt-2">You can unsubscribe anytime.</small>
+          <small class="text-white-50">No spam ever. Unsubscribe anytime with one click.</small>
         </form>
       </div>
     </div>
+
+    <!-- Contact Information Section -->
     <div class="col-lg-5">
-      <div class="bg-secondary p-4 rounded h-100">
-        <h5 class="text-white mb-3">Contact Details</h5>
-        <ul class="list-unstyled mb-3 text-white-50 small">
-          {% if site_profile.email %}<li><i class="fa fa-envelope text-warning"></i> {{ site_profile.email }}</li>{% endif %}
-          {% if site_profile.phone %}<li><i class="fa fa-phone text-warning"></i> {{ site_profile.phone }}</li>{% endif %}
-          {% if site_profile.location %}<li><i class="fa fa-location-dot text-warning"></i> {{ site_profile.location }}</li>{% endif %}
-        </ul>
-        <h6 class="text-white">Social Links</h6>
-        <div class="d-flex flex-wrap gap-2 mb-3">
+      <div class="contact-card h-100">
+        <h3 class="card-title">Contact Details</h3>
+
+        <!-- Contact Information -->
+        <div class="contact-info-list">
+          {% if site_profile.email %}
+          <div class="contact-info-item">
+            <div class="contact-icon">
+              <i class="fa fa-envelope"></i>
+            </div>
+            <div class="contact-details">
+              <div class="contact-label">Email</div>
+              <div class="contact-value">{{ site_profile.email }}</div>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if site_profile.phone %}
+          <div class="contact-info-item">
+            <div class="contact-icon">
+              <i class="fa fa-phone"></i>
+            </div>
+            <div class="contact-details">
+              <div class="contact-label">Phone</div>
+              <div class="contact-value">{{ site_profile.phone }}</div>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if site_profile.location %}
+          <div class="contact-info-item">
+            <div class="contact-icon">
+              <i class="fa fa-location-dot"></i>
+            </div>
+            <div class="contact-details">
+              <div class="contact-label">Location</div>
+              <div class="contact-value">{{ site_profile.location }}</div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Social Links -->
+        <h5 class="text-white mt-4 mb-3">Follow Me</h5>
+        <div class="social-links-grid">
           {% for link in social_links %}
-            <a href="{{ link.url }}" target="_blank" class="btn btn-sm btn-outline-light" title="{{ link.platform|title }}"><i class="{{ link.icon_class }}"></i></a>
+            <a href="{{ link.url }}" target="_blank" class="social-link" title="{{ link.platform|title }}">
+              <i class="{{ link.icon_class }}"></i>
+            </a>
+          {% empty %}
+            <a href="https://github.com/yourusername" target="_blank" class="social-link" title="GitHub">
+              <i class="fab fa-github"></i>
+            </a>
+            <a href="https://linkedin.com/in/yourprofile" target="_blank" class="social-link" title="LinkedIn">
+              <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="https://twitter.com/yourhandle" target="_blank" class="social-link" title="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="https://stackoverflow.com/users/yourid" target="_blank" class="social-link" title="Stack Overflow">
+              <i class="fab fa-stack-overflow"></i>
+            </a>
           {% endfor %}
         </div>
-        <h6 class="text-white">Why Reach Out?</h6>
-        <p class="text-white-50 small">Whether you have a question, a project idea, collaboration proposal, or just want to say hi — feel free to send a message. I respond within 24 hours.</p>
-        <div class="mt-3">
-          <a href="{% url 'services' %}" class="btn btn-sm btn-outline-warning me-2">View Services</a>
-          <a href="{% url 'projects' %}" class="btn btn-sm btn-outline-info">View Projects</a>
+
+        <!-- Why Contact Features -->
+        <h5 class="text-white mt-4 mb-3">Why Reach Out?</h5>
+        <div class="row g-2">
+          <div class="col-6">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fa fa-lightbulb"></i>
+              </div>
+              <div class="feature-title">Project Ideas</div>
+              <div class="feature-description">Got an idea? Let's discuss and bring it to life.</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fa fa-handshake"></i>
+              </div>
+              <div class="feature-title">Collaboration</div>
+              <div class="feature-description">Looking for a technical partner? Let's talk.</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fa fa-question"></i>
+              </div>
+              <div class="feature-title">Consultation</div>
+              <div class="feature-description">Need technical advice? I'm here to help.</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fa fa-comments"></i>
+              </div>
+              <div class="feature-title">Just Say Hi</div>
+              <div class="feature-description">Want to connect? Don't hesitate to reach out.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-flex gap-2 mt-4 flex-wrap">
+          <a href="{% url 'services' %}" class="btn-outline-custom flex-fill text-center">
+            <i class="fa fa-cogs me-2"></i>View Services
+          </a>
+          <a href="{% url 'projects' %}" class="btn-outline-custom flex-fill text-center">
+            <i class="fa fa-folder me-2"></i>View Projects
+          </a>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add custom styling to form inputs
+    const formInputs = document.querySelectorAll('input, textarea, select');
+    formInputs.forEach(input => {
+      if (!input.classList.contains('form-control-custom')) {
+        input.classList.add('form-control-custom');
+      }
+    });
+
+    // Add animation to contact info items
+    const contactItems = document.querySelectorAll('.contact-info-item');
+    contactItems.forEach((item, index) => {
+      item.style.opacity = '0';
+      item.style.transform = 'translateX(-20px)';
+      item.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+
+      setTimeout(() => {
+        item.style.opacity = '1';
+        item.style.transform = 'translateX(0)';
+      }, 100 * index);
+    });
+
+    // Add hover effects to feature cards
+    const featureCards = document.querySelectorAll('.feature-card');
+    featureCards.forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-5px)';
+      });
+
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+      });
+    });
+  });
+</script>
 {% endblock content %}

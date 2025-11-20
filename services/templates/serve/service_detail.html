@@ -1,39 +1,510 @@
 {% extends 'core/base.html' %}
 {% block title %}{{ service.title }} | Services | {{ SITE_NAME }}{% endblock title %}
 {% block content %}
-<div class="container mt-4 mb-5">
-  <div class="row g-4">
-    <div class="col-lg-8">
-      <h1 class="text-warning h3 mb-2">{{ service.title }}</h1>
-      <p class="text-white-50">{{ service.description|linebreaks }}</p>
-      {% if service.features %}
-        <h6 class="text-white mt-3">Key Features</h6>
-        <ul class="text-white-50 small">
-          {% for f in service.get_features_list %}<li><i class="fa fa-check text-success"></i> {{ f }}</li>{% endfor %}
-        </ul>
-      {% endif %}
-      {% if service.image %}<img src="{{ service.image.url }}" alt="{{ service.title }}" class="img-fluid rounded mb-3">{% endif %}
-      <div class="mt-3">
-        <a href="{% url 'contactus' %}" class="btn btn-sm btn-outline-warning">Request This Service</a>
-        <a href="{% url 'services' %}" class="btn btn-sm btn-outline-light">Back to Services</a>
+<style>
+  :root {
+    --primary: #ff6b35;
+    --primary-light: #ff8e53;
+    --primary-dark: #e55a2b;
+    --secondary: #1a1a1a;
+    --accent: #2d3748;
+    --text-primary: #ffffff;
+    --text-secondary: #a0aec0;
+    --gradient-primary: linear-gradient(135deg, #ff6b35, #ff8e53);
+    --gradient-dark: linear-gradient(135deg, #1a1a1a, #2d1b1b);
+    --shadow-primary: 0 10px 30px rgba(255, 107, 53, 0.3);
+    --shadow-dark: 0 15px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .service-detail-hero {
+    background: var(--gradient-dark);
+    padding: 3rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-detail-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+      radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+    animation: slideInUp 1s ease;
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .service-icon-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .service-card-premium {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-card-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(1);
+  }
+
+  .service-image {
+    width: 100%;
+    border-radius: 15px;
+    margin: 2rem 0;
+    box-shadow: var(--shadow-dark);
+    transition: transform 0.3s ease;
+  }
+
+  .service-image:hover {
+    transform: scale(1.02);
+  }
+
+  .service-description {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+  }
+
+  .features-section {
+    margin: 2rem 0;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .feature-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(5px);
+  }
+
+  .feature-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(72, 187, 120, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #48bb78;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .feature-content {
+    flex: 1;
+  }
+
+  .feature-text {
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .section-title {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    margin: 2rem 0 1rem 0;
+    position: relative;
+    display: inline-block;
+  }
+
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+  }
+
+  .action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+  .btn-service-primary {
+    background: var(--gradient-primary);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-service-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+    color: white;
+  }
+
+  .btn-service-outline {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-service-outline:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .info-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .info-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(5px);
+  }
+
+  .info-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .info-content {
+    flex: 1;
+  }
+
+  .info-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .info-value {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .pricing-badge {
+    background: rgba(255, 107, 53, 0.15);
+    color: var(--primary-light);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .page-title { font-size: 2rem; }
+    .action-buttons { justify-content: center; }
+    .service-icon-large { width: 60px; height: 60px; font-size: 1.5rem; }
+  }
+</style>
+
+<!-- Service Hero Section -->
+<section class="service-detail-hero">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <div class="service-icon-large">
+          <i class="{{ service.icon_class }}"></i>
+        </div>
+        <h1 class="page-title">{{ service.title }}</h1>
+        <p class="text-white-50 lead mb-0">
+          {{ service.short_description|default:service.description|truncatewords:20 }}
+        </p>
       </div>
     </div>
-    <div class="col-lg-4">
-      <div class="bg-secondary p-4 rounded mb-4">
-        <h5 class="text-white mb-3">Service Info</h5>
-        <ul class="list-unstyled small text-white-50 mb-0">
-          {% if service.price_starting %}<li><i class="fa fa-dollar-sign text-warning"></i> Starting: {{ service.get_price_display }}</li>{% endif %}
-          {% if service.delivery_time %}<li><i class="fa fa-clock text-warning"></i> Delivery: {{ service.delivery_time }}</li>{% endif %}
-          <li><i class="fa fa-star text-warning"></i> Featured: {% if service.is_featured %}Yes{% else %}No{% endif %}</li>
-        </ul>
+  </div>
+</section>
+
+<!-- Service Detail Content -->
+<div class="container py-5">
+  <div class="row g-4">
+    <!-- Main Content -->
+    <div class="col-lg-8">
+      <div class="service-card-premium">
+        <!-- Service Image -->
+        {% if service.image %}
+          <img src="{{ service.image.url }}" alt="{{ service.title }}" class="service-image">
+        {% endif %}
+
+        <!-- Service Description -->
+        <h2 class="section-title">Service Overview</h2>
+        <div class="service-description">
+          {{ service.description|linebreaks }}
+        </div>
+
+        <!-- Key Features -->
+        {% if service.features %}
+          <div class="features-section">
+            <h2 class="section-title">Key Features</h2>
+            {% for f in service.get_features_list %}
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="fa fa-check"></i>
+                </div>
+                <div class="feature-content">
+                  <div class="feature-text">{{ f }}</div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <a href="{% url 'contactus' %}" class="btn-service-primary">
+            <i class="fa fa-rocket"></i> Request This Service
+          </a>
+          <a href="{% url 'services' %}" class="btn-service-outline">
+            <i class="fa fa-arrow-left"></i> Back to Services
+          </a>
+        </div>
       </div>
-      <div class="bg-secondary p-4 rounded">
-        <h5 class="text-white mb-3">Need Something Custom?</h5>
-        <p class="text-white-50 small">Describe your unique requirements and get a tailored solution.</p>
-        <a href="{% url 'contactus' %}" class="btn btn-sm btn-outline-success">Contact</a>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+      <!-- Service Information -->
+      <div class="service-card-premium">
+        <h3 class="text-white mb-3">Service Details</h3>
+
+        <!-- Pricing -->
+        {% if service.price_starting %}
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fa fa-dollar-sign"></i>
+            </div>
+            <div class="info-content">
+              <div class="info-label">Starting Price</div>
+              <div class="info-value">{{ service.get_price_display }}</div>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Delivery Time -->
+        {% if service.delivery_time %}
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fa fa-clock"></i>
+            </div>
+            <div class="info-content">
+              <div class="info-label">Delivery Time</div>
+              <div class="info-value">{{ service.delivery_time }}</div>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Featured Status -->
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="fa fa-star"></i>
+          </div>
+          <div class="info-content">
+            <div class="info-label">Featured Service</div>
+            <div class="info-value">
+              {% if service.is_featured %}
+                <span class="text-success">Yes</span>
+              {% else %}
+                <span class="text-secondary">No</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Service Status -->
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="fa fa-layer-group"></i>
+          </div>
+          <div class="info-content">
+            <div class="info-label">Service Status</div>
+            <div class="info-value">
+              {% if service.is_active %}
+                <span class="text-success">Active</span>
+              {% else %}
+                <span class="text-secondary">Inactive</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom Solution Card -->
+      <div class="service-card-premium mt-4">
+        <h3 class="text-white mb-3">Need Something Custom?</h3>
+        <p class="text-white-50 mb-3">
+          Describe your unique requirements and get a tailored solution that perfectly fits your needs.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{% url 'contactus' %}" class="btn-service-primary flex-fill text-center">
+            <i class="fa fa-comments"></i> Discuss Project
+          </a>
+          <a href="{% url 'services' %}" class="btn-service-outline flex-fill text-center">
+            <i class="fa fa-briefcase"></i> All Services
+          </a>
+        </div>
+      </div>
+
+      <!-- Related Services Call-to-Action -->
+      <div class="service-card-premium mt-4">
+        <h3 class="text-white mb-3">Explore More Services</h3>
+        <p class="text-white-50 mb-3">
+          Discover other services that might interest you and help grow your business.
+        </p>
+        <a href="{% url 'services' %}" class="btn-service-outline w-100 text-center">
+          <i class="fa fa-search"></i> Browse All Services
+        </a>
       </div>
     </div>
   </div>
 </div>
-{% endblock content %}
 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add scroll animations
+    const serviceCards = document.querySelectorAll('.service-card-premium');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    serviceCards.forEach(card => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(30px)';
+      card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(card);
+    });
+
+    // Add hover effects to feature items
+    const featureItems = document.querySelectorAll('.feature-item');
+    featureItems.forEach(item => {
+      item.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateX(8px)';
+      });
+
+      item.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateX(0)';
+      });
+    });
+
+    // Add hover effects to info items
+    const infoItems = document.querySelectorAll('.info-item');
+    infoItems.forEach(item => {
+      item.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateX(8px)';
+      });
+
+      item.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateX(0)';
+      });
+    });
+
+    // Add click animation to service icon
+    const serviceIcon = document.querySelector('.service-icon-large');
+    if (serviceIcon) {
+      serviceIcon.addEventListener('click', function() {
+        this.style.transform = 'scale(1.1) rotate(10deg)';
+        setTimeout(() => {
+          this.style.transform = 'scale(1) rotate(0deg)';
+        }, 300);
+      });
+    }
+  });
+</script>
+{% endblock content %}
