@@ -1,0 +1,154 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Login | {{ SITE_NAME }}{% endblock title %}
+{% block content %}
+<style>
+  .auth-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .auth-card {
+    background: rgba(45, 55, 72, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    padding: 2.5rem;
+    max-width: 450px;
+    width: 100%;
+  }
+  .auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .auth-header h2 {
+    color: #ff6b35;
+    margin-bottom: 0.5rem;
+  }
+  .auth-header p {
+    color: #cbd5e0;
+    font-size: 0.9rem;
+  }
+  .form-control {
+    background: rgba(26, 32, 44, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+  }
+  .form-control:focus {
+    background: rgba(26, 32, 44, 0.9);
+    border-color: #ff6b35;
+    box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+    color: #e2e8f0;
+  }
+  .form-label {
+    color: #e2e8f0;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+  .btn-login {
+    background: linear-gradient(135deg, #ff6b35, #ff8e53);
+    border: none;
+    padding: 0.75rem;
+    font-weight: 600;
+    border-radius: 8px;
+    width: 100%;
+    transition: transform 0.2s;
+  }
+  .btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+  }
+  .divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0;
+  }
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .divider span {
+    padding: 0 1rem;
+    color: #a0aec0;
+    font-size: 0.875rem;
+  }
+  .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+  }
+  .errorlist li {
+    color: #fc8181;
+    font-size: 0.875rem;
+  }
+</style>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
+      <p>Login to access your dashboard</p>
+    </div>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <div class="mb-3">
+        <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+          <ul class="errorlist">
+            {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+        {{ form.password }}
+        {% if form.password.errors %}
+          <ul class="errorlist">
+            {% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="remember" id="remember">
+          <label class="form-check-label text-white-50 small" for="remember">
+            Remember me
+          </label>
+        </div>
+        <a href="#" class="text-warning small">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn btn-warning btn-login">
+        <i class="fas fa-sign-in-alt"></i> Login
+      </button>
+
+      <div class="divider">
+        <span>Don't have an account?</span>
+      </div>
+
+      <div class="text-center">
+        <a href="{% url 'register' %}" class="btn btn-outline-light btn-sm">
+          <i class="fas fa-user-plus"></i> Sign Up Now
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}
+

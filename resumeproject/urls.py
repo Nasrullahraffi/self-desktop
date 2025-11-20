@@ -16,6 +16,9 @@ urlpatterns = [
     # Core pages (home, about, projects)
     path('', include('core.urls')),
 
+    # Authentication & User Management
+    path('accounts/', include('accounts.urls')),
+
     # App URLs
     path('services/', include('services.urls')),
     path('skills/', include('education.urls')),

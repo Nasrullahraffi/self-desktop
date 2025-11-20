@@ -9,6 +9,7 @@
     background:#2d3748;
     color:#e2e8f0;
     border:1px solid rgba(255,255,255,.1);
+    transition: all 0.3s ease;
   }
   .service-form .bg-secondary input:focus,
   .service-form .bg-secondary select:focus,
@@ -16,6 +17,7 @@
     background:#374151;
     border-color:#ff6b35;
     box-shadow: 0 0 0 0.2rem rgba(255,107,53,.25);
+    transform: translateY(-2px);
   }
   .service-form .bg-secondary label {color:#e2e8f0;}
 
@@ -28,119 +30,366 @@
     align-items: center;
     justify-content: center;
     font-size: 2rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255,107,53,.3);
   }
+  .icon-preview-box:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(255,107,53,.4);
+  }
+
   .service-preview {
-    background: #1e1e1e;
+    background: linear-gradient(145deg, #1e1e1e, #252525);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px;
     padding: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  .service-preview:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  }
+
+  .form-section {
+    background: linear-gradient(145deg, #2d3748, #1a202c);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #ff6b35;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  .form-section:hover {
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    transform: translateY(-3px);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .section-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg,#ff6b35,#ff8e53);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-size: 1.2rem;
+  }
+
+  .color-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+  .color-option.active {
+    border-color: white;
+    transform: scale(1.1);
+  }
+
+  .feature-tag {
+    display: inline-block;
+    background: rgba(255,107,53,0.2);
+    color: #ff8e53;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin: 3px;
+    font-size: 0.85rem;
+    border: 1px solid rgba(255,107,53,0.3);
+  }
+
+  .pricing-card {
+    background: linear-gradient(145deg, #252525, #1e1e1e);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.3s ease;
+  }
+  .pricing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+  }
+
+  .form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255,107,53,.25);
+    border-color: #ff6b35;
+  }
+
+  .btn-warning {
+    background: linear-gradient(135deg,#ff6b35,#ff8e53);
+    border: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(255,107,53,.3);
+  }
+
+  .form-check-input:checked {
+    background-color: #ff6b35;
+    border-color: #ff6b35;
+  }
+
+  .preview-service-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg,#ff6b35,#ff8e53);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    font-size: 1.8rem;
+    box-shadow: 0 4px 10px rgba(255,107,53,.3);
+  }
+
+  .color-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .animated-field {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+
+  .floating-label {
+    position: absolute;
+    top: -10px;
+    left: 12px;
+    font-size: 0.8rem;
+    background: #2d3748;
+    padding: 0 5px;
+    color: #ff8e53;
+    transition: all 0.3s ease;
+  }
+
+  .progress-indicator {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .progress-step {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #4a5568;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    z-index: 2;
+    transition: all 0.3s ease;
+  }
+
+  .progress-step.active {
+    background: linear-gradient(135deg,#ff6b35,#ff8e53);
+    box-shadow: 0 4px 10px rgba(255,107,53,.3);
+  }
+
+  .progress-step.completed {
+    background: #38a169;
+  }
+
+  .progress-bar {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background: #4a5568;
+    z-index: 1;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg,#ff6b35,#ff8e53);
+    transition: width 0.5s ease;
   }
 </style>
 
 <div class="container mt-4 mb-5 service-form">
   <div class="row">
-    <div class="col-lg-9 mx-auto">
+    <div class="col-lg-10 mx-auto">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-warning h3 mb-0">
-          <i class="fa fa-{% if object %}edit{% else %}plus{% endif %}"></i>
+          <i class="fa fa-{% if object %}edit{% else %}plus{% endif %} me-2"></i>
           {% if object %}Edit Service{% else %}Add New Service{% endif %}
         </h1>
-        <a href="{% url 'services' %}" class="btn btn-sm btn-outline-light"><i class="fa fa-arrow-left"></i> Back</a>
+        <a href="{% url 'services' %}" class="btn btn-sm btn-outline-light"><i class="fa fa-arrow-left me-1"></i> Back to Services</a>
       </div>
 
-      <form method="post" enctype="multipart/form-data">
+      <!-- Progress Indicator -->
+      <div class="progress-indicator">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 25%;"></div>
+        </div>
+        <div class="progress-step active" data-step="1">
+          <span>1</span>
+        </div>
+        <div class="progress-step" data-step="2">
+          <span>2</span>
+        </div>
+        <div class="progress-step" data-step="3">
+          <span>3</span>
+        </div>
+        <div class="progress-step" data-step="4">
+          <span>4</span>
+        </div>
+      </div>
+
+      <form method="post" enctype="multipart/form-data" id="serviceForm">
         {% csrf_token %}
         {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
 
         <div class="row g-4">
           <div class="col-lg-8">
             <!-- Basic Information -->
-            <div class="bg-secondary p-4 rounded mb-4">
-              <h5 class="text-warning mb-3"><i class="fa fa-info-circle"></i> Service Details</h5>
-
-              <div class="mb-3">
-                <label for="{{ form.title.id_for_label }}" class="form-label text-white">Service Title *</label>
-                {{ form.title }}
-                {% if form.title.errors %}<div class="text-danger small">{{ form.title.errors }}</div>{% endif %}
+            <div class="form-section" id="section-1">
+              <div class="section-header">
+                <div class="section-icon">
+                  <i class="fa fa-info-circle text-white"></i>
+                </div>
+                <h5 class="text-warning mb-0">Service Details</h5>
               </div>
 
-              <div class="mb-3">
+              <div class="animated-field">
+                <label for="{{ form.title.id_for_label }}" class="form-label text-white">Service Title *</label>
+                {{ form.title }}
+                {% if form.title.errors %}<div class="text-danger small mt-1">{{ form.title.errors }}</div>{% endif %}
+              </div>
+
+              <div class="animated-field">
                 <label for="{{ form.slug.id_for_label }}" class="form-label text-white">Slug</label>
                 {{ form.slug }}
                 <small class="text-white-50 d-block mt-1">{{ form.slug.help_text }}</small>
-                {% if form.slug.errors %}<div class="text-danger small">{{ form.slug.errors }}</div>{% endif %}
+                {% if form.slug.errors %}<div class="text-danger small mt-1">{{ form.slug.errors }}</div>{% endif %}
               </div>
 
-              <div class="mb-3">
+              <div class="animated-field">
                 <label for="{{ form.short_description.id_for_label }}" class="form-label text-white">Short Description *</label>
                 {{ form.short_description }}
                 <small class="text-white-50 d-block mt-1">Brief one-liner for service cards</small>
-                {% if form.short_description.errors %}<div class="text-danger small">{{ form.short_description.errors }}</div>{% endif %}
+                {% if form.short_description.errors %}<div class="text-danger small mt-1">{{ form.short_description.errors }}</div>{% endif %}
               </div>
 
-              <div class="mb-3">
+              <div class="animated-field">
                 <label for="{{ form.description.id_for_label }}" class="form-label text-white">Detailed Description *</label>
                 {{ form.description }}
                 <small class="text-white-50 d-block mt-1">Full description with benefits and details</small>
-                {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+                {% if form.description.errors %}<div class="text-danger small mt-1">{{ form.description.errors }}</div>{% endif %}
+              </div>
+
+              <div class="d-flex justify-content-end mt-3">
+                <button type="button" class="btn btn-warning next-section" data-next="2">Continue <i class="fa fa-arrow-right ms-1"></i></button>
               </div>
             </div>
 
             <!-- Features -->
-            <div class="bg-secondary p-4 rounded mb-4">
-              <h5 class="text-warning mb-3"><i class="fa fa-list-ul"></i> Service Features</h5>
+            <div class="form-section" id="section-2" style="display: none;">
+              <div class="section-header">
+                <div class="section-icon">
+                  <i class="fa fa-list-ul text-white"></i>
+                </div>
+                <h5 class="text-warning mb-0">Service Features</h5>
+              </div>
 
-              <div class="mb-3">
+              <div class="animated-field">
                 <label for="{{ form.features.id_for_label }}" class="form-label text-white">Features & Highlights</label>
                 {{ form.features }}
                 <small class="text-white-50 d-block mt-1">{{ form.features.help_text }}</small>
-                {% if form.features.errors %}<div class="text-danger small">{{ form.features.errors }}</div>{% endif %}
+                {% if form.features.errors %}<div class="text-danger small mt-1">{{ form.features.errors }}</div>{% endif %}
               </div>
 
-              <div class="alert alert-info small mb-0">
+              <div class="mt-3">
+                <h6 class="text-white">Preview Features</h6>
+                <div id="featureTagsPreview" class="mt-2">
+                  <!-- Feature tags will appear here -->
+                </div>
+              </div>
+
+              <div class="alert alert-dark small mt-3 mb-0">
                 <strong>Example:</strong><br>
                 Custom responsive design<br>
                 SEO optimization included<br>
                 Mobile-first approach<br>
                 Free support for 30 days
               </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-light prev-section" data-prev="1"><i class="fa fa-arrow-left me-1"></i> Back</button>
+                <button type="button" class="btn btn-warning next-section" data-next="3">Continue <i class="fa fa-arrow-right ms-1"></i></button>
+              </div>
             </div>
 
             <!-- Pricing -->
-            <div class="bg-secondary p-4 rounded mb-4">
-              <h5 class="text-warning mb-3"><i class="fa fa-dollar-sign"></i> Pricing Information</h5>
+            <div class="form-section" id="section-3" style="display: none;">
+              <div class="section-header">
+                <div class="section-icon">
+                  <i class="fa fa-dollar-sign text-white"></i>
+                </div>
+                <h5 class="text-warning mb-0">Pricing Information</h5>
+              </div>
 
               <div class="row">
-                <div class="col-md-4 mb-3">
+                <div class="col-md-4 animated-field">
                   <label for="{{ form.price_starting.id_for_label }}" class="form-label text-white">Starting Price</label>
                   {{ form.price_starting }}
-                  {% if form.price_starting.errors %}<div class="text-danger small">{{ form.price_starting.errors }}</div>{% endif %}
+                  {% if form.price_starting.errors %}<div class="text-danger small mt-1">{{ form.price_starting.errors }}</div>{% endif %}
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-4 animated-field">
                   <label for="{{ form.price_currency.id_for_label }}" class="form-label text-white">Currency</label>
                   {{ form.price_currency }}
-                  {% if form.price_currency.errors %}<div class="text-danger small">{{ form.price_currency.errors }}</div>{% endif %}
+                  {% if form.price_currency.errors %}<div class="text-danger small mt-1">{{ form.price_currency.errors }}</div>{% endif %}
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-4 animated-field">
                   <label for="{{ form.pricing_model.id_for_label }}" class="form-label text-white">Pricing Model</label>
                   {{ form.pricing_model }}
-                  {% if form.pricing_model.errors %}<div class="text-danger small">{{ form.pricing_model.errors }}</div>{% endif %}
+                  {% if form.pricing_model.errors %}<div class="text-danger small mt-1">{{ form.pricing_model.errors }}</div>{% endif %}
                 </div>
               </div>
 
-              <div class="mb-3">
+              <div class="animated-field">
                 <label for="{{ form.delivery_time.id_for_label }}" class="form-label text-white">Delivery Time</label>
                 {{ form.delivery_time }}
                 <small class="text-white-50 d-block mt-1">Typical project timeline</small>
-                {% if form.delivery_time.errors %}<div class="text-danger small">{{ form.delivery_time.errors }}</div>{% endif %}
+                {% if form.delivery_time.errors %}<div class="text-danger small mt-1">{{ form.delivery_time.errors }}</div>{% endif %}
+              </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-light prev-section" data-prev="2"><i class="fa fa-arrow-left me-1"></i> Back</button>
+                <button type="button" class="btn btn-warning next-section" data-next="4">Continue <i class="fa fa-arrow-right ms-1"></i></button>
               </div>
             </div>
           </div>
 
           <div class="col-lg-4">
             <!-- Visual Settings -->
-            <div class="bg-secondary p-4 rounded mb-4">
-              <h5 class="text-warning mb-3"><i class="fa fa-palette"></i> Visual Settings</h5>
+            <div class="form-section" id="section-4" style="display: none;">
+              <div class="section-header">
+                <div class="section-icon">
+                  <i class="fa fa-palette text-white"></i>
+                </div>
+                <h5 class="text-warning mb-0">Visual Settings</h5>
+              </div>
 
               <div class="text-center mb-3">
                 <div class="icon-preview-box mx-auto" id="iconPreviewBox">
@@ -148,81 +397,88 @@
                 </div>
               </div>
 
-              <div class="mb-3">
+              <div class="animated-field">
                 <label for="{{ form.icon_class.id_for_label }}" class="form-label text-white">Icon Class</label>
                 {{ form.icon_class }}
                 <small class="text-white-50 d-block mt-1">{{ form.icon_class.help_text }}</small>
-                {% if form.icon_class.errors %}<div class="text-danger small">{{ form.icon_class.errors }}</div>{% endif %}
+                {% if form.icon_class.errors %}<div class="text-danger small mt-1">{{ form.icon_class.errors }}</div>{% endif %}
               </div>
 
-              <div class="mb-3">
-                <label for="{{ form.color.id_for_label }}" class="form-label text-white">Color Theme</label>
+              <div class="animated-field">
+                <label class="form-label text-white">Color Theme</label>
+                <div class="color-palette">
+                  <div class="color-option active" style="background: linear-gradient(135deg,#ff6b35,#ff8e53);" data-color="orange"></div>
+                  <div class="color-option" style="background: linear-gradient(135deg,#4299e1,#63b3ed);" data-color="blue"></div>
+                  <div class="color-option" style="background: linear-gradient(135deg,#48bb78,#68d391);" data-color="green"></div>
+                  <div class="color-option" style="background: linear-gradient(135deg,#ed64a6,#fbb6ce);" data-color="pink"></div>
+                  <div class="color-option" style="background: linear-gradient(135deg,#9f7aea,#d6bcfa);" data-color="purple"></div>
+                </div>
                 {{ form.color }}
-                {% if form.color.errors %}<div class="text-danger small">{{ form.color.errors }}</div>{% endif %}
+                {% if form.color.errors %}<div class="text-danger small mt-1">{{ form.color.errors }}</div>{% endif %}
               </div>
 
-              <div class="mb-3">
+              <div class="animated-field">
                 <label for="{{ form.image.id_for_label }}" class="form-label text-white">Service Image</label>
                 {{ form.image }}
                 <small class="text-white-50 d-block mt-1">{{ form.image.help_text }}</small>
-                {% if form.image.errors %}<div class="text-danger small">{{ form.image.errors }}</div>{% endif %}
+                {% if form.image.errors %}<div class="text-danger small mt-1">{{ form.image.errors }}</div>{% endif %}
               </div>
-            </div>
 
-            <!-- Settings -->
-            <div class="bg-secondary p-4 rounded mb-4">
-              <h5 class="text-warning mb-3"><i class="fa fa-cog"></i> Settings</h5>
+              <!-- Settings -->
+              <div class="mt-4">
+                <h6 class="text-warning mb-3"><i class="fa fa-cog me-2"></i>Settings</h6>
 
-              <div class="mb-3">
-                <div class="form-check form-switch">
-                  {{ form.is_featured }}
-                  <label class="form-check-label text-white" for="{{ form.is_featured.id_for_label }}">
-                    Featured Service
-                  </label>
+                <div class="mb-3">
+                  <div class="form-check form-switch">
+                    {{ form.is_featured }}
+                    <label class="form-check-label text-white" for="{{ form.is_featured.id_for_label }}">
+                      Featured Service
+                    </label>
+                  </div>
+                  <small class="text-white-50">{{ form.is_featured.help_text }}</small>
                 </div>
-                <small class="text-white-50">{{ form.is_featured.help_text }}</small>
-              </div>
 
-              <div class="mb-3">
-                <div class="form-check form-switch">
-                  {{ form.is_active }}
-                  <label class="form-check-label text-white" for="{{ form.is_active.id_for_label }}">
-                    Active/Visible
-                  </label>
+                <div class="mb-3">
+                  <div class="form-check form-switch">
+                    {{ form.is_active }}
+                    <label class="form-check-label text-white" for="{{ form.is_active.id_for_label }}">
+                      Active/Visible
+                    </label>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="{{ form.order.id_for_label }}" class="form-label text-white">Display Order</label>
+                  {{ form.order }}
+                  <small class="text-white-50 d-block mt-1">Lower numbers appear first</small>
+                  {% if form.order.errors %}<div class="text-danger small mt-1">{{ form.order.errors }}</div>{% endif %}
                 </div>
               </div>
 
-              <div class="mb-3">
-                <label for="{{ form.order.id_for_label }}" class="form-label text-white">Display Order</label>
-                {{ form.order }}
-                <small class="text-white-50 d-block mt-1">Lower numbers appear first</small>
-                {% if form.order.errors %}<div class="text-danger small">{{ form.order.errors }}</div>{% endif %}
+              <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-light prev-section" data-prev="3"><i class="fa fa-arrow-left me-1"></i> Back</button>
+                <button type="submit" class="btn btn-warning">
+                  <i class="fa fa-save me-1"></i> {% if object %}Update{% else %}Create{% endif %} Service
+                </button>
               </div>
             </div>
 
             <!-- Live Preview -->
             <div class="service-preview">
-              <h6 class="text-warning mb-3"><i class="fa fa-eye"></i> Preview</h6>
-              <div class="text-center mb-2">
-                <div style="width:60px; height:60px; background:linear-gradient(135deg,#ff6b35,#ff8e53); border-radius:10px; display:inline-flex; align-items:center; justify-content:center;">
-                  <i id="previewIcon" class="fas fa-code text-white" style="font-size:1.5rem;"></i>
-                </div>
+              <h6 class="text-warning mb-3"><i class="fa fa-eye me-2"></i> Live Preview</h6>
+              <div class="preview-service-icon">
+                <i id="previewIcon" class="fas fa-code text-white"></i>
               </div>
               <h6 class="text-white text-center mb-2" id="previewTitle">Service Title</h6>
               <p class="text-white-50 small text-center mb-2" id="previewShortDesc">Short description will appear here</p>
-              <div class="text-center">
+              <div class="text-center mb-3">
                 <span class="badge bg-success" id="previewPrice">Price info</span>
+              </div>
+              <div class="text-center">
+                <span class="badge bg-secondary" id="previewDelivery">Delivery time</span>
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- Submit -->
-        <div class="d-flex gap-2 justify-content-end mt-4">
-          <a href="{% url 'services' %}" class="btn btn-outline-light"><i class="fa fa-times"></i> Cancel</a>
-          <button type="submit" class="btn btn-warning">
-            <i class="fa fa-save"></i> {% if object %}Update{% else %}Create{% endif %} Service
-          </button>
         </div>
       </form>
     </div>
@@ -242,13 +498,25 @@ document.addEventListener('DOMContentLoaded', function() {
   const currencyInput = document.getElementById('{{ form.price_currency.id_for_label }}');
   const pricingModelInput = document.getElementById('{{ form.pricing_model.id_for_label }}');
   const previewPrice = document.getElementById('previewPrice');
+  const deliveryInput = document.getElementById('{{ form.delivery_time.id_for_label }}');
+  const previewDelivery = document.getElementById('previewDelivery');
+  const featuresInput = document.getElementById('{{ form.features.id_for_label }}');
+  const featureTagsPreview = document.getElementById('featureTagsPreview');
+  const colorInput = document.getElementById('{{ form.color.id_for_label }}');
+  const colorOptions = document.querySelectorAll('.color-option');
+  const progressFill = document.getElementById('progressFill');
+  const progressSteps = document.querySelectorAll('.progress-step');
+  const sections = document.querySelectorAll('.form-section');
+  const nextButtons = document.querySelectorAll('.next-section');
+  const prevButtons = document.querySelectorAll('.prev-section');
+
+  let currentSection = 1;
 
   // Update icon preview
   function updateIconPreview() {
     const iconClass = iconInput.value.trim() || 'fas fa-code';
     iconPreview.className = iconClass + ' text-white';
     previewIcon.className = iconClass + ' text-white';
-    previewIcon.style.fontSize = '1.5rem';
   }
 
   // Update title preview
@@ -274,11 +542,157 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  // Update delivery preview
+  function updateDeliveryPreview() {
+    const delivery = deliveryInput.value;
+    previewDelivery.textContent = delivery || 'Delivery time';
+  }
+
+  // Update features preview
+  function updateFeaturesPreview() {
+    const featuresText = featuresInput.value;
+    featureTagsPreview.innerHTML = '';
+
+    if (featuresText) {
+      const features = featuresText.split('\n').filter(f => f.trim() !== '');
+      features.forEach(feature => {
+        if (feature.trim()) {
+          const tag = document.createElement('span');
+          tag.className = 'feature-tag';
+          tag.textContent = feature.trim();
+          featureTagsPreview.appendChild(tag);
+        }
+      });
+    }
+  }
+
+  // Color selection
+  function setupColorSelection() {
+    colorOptions.forEach(option => {
+      option.addEventListener('click', function() {
+        // Remove active class from all options
+        colorOptions.forEach(opt => opt.classList.remove('active'));
+        // Add active class to clicked option
+        this.classList.add('active');
+        // Update the color input value
+        colorInput.value = this.getAttribute('data-color');
+
+        // Update preview colors
+        const color = this.getAttribute('data-color');
+        updateColors(color);
+      });
+    });
+  }
+
+  // Update colors based on selection
+  function updateColors(color) {
+    let primaryColor, secondaryColor;
+
+    switch(color) {
+      case 'blue':
+        primaryColor = '#4299e1';
+        secondaryColor = '#63b3ed';
+        break;
+      case 'green':
+        primaryColor = '#48bb78';
+        secondaryColor = '#68d391';
+        break;
+      case 'pink':
+        primaryColor = '#ed64a6';
+        secondaryColor = '#fbb6ce';
+        break;
+      case 'purple':
+        primaryColor = '#9f7aea';
+        secondaryColor = '#d6bcfa';
+        break;
+      default: // orange
+        primaryColor = '#ff6b35';
+        secondaryColor = '#ff8e53';
+    }
+
+    // Update CSS variables or directly update elements
+    document.documentElement.style.setProperty('--primary-color', primaryColor);
+    document.documentElement.style.setProperty('--secondary-color', secondaryColor);
+
+    // Update preview icon box
+    const iconPreviewBox = document.getElementById('iconPreviewBox');
+    iconPreviewBox.style.background = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+
+    // Update preview service icon
+    const previewServiceIcon = document.querySelector('.preview-service-icon');
+    previewServiceIcon.style.background = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+
+    // Update buttons
+    const buttons = document.querySelectorAll('.btn-warning');
+    buttons.forEach(btn => {
+      btn.style.background = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+    });
+
+    // Update section icons
+    const sectionIcons = document.querySelectorAll('.section-icon');
+    sectionIcons.forEach(icon => {
+      icon.style.background = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+    });
+  }
+
+  // Section navigation
+  function setupSectionNavigation() {
+    nextButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const nextSection = this.getAttribute('data-next');
+        navigateToSection(nextSection);
+      });
+    });
+
+    prevButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const prevSection = this.getAttribute('data-prev');
+        navigateToSection(prevSection);
+      });
+    });
+  }
+
+  function navigateToSection(sectionNum) {
+    // Hide all sections
+    sections.forEach(section => {
+      section.style.display = 'none';
+    });
+
+    // Show target section
+    document.getElementById(`section-${sectionNum}`).style.display = 'block';
+
+    // Update progress
+    updateProgress(sectionNum);
+
+    currentSection = parseInt(sectionNum);
+  }
+
+  function updateProgress(sectionNum) {
+    const progressPercentage = (sectionNum / 4) * 100;
+    progressFill.style.width = `${progressPercentage}%`;
+
+    // Update progress steps
+    progressSteps.forEach(step => {
+      const stepNum = parseInt(step.getAttribute('data-step'));
+      step.classList.remove('active', 'completed');
+
+      if (stepNum < sectionNum) {
+        step.classList.add('completed');
+      } else if (stepNum == sectionNum) {
+        step.classList.add('active');
+      }
+    });
+  }
+
   // Initialize
   updateIconPreview();
   updateTitlePreview();
   updateShortDescPreview();
   updatePricePreview();
+  updateDeliveryPreview();
+  updateFeaturesPreview();
+  setupColorSelection();
+  setupSectionNavigation();
 
   // Event listeners
   if (iconInput) iconInput.addEventListener('input', updateIconPreview);
@@ -287,7 +701,8 @@ document.addEventListener('DOMContentLoaded', function() {
   if (priceInput) priceInput.addEventListener('input', updatePricePreview);
   if (currencyInput) currencyInput.addEventListener('input', updatePricePreview);
   if (pricingModelInput) pricingModelInput.addEventListener('input', updatePricePreview);
+  if (deliveryInput) deliveryInput.addEventListener('input', updateDeliveryPreview);
+  if (featuresInput) featuresInput.addEventListener('input', updateFeaturesPreview);
 });
 </script>
 {% endblock content %}
-
