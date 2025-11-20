@@ -1,63 +1,577 @@
 {% extends 'core/base.html' %}
 {% block title %}{{ project.title }} | {{ SITE_NAME }}{% endblock title %}
 {% block content %}
-<div class="container mt-4 mb-5">
-  <div class="row g-4">
-    <div class="col-lg-8">
-      <div class="d-flex justify-content-between align-items-start mb-3">
-        <h1 class="text-warning h3 mb-2">{{ project.title }}</h1>
-        {% if user.is_authenticated %}
-          <div class="d-flex gap-2">
-            <a href="{% url 'project_edit' project.slug %}" class="btn btn-sm btn-info" title="Edit Project">
-              <i class="fa fa-edit"></i> Edit
-            </a>
-            <a href="{% url 'project_delete' project.slug %}" class="btn btn-sm btn-danger" title="Delete Project">
-              <i class="fa fa-trash"></i> Delete
-            </a>
-          </div>
-        {% endif %}
-      </div>
-      <div class="mb-2 small text-white-50">Status: <span class="text-info">{{ project.status|title }}</span></div>
-      {% if project.featured_image %}<img src="{{ project.featured_image.url }}" alt="{{ project.title }}" class="img-fluid rounded mb-3">{% endif %}
-      <p class="text-white-50">{{ project.description|linebreaks }}</p>
-      <h6 class="text-white mt-4">Technologies</h6>
-      <div class="d-flex flex-wrap gap-2 mb-3">
-        {% for tech in project.get_technologies_list %}
-          <span class="badge bg-secondary fw-normal">{{ tech }}</span>
-        {% endfor %}
-      </div>
-      {% if project.github_repo_name %}
-        <div class="bg-secondary rounded p-3 mb-3 small">
-          <strong class="text-white">GitHub Stats</strong><br>
-          <span class="text-white-50">Stars: </span><span class="text-warning">{{ project.github_stars }}</span>
-          <span class="text-white-50 ms-3">Forks: </span><span class="text-warning">{{ project.github_forks }}</span>
-          {% if project.github_language %}<span class="text-white-50 ms-3">Primary: </span><span class="text-info">{{ project.github_language }}</span>{% endif %}
-        </div>
-      {% endif %}
-      <div class="d-flex flex-wrap gap-2 mt-2">
-        {% if project.github_url %}<a href="{{ project.github_url }}" target="_blank" class="btn btn-sm btn-outline-light"><i class="fab fa-github"></i> Code</a>{% endif %}
-        {% if project.live_url %}<a href="{{ project.live_url }}" target="_blank" class="btn btn-sm btn-outline-success">Live Demo</a>{% endif %}
-        {% if project.demo_url %}<a href="{{ project.demo_url }}" target="_blank" class="btn btn-sm btn-outline-info">Video</a>{% endif %}
-        <a href="{% url 'contactus' %}" class="btn btn-sm btn-outline-warning">Discuss Project</a>
+<style>
+  :root {
+    --primary: #ff6b35;
+    --primary-light: #ff8e53;
+    --primary-dark: #e55a2b;
+    --secondary: #1a1a1a;
+    --accent: #2d3748;
+    --text-primary: #ffffff;
+    --text-secondary: #a0aec0;
+    --gradient-primary: linear-gradient(135deg, #ff6b35, #ff8e53);
+    --gradient-dark: linear-gradient(135deg, #1a1a1a, #2d1b1b);
+    --shadow-primary: 0 10px 30px rgba(255, 107, 53, 0.3);
+    --shadow-dark: 0 15px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .project-detail-hero {
+    background: var(--gradient-dark);
+    padding: 3rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-detail-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+      radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+    animation: slideInUp 1s ease;
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .project-status-badge {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .status-completed { background: rgba(72, 187, 120, 0.2); color: #48bb78; border: 1px solid rgba(72, 187, 120, 0.3); }
+  .status-in-progress { background: rgba(237, 137, 54, 0.2); color: #ed8936; border: 1px solid rgba(237, 137, 54, 0.3); }
+  .status-planning { background: rgba(66, 153, 225, 0.2); color: #4299e1; border: 1px solid rgba(66, 153, 225, 0.3); }
+  .status-on-hold { background: rgba(160, 174, 192, 0.2); color: #a0aec0; border: 1px solid rgba(160, 174, 192, 0.3); }
+
+  .project-card-premium {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(1);
+  }
+
+  .project-image {
+    width: 100%;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-dark);
+    transition: transform 0.3s ease;
+  }
+
+  .project-image:hover {
+    transform: scale(1.02);
+  }
+
+  .tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .tech-tag {
+    background: rgba(255, 107, 53, 0.15);
+    color: var(--primary-light);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .tech-tag:hover {
+    background: rgba(255, 107, 53, 0.25);
+    transform: translateY(-2px);
+  }
+
+  .btn-project-primary {
+    background: var(--gradient-primary);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-project-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+    color: white;
+  }
+
+  .btn-project-outline {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-project-outline:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .btn-project-ghost {
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-secondary);
+    background: transparent;
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-project-ghost:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-2px);
+  }
+
+  .github-stats {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .stat-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(5px);
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+  }
+
+  .stat-content {
+    flex: 1;
+  }
+
+  .stat-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-value {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 2rem 0;
+  }
+
+  .project-description {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    margin: 2rem 0 1rem 0;
+    position: relative;
+    display: inline-block;
+  }
+
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+  }
+
+  .admin-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .btn-edit {
+    background: rgba(66, 153, 225, 0.15);
+    border: 1px solid rgba(66, 153, 225, 0.3);
+    color: #63b3ed;
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-edit:hover {
+    background: rgba(66, 153, 225, 0.25);
+    transform: translateY(-2px);
+    color: #63b3ed;
+  }
+
+  .btn-delete {
+    background: rgba(245, 101, 101, 0.15);
+    border: 1px solid rgba(245, 101, 101, 0.3);
+    color: #fc8181;
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-delete:hover {
+    background: rgba(245, 101, 101, 0.25);
+    transform: translateY(-2px);
+    color: #fc8181;
+  }
+
+  @media (max-width: 768px) {
+    .page-title { font-size: 2rem; }
+    .action-buttons { justify-content: center; }
+    .admin-actions { justify-content: center; }
+  }
+</style>
+
+<!-- Project Hero Section -->
+<section class="project-detail-hero">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="page-title">{{ project.title }}</h1>
+        <span class="project-status-badge status-{{ project.status|lower|slugify }}">
+          {{ project.status|title }}
+        </span>
+        <p class="text-white-50 lead mb-0">
+          {{ project.short_description|default:project.description|truncatewords:20 }}
+        </p>
       </div>
     </div>
-    <div class="col-lg-4">
-      <div class="bg-secondary p-4 rounded mb-4">
-        <h5 class="text-white mb-3">Project Overview</h5>
-        <ul class="list-unstyled small text-white-50 mb-0">
-          {% if project.start_date %}<li><i class="fa fa-calendar text-warning"></i> Started: {{ project.start_date|date:'M Y' }}</li>{% endif %}
-          {% if project.end_date %}<li><i class="fa fa-flag-checkered text-warning"></i> Finished: {{ project.end_date|date:'M Y' }}</li>{% endif %}
-          <li><i class="fa fa-layer-group text-warning"></i> Status: {{ project.status|title }}</li>
-          <li><i class="fa fa-star text-warning"></i> Featured: {% if project.is_featured %}Yes{% else %}No{% endif %}</li>
-        </ul>
+  </div>
+</section>
+
+<!-- Project Detail Content -->
+<div class="container py-5">
+  <div class="row g-4">
+    <!-- Main Content -->
+    <div class="col-lg-8">
+      <!-- Admin Actions -->
+      {% if user.is_authenticated %}
+        <div class="admin-actions">
+          <a href="{% url 'project_edit' project.slug %}" class="btn-edit">
+            <i class="fa fa-edit"></i> Edit Project
+          </a>
+          <a href="{% url 'project_delete' project.slug %}" class="btn-delete">
+            <i class="fa fa-trash"></i> Delete Project
+          </a>
+        </div>
+      {% endif %}
+
+      <!-- Project Image -->
+      {% if project.featured_image %}
+        <img src="{{ project.featured_image.url }}" alt="{{ project.title }}" class="project-image">
+      {% endif %}
+
+      <!-- Project Description -->
+      <div class="project-card-premium">
+        <h2 class="section-title">Project Overview</h2>
+        <div class="project-description">
+          {{ project.description|linebreaks }}
+        </div>
+
+        <!-- Technologies -->
+        <h2 class="section-title">Technologies Used</h2>
+        <div class="tech-tags">
+          {% for tech in project.get_technologies_list %}
+            <span class="tech-tag">{{ tech }}</span>
+          {% endfor %}
+        </div>
+
+        <!-- GitHub Stats -->
+        {% if project.github_repo_name %}
+          <div class="github-stats">
+            <h3 class="text-white mb-3">GitHub Repository</h3>
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fab fa-github"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-label">Repository</div>
+                <div class="stat-value">{{ project.github_repo_name }}</div>
+              </div>
+            </div>
+            {% if project.github_stars %}
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fa fa-star"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-label">Stars</div>
+                <div class="stat-value">{{ project.github_stars }}</div>
+              </div>
+            </div>
+            {% endif %}
+            {% if project.github_forks %}
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fa fa-code-branch"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-label">Forks</div>
+                <div class="stat-value">{{ project.github_forks }}</div>
+              </div>
+            </div>
+            {% endif %}
+            {% if project.github_language %}
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fa fa-code"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-label">Primary Language</div>
+                <div class="stat-value">{{ project.github_language }}</div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          {% if project.github_url %}
+            <a href="{{ project.github_url }}" target="_blank" class="btn-project-outline">
+              <i class="fab fa-github"></i> View Code
+            </a>
+          {% endif %}
+          {% if project.live_url %}
+            <a href="{{ project.live_url }}" target="_blank" class="btn-project-primary">
+              <i class="fa fa-external-link-alt"></i> Live Demo
+            </a>
+          {% endif %}
+          {% if project.demo_url %}
+            <a href="{{ project.demo_url }}" target="_blank" class="btn-project-ghost">
+              <i class="fa fa-play"></i> Watch Demo
+            </a>
+          {% endif %}
+          <a href="{% url 'contactus' %}" class="btn-project-outline">
+            <i class="fa fa-comments"></i> Discuss Project
+          </a>
+        </div>
       </div>
-      <div class="bg-secondary p-4 rounded">
-        <h5 class="text-white mb-3">Hire Me</h5>
-        <p class="text-white-50 small">Interested in similar work? Reach out to discuss your requirements and timeline.</p>
-        <a href="{% url 'services' %}" class="btn btn-sm btn-outline-info">View Services</a>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+      <!-- Project Overview -->
+      <div class="project-card-premium">
+        <h3 class="text-white mb-3">Project Details</h3>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i class="fa fa-calendar"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">Start Date</div>
+            <div class="stat-value">
+              {% if project.start_date %}
+                {{ project.start_date|date:'M Y' }}
+              {% else %}
+                Not specified
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i class="fa fa-flag-checkered"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">Completion Date</div>
+            <div class="stat-value">
+              {% if project.end_date %}
+                {{ project.end_date|date:'M Y' }}
+              {% else %}
+                Ongoing
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i class="fa fa-star"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">Featured Project</div>
+            <div class="stat-value">
+              {% if project.is_featured %}
+                <span class="text-success">Yes</span>
+              {% else %}
+                <span class="text-secondary">No</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i class="fa fa-layer-group"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-label">Project Status</div>
+            <div class="stat-value">{{ project.status|title }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hire Me Card -->
+      <div class="project-card-premium mt-4">
+        <h3 class="text-white mb-3">Interested in Similar Work?</h3>
+        <p class="text-white-50 mb-3">
+          Let's discuss your project requirements and create something amazing together.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{% url 'contactus' %}" class="btn-project-primary flex-fill text-center">
+            <i class="fa fa-rocket"></i> Start Project
+          </a>
+          <a href="{% url 'services' %}" class="btn-project-outline flex-fill text-center">
+            <i class="fa fa-briefcase"></i> View Services
+          </a>
+        </div>
       </div>
     </div>
   </div>
 </div>
-{% endblock content %}
 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add scroll animations
+    const projectCards = document.querySelectorAll('.project-card-premium');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    projectCards.forEach(card => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(30px)';
+      card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(card);
+    });
+
+    // Add hover effects to tech tags
+    const techTags = document.querySelectorAll('.tech-tag');
+    techTags.forEach(tag => {
+      tag.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-3px)';
+      });
+
+      tag.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+      });
+    });
+
+    // Add hover effects to stat items
+    const statItems = document.querySelectorAll('.stat-item');
+    statItems.forEach(item => {
+      item.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateX(8px)';
+      });
+
+      item.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateX(0)';
+      });
+    });
+  });
+</script>
+{% endblock content %}
