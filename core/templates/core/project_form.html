@@ -1,141 +1,292 @@
 {% extends 'core/base.html' %}
-{% load crispy_forms_tags %}
+{% load static %}
 {% block title %}{% if object %}Edit Project{% else %}Create Project{% endif %} | {{ SITE_NAME }}{% endblock title %}
+
 {% block content %}
-<div class="container mt-4 mb-5">
+<style>
+  .project-form .bg-secondary input,
+  .project-form .bg-secondary select,
+  .project-form .bg-secondary textarea {
+    background:#2d3748;
+    color:#e2e8f0;
+    border:1px solid rgba(255,255,255,.1);
+  }
+  .project-form .bg-secondary input:focus,
+  .project-form .bg-secondary select:focus,
+  .project-form .bg-secondary textarea:focus {
+    background:#374151;
+    border-color:#ff6b35;
+    box-shadow: 0 0 0 0.2rem rgba(255,107,53,.25);
+  }
+  .project-form .bg-secondary label {color:#e2e8f0;}
+
+  .image-upload-area {
+    border: 2px dashed rgba(255,107,53,0.5);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .image-upload-area:hover {
+    border-color: #ff6b35;
+    background: rgba(255,107,53,0.05);
+  }
+  .image-preview-container {
+    position: relative;
+    display: inline-block;
+  }
+  .image-preview {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 12px;
+    border: 3px solid #ff6b35;
+  }
+  .remove-image {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+</style>
+
+<div class="container mt-4 mb-5 project-form">
   <div class="row">
-    <div class="col-lg-8 mx-auto">
+    <div class="col-lg-10 mx-auto">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-warning h3 mb-0">{% if object %}Edit Project{% else %}Create New Project{% endif %}</h1>
+        <div>
+          <h1 class="text-warning h3 mb-0">
+            <i class="fa fa-{% if object %}edit{% else %}plus{% endif %}"></i>
+            {% if object %}Edit Project{% else %}Create New Project{% endif %}
+          </h1>
+          <p class="text-white-50 small mb-0">Showcase your amazing work</p>
+        </div>
         <a href="{% url 'projects' %}" class="btn btn-sm btn-outline-light"><i class="fa fa-arrow-left"></i> Back</a>
       </div>
-      <div class="bg-secondary p-4 rounded">
-        <form method="post" enctype="multipart/form-data">
-          {% csrf_token %}
 
-          {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-              {{ form.non_field_errors }}
-            </div>
-          {% endif %}
+      <form method="post" enctype="multipart/form-data" id="projectForm">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
 
-          <div class="row">
-            <div class="col-md-8 mb-3">
-              <label for="{{ form.title.id_for_label }}" class="form-label text-white">Project Title *</label>
-              {{ form.title }}
-              {% if form.title.errors %}<div class="text-danger small">{{ form.title.errors }}</div>{% endif %}
-              <small class="text-white-50">{{ form.title.help_text }}</small>
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="{{ form.slug.id_for_label }}" class="form-label text-white">Slug</label>
-              {{ form.slug }}
-              {% if form.slug.errors %}<div class="text-danger small">{{ form.slug.errors }}</div>{% endif %}
-              <small class="text-white-50">{{ form.slug.help_text }}</small>
-            </div>
-          </div>
+        <div class="row g-4">
+          <div class="col-lg-8">
+            <!-- Basic Info -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-info-circle"></i> Project Information</h5>
 
-          <div class="mb-3">
-            <label for="{{ form.short_description.id_for_label }}" class="form-label text-white">Short Description</label>
-            {{ form.short_description }}
-            {% if form.short_description.errors %}<div class="text-danger small">{{ form.short_description.errors }}</div>{% endif %}
-            <small class="text-white-50">Brief summary shown on cards</small>
-          </div>
-
-          <div class="mb-3">
-            <label for="{{ form.description.id_for_label }}" class="form-label text-white">Full Description *</label>
-            {{ form.description }}
-            {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
-          </div>
-
-          <div class="mb-3">
-            <label for="{{ form.technologies.id_for_label }}" class="form-label text-white">Technologies *</label>
-            {{ form.technologies }}
-            {% if form.technologies.errors %}<div class="text-danger small">{{ form.technologies.errors }}</div>{% endif %}
-            <small class="text-white-50">{{ form.technologies.help_text }}</small>
-          </div>
-
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label for="{{ form.github_url.id_for_label }}" class="form-label text-white">GitHub URL</label>
-              {{ form.github_url }}
-              {% if form.github_url.errors %}<div class="text-danger small">{{ form.github_url.errors }}</div>{% endif %}
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="{{ form.live_url.id_for_label }}" class="form-label text-white">Live Demo URL</label>
-              {{ form.live_url }}
-              {% if form.live_url.errors %}<div class="text-danger small">{{ form.live_url.errors }}</div>{% endif %}
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="{{ form.demo_url.id_for_label }}" class="form-label text-white">Video Demo URL</label>
-              {{ form.demo_url }}
-              {% if form.demo_url.errors %}<div class="text-danger small">{{ form.demo_url.errors }}</div>{% endif %}
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label for="{{ form.featured_image.id_for_label }}" class="form-label text-white">Featured Image</label>
-            {% if object and object.featured_image %}
-              <div class="mb-2">
-                <img src="{{ object.featured_image.url }}" alt="{{ object.title }}" class="img-thumbnail" style="max-width:200px;">
-                <p class="text-white-50 small mt-1">Current image (upload new to replace)</p>
+              <div class="mb-3">
+                <label for="{{ form.title.id_for_label }}" class="form-label text-white">Project Title *</label>
+                {{ form.title }}
+                {% if form.title.errors %}<div class="text-danger small">{{ form.title.errors }}</div>{% endif %}
               </div>
-            {% endif %}
-            {{ form.featured_image }}
-            {% if form.featured_image.errors %}<div class="text-danger small">{{ form.featured_image.errors }}</div>{% endif %}
-            <small class="text-white-50">{{ form.featured_image.help_text }}</small>
-          </div>
 
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label for="{{ form.status.id_for_label }}" class="form-label text-white">Status</label>
-              {{ form.status }}
-              {% if form.status.errors %}<div class="text-danger small">{{ form.status.errors }}</div>{% endif %}
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="{{ form.start_date.id_for_label }}" class="form-label text-white">Start Date</label>
-              {{ form.start_date }}
-              {% if form.start_date.errors %}<div class="text-danger small">{{ form.start_date.errors }}</div>{% endif %}
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="{{ form.end_date.id_for_label }}" class="form-label text-white">End Date</label>
-              {{ form.end_date }}
-              {% if form.end_date.errors %}<div class="text-danger small">{{ form.end_date.errors }}</div>{% endif %}
-            </div>
-          </div>
+              <div class="mb-3">
+                <label for="{{ form.slug.id_for_label }}" class="form-label text-white">Slug</label>
+                {{ form.slug }}
+                <small class="text-white-50 d-block mt-1">{{ form.slug.help_text }}</small>
+                {% if form.slug.errors %}<div class="text-danger small">{{ form.slug.errors }}</div>{% endif %}
+              </div>
 
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <div class="form-check">
-                {{ form.is_featured }}
-                <label class="form-check-label text-white" for="{{ form.is_featured.id_for_label }}">
-                  Featured Project
+              <div class="mb-3">
+                <label for="{{ form.short_description.id_for_label }}" class="form-label text-white">Short Description</label>
+                {{ form.short_description }}
+                <small class="text-white-50 d-block mt-1">Brief summary for project cards</small>
+                {% if form.short_description.errors %}<div class="text-danger small">{{ form.short_description.errors }}</div>{% endif %}
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.description.id_for_label }}" class="form-label text-white">Full Description *</label>
+                {{ form.description }}
+                <small class="text-white-50 d-block mt-1">Detailed project description, challenges, and solutions</small>
+                {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.technologies.id_for_label }}" class="form-label text-white">Technologies Used *</label>
+                {{ form.technologies }}
+                <small class="text-white-50 d-block mt-1">{{ form.technologies.help_text }}</small>
+                {% if form.technologies.errors %}<div class="text-danger small">{{ form.technologies.errors }}</div>{% endif %}
+              </div>
+            </div>
+
+            <!-- Links -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-link"></i> Project Links</h5>
+
+              <div class="mb-3">
+                <label for="{{ form.github_url.id_for_label }}" class="form-label text-white">
+                  <i class="fab fa-github"></i> GitHub Repository
                 </label>
-                <small class="text-white-50 d-block">{{ form.is_featured.help_text }}</small>
+                {{ form.github_url }}
+                {% if form.github_url.errors %}<div class="text-danger small">{{ form.github_url.errors }}</div>{% endif %}
               </div>
-            </div>
-            <div class="col-md-4 mb-3">
-              <div class="form-check">
-                {{ form.is_active }}
-                <label class="form-check-label text-white" for="{{ form.is_active.id_for_label }}">
-                  Active/Visible
+
+              <div class="mb-3">
+                <label for="{{ form.live_url.id_for_label }}" class="form-label text-white">
+                  <i class="fa fa-external-link-alt"></i> Live Demo URL
                 </label>
+                {{ form.live_url }}
+                {% if form.live_url.errors %}<div class="text-danger small">{{ form.live_url.errors }}</div>{% endif %}
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.demo_url.id_for_label }}" class="form-label text-white">
+                  <i class="fa fa-video"></i> Video Demo URL
+                </label>
+                {{ form.demo_url }}
+                {% if form.demo_url.errors %}<div class="text-danger small">{{ form.demo_url.errors }}</div>{% endif %}
               </div>
             </div>
-            <div class="col-md-4 mb-3">
-              <label for="{{ form.order.id_for_label }}" class="form-label text-white">Display Order</label>
-              {{ form.order }}
-              {% if form.order.errors %}<div class="text-danger small">{{ form.order.errors }}</div>{% endif %}
+
+            <!-- Timeline -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-calendar"></i> Project Timeline</h5>
+
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="{{ form.status.id_for_label }}" class="form-label text-white">Status *</label>
+                  {{ form.status }}
+                  {% if form.status.errors %}<div class="text-danger small">{{ form.status.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="{{ form.start_date.id_for_label }}" class="form-label text-white">Start Date</label>
+                  {{ form.start_date }}
+                  {% if form.start_date.errors %}<div class="text-danger small">{{ form.start_date.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="{{ form.end_date.id_for_label }}" class="form-label text-white">End Date</label>
+                  {{ form.end_date }}
+                  {% if form.end_date.errors %}<div class="text-danger small">{{ form.end_date.errors }}</div>{% endif %}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="d-flex gap-2 mt-4">
-            <button type="submit" class="btn btn-warning"><i class="fa fa-save"></i> {% if object %}Update{% else %}Create{% endif %} Project</button>
-            <a href="{% url 'projects' %}" class="btn btn-outline-light">Cancel</a>
+          <div class="col-lg-4">
+            <!-- Featured Image -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-image"></i> Featured Image</h5>
+
+              <div class="mb-3" id="imageUploadArea">
+                {% if object and object.featured_image %}
+                  <div class="image-preview-container mb-3" id="imagePreviewContainer">
+                    <img src="{{ object.featured_image.url }}" alt="Preview" class="image-preview" id="imagePreview">
+                    <button type="button" class="remove-image" onclick="clearImage()">
+                      <i class="fa fa-times"></i>
+                    </button>
+                  </div>
+                {% else %}
+                  <div class="image-upload-area" onclick="document.getElementById('{{ form.featured_image.id_for_label }}').click()">
+                    <i class="fa fa-cloud-upload-alt text-warning" style="font-size: 3rem;"></i>
+                    <p class="text-white mt-2 mb-0">Click to upload image</p>
+                    <small class="text-white-50">JPG, PNG or GIF</small>
+                  </div>
+                  <div class="image-preview-container mb-3 d-none" id="imagePreviewContainer">
+                    <img src="" alt="Preview" class="image-preview" id="imagePreview">
+                    <button type="button" class="remove-image" onclick="clearImage()">
+                      <i class="fa fa-times"></i>
+                    </button>
+                  </div>
+                {% endif %}
+                {{ form.featured_image }}
+                <small class="text-white-50 d-block mt-2">{{ form.featured_image.help_text }}</small>
+                {% if form.featured_image.errors %}<div class="text-danger small">{{ form.featured_image.errors }}</div>{% endif %}
+              </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-cog"></i> Settings</h5>
+
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  {{ form.is_featured }}
+                  <label class="form-check-label text-white" for="{{ form.is_featured.id_for_label }}">
+                    <i class="fa fa-star text-warning"></i> Featured Project
+                  </label>
+                </div>
+                <small class="text-white-50 d-block mt-1">{{ form.is_featured.help_text }}</small>
+              </div>
+
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  {{ form.is_active }}
+                  <label class="form-check-label text-white" for="{{ form.is_active.id_for_label }}">
+                    <i class="fa fa-eye text-info"></i> Active/Visible
+                  </label>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.order.id_for_label }}" class="form-label text-white">Display Order</label>
+                {{ form.order }}
+                <small class="text-white-50 d-block mt-1">Lower numbers appear first</small>
+                {% if form.order.errors %}<div class="text-danger small">{{ form.order.errors }}</div>{% endif %}
+              </div>
+            </div>
+
+            <!-- Tips -->
+            <div class="p-3 rounded" style="background:rgba(0,180,216,0.1); border-left:3px solid #00b4d8;">
+              <h6 class="text-info mb-2"><i class="fa fa-lightbulb"></i> Tips</h6>
+              <ul class="text-white-50 small mb-0" style="list-style:none; padding-left:0;">
+                <li class="mb-1"><i class="fa fa-check text-success me-2"></i>Use high-quality screenshots</li>
+                <li class="mb-1"><i class="fa fa-check text-success me-2"></i>Highlight key features</li>
+                <li class="mb-1"><i class="fa fa-check text-success me-2"></i>Include live demo links</li>
+                <li><i class="fa fa-check text-success me-2"></i>List all technologies used</li>
+              </ul>
+            </div>
           </div>
-        </form>
-      </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="d-flex gap-2 justify-content-end mt-4">
+          <a href="{% url 'projects' %}" class="btn btn-outline-light"><i class="fa fa-times"></i> Cancel</a>
+          <button type="submit" class="btn btn-warning">
+            <i class="fa fa-save"></i> {% if object %}Update{% else %}Create{% endif %} Project
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const imageInput = document.getElementById('{{ form.featured_image.id_for_label }}');
+  const imagePreview = document.getElementById('imagePreview');
+  const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+
+  // Hide the default file input
+  imageInput.style.display = 'none';
+
+  // Image preview on file select
+  imageInput.addEventListener('change', function(e) {
+    if (e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        imagePreview.src = event.target.result;
+        imagePreviewContainer.classList.remove('d-none');
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  });
+});
+
+function clearImage() {
+  const imageInput = document.getElementById('{{ form.featured_image.id_for_label }}');
+  const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+  imageInput.value = '';
+  imagePreviewContainer.classList.add('d-none');
+}
+</script>
 {% endblock content %}
 

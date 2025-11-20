@@ -18,6 +18,45 @@
         <li class="nav-item"><a class="nav-link {% if '/contact' in request.path %}active{% endif %}" href="{% url 'contactus' %}">Contact</a></li>
       </ul>
       <div class="d-flex gap-2">
+        {% if user.is_authenticated %}
+          <!-- Logged-in User Menu -->
+          <div class="dropdown">
+            <button class="btn btn-sm btn-outline-warning dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fa fa-user-circle"></i> {{ user.username }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary" aria-labelledby="userMenu">
+              <li><a class="dropdown-item text-white" href="{% url 'dashboard' %}">
+                <i class="fa fa-tachometer-alt text-warning"></i> Dashboard
+              </a></li>
+              <li><a class="dropdown-item text-white" href="{% url 'profile_settings' %}">
+                <i class="fa fa-user-edit text-info"></i> Settings
+              </a></li>
+              <li><hr class="dropdown-divider bg-secondary"></li>
+              <li><a class="dropdown-item text-white" href="{% url 'project_create' %}">
+                <i class="fa fa-folder-plus text-warning"></i> Add Project
+              </a></li>
+              <li><a class="dropdown-item text-white" href="{% url 'skill_create' %}">
+                <i class="fa fa-code text-success"></i> Add Skill
+              </a></li>
+              <li><a class="dropdown-item text-white" href="{% url 'service_create' %}">
+                <i class="fa fa-briefcase text-info"></i> Add Service
+              </a></li>
+              <li><hr class="dropdown-divider bg-secondary"></li>
+              <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                <i class="fa fa-sign-out-alt"></i> Logout
+              </a></li>
+            </ul>
+          </div>
+        {% else %}
+          <!-- Guest User Links -->
+          <a href="{% url 'login' %}" class="btn btn-sm btn-outline-light">
+            <i class="fa fa-sign-in-alt"></i> Login
+          </a>
+          <a href="{% url 'register' %}" class="btn btn-sm btn-warning">
+            <i class="fa fa-user-plus"></i> Sign Up
+          </a>
+        {% endif %}
+
         {% if profile and profile.resume %}
           <a href="{{ profile.resume.url }}" target="_blank" class="btn btn-sm btn-outline-light"><i class="fa fa-download"></i> Resume</a>
         {% endif %}

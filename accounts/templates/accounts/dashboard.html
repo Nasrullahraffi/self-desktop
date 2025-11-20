@@ -1,0 +1,221 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Dashboard | {{ SITE_NAME }}{% endblock title %}
+{% block content %}
+<style>
+  .dashboard-header {
+    background: linear-gradient(135deg, rgba(255,107,53,0.2), rgba(255,142,83,0.2));
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255,107,53,0.3);
+  }
+  .stat-card {
+    background: rgba(45, 55, 72, 0.95);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(255,107,53,0.3);
+  }
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ff6b35;
+    line-height: 1;
+  }
+  .stat-label {
+    color: #cbd5e0;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+  }
+  .quick-action-card {
+    background: rgba(45, 55, 72, 0.95);
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: all 0.3s;
+    border: 1px solid rgba(255,255,255,0.1);
+    text-decoration: none;
+    display: block;
+  }
+  .quick-action-card:hover {
+    transform: translateX(5px);
+    border-color: #ff6b35;
+    box-shadow: 0 5px 15px rgba(255,107,53,0.2);
+  }
+  .quick-action-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #ff6b35, #ff8e53);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+</style>
+
+<div class="container mt-4 mb-5">
+  <!-- Welcome Header -->
+  <div class="dashboard-header">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <h1 class="text-warning h2 mb-2">
+          <i class="fas fa-tachometer-alt"></i> Welcome back, {{ user.first_name|default:user.username }}!
+        </h1>
+        <p class="text-white-50 mb-0">
+          Manage your portfolio, projects, skills, and more from your personal dashboard
+        </p>
+      </div>
+      <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <a href="{% url 'profile_settings' %}" class="btn btn-warning">
+          <i class="fas fa-cog"></i> Settings
+        </a>
+        <a href="{% url 'home' %}" class="btn btn-outline-light">
+          <i class="fas fa-eye"></i> View Site
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Overview -->
+  <div class="row g-4 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-number">{{ projects_count }}</div>
+        <div class="stat-label">
+          <i class="fas fa-folder"></i> Projects
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-number">{{ skills_count }}</div>
+        <div class="stat-label">
+          <i class="fas fa-code"></i> Skills
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-number">{{ education_count }}</div>
+        <div class="stat-label">
+          <i class="fas fa-graduation-cap"></i> Education
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-number">{{ services_count }}</div>
+        <div class="stat-label">
+          <i class="fas fa-briefcase"></i> Services
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Quick Actions -->
+    <div class="col-lg-4">
+      <h5 class="text-white mb-3"><i class="fas fa-bolt"></i> Quick Actions</h5>
+
+      <a href="{% url 'project_create' %}" class="quick-action-card mb-3">
+        <div class="quick-action-icon">
+          <i class="fas fa-folder-plus text-white"></i>
+        </div>
+        <h6 class="text-white mb-1">Add Project</h6>
+        <small class="text-white-50">Create a new project for your portfolio</small>
+      </a>
+
+      <a href="{% url 'skill_create' %}" class="quick-action-card mb-3">
+        <div class="quick-action-icon">
+          <i class="fas fa-code text-white"></i>
+        </div>
+        <h6 class="text-white mb-1">Add Skill</h6>
+        <small class="text-white-50">Showcase your technical expertise</small>
+      </a>
+
+      <a href="{% url 'service_create' %}" class="quick-action-card mb-3">
+        <div class="quick-action-icon">
+          <i class="fas fa-briefcase text-white"></i>
+        </div>
+        <h6 class="text-white mb-1">Add Service</h6>
+        <small class="text-white-50">Highlight services you offer</small>
+      </a>
+
+      <a href="{% url 'education_create' %}" class="quick-action-card">
+        <div class="quick-action-icon">
+          <i class="fas fa-graduation-cap text-white"></i>
+        </div>
+        <h6 class="text-white mb-1">Add Education</h6>
+        <small class="text-white-50">Add your educational background</small>
+      </a>
+    </div>
+
+    <!-- Recent Projects -->
+    <div class="col-lg-8">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="text-white mb-0"><i class="fas fa-folder"></i> Recent Projects</h5>
+        <a href="{% url 'projects' %}" class="text-warning small">View All <i class="fas fa-arrow-right"></i></a>
+      </div>
+
+      {% if recent_projects %}
+        <div class="row g-3">
+          {% for project in recent_projects %}
+            <div class="col-md-6">
+              <div class="bg-secondary p-3 rounded">
+                {% if project.featured_image %}
+                  <img src="{{ project.featured_image.url }}" alt="{{ project.title }}" class="img-fluid rounded mb-2" style="max-height:120px; width:100%; object-fit:cover;">
+                {% endif %}
+                <h6 class="text-white mb-1">{{ project.title }}</h6>
+                <small class="text-white-50 d-block mb-2">{{ project.status|title }}</small>
+                <div class="d-flex gap-2">
+                  <a href="{{ project.get_absolute_url }}" class="btn btn-sm btn-outline-warning">View</a>
+                  <a href="{% url 'project_edit' project.slug %}" class="btn btn-sm btn-outline-info">Edit</a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="bg-secondary p-5 rounded text-center">
+          <i class="fas fa-folder-open text-warning mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
+          <h5 class="text-white mb-3">No Projects Yet</h5>
+          <p class="text-white-50 mb-3">Start building your portfolio by adding your first project!</p>
+          <a href="{% url 'project_create' %}" class="btn btn-warning">
+            <i class="fas fa-plus-circle"></i> Create Your First Project
+          </a>
+        </div>
+      {% endif %}
+
+      <!-- Profile Completion -->
+      <div class="mt-4 bg-secondary p-4 rounded">
+        <h6 class="text-white mb-3"><i class="fas fa-tasks"></i> Profile Completion</h6>
+        <div class="mb-2">
+          <div class="d-flex justify-content-between mb-1">
+            <small class="text-white-50">Your Progress</small>
+            <small class="text-warning">
+              {% widthratio projects_count 1 20 %}{% widthratio skills_count 1 20 %}{% widthratio education_count 1 20 %}{% widthratio services_count 1 20 %}{% if user_profile.avatar %}20{% else %}0{% endif %}%
+            </small>
+          </div>
+          <div class="progress" style="height: 8px; background: rgba(0,0,0,0.3);">
+            <div class="progress-bar bg-warning" role="progressbar" style="width: {% widthratio projects_count 1 20 %}{% widthratio skills_count 1 20 %}{% widthratio education_count 1 20 %}{% widthratio services_count 1 20 %}{% if user_profile.avatar %}20{% else %}0{% endif %}%"></div>
+          </div>
+        </div>
+        <div class="small text-white-50 mt-3">
+          <div class="mb-1">✓ Profile created</div>
+          {% if user_profile.avatar %}<div class="mb-1 text-success">✓ Profile picture added</div>{% else %}<div class="mb-1 text-warning">○ Add profile picture</div>{% endif %}
+          {% if projects_count > 0 %}<div class="mb-1 text-success">✓ Projects added</div>{% else %}<div class="mb-1 text-warning">○ Add your first project</div>{% endif %}
+          {% if skills_count > 0 %}<div class="mb-1 text-success">✓ Skills added</div>{% else %}<div class="mb-1 text-warning">○ Add your skills</div>{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+

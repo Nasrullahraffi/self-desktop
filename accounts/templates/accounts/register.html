@@ -1,0 +1,192 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Sign Up | {{ SITE_NAME }}{% endblock title %}
+{% block content %}
+<style>
+  .auth-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .auth-card {
+    background: rgba(45, 55, 72, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    padding: 2.5rem;
+    max-width: 500px;
+    width: 100%;
+  }
+  .auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .auth-header h2 {
+    color: #ff6b35;
+    margin-bottom: 0.5rem;
+  }
+  .auth-header p {
+    color: #cbd5e0;
+    font-size: 0.9rem;
+  }
+  .form-control {
+    background: rgba(26, 32, 44, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+  }
+  .form-control:focus {
+    background: rgba(26, 32, 44, 0.9);
+    border-color: #ff6b35;
+    box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+    color: #e2e8f0;
+  }
+  .form-label {
+    color: #e2e8f0;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+  .btn-register {
+    background: linear-gradient(135deg, #ff6b35, #ff8e53);
+    border: none;
+    padding: 0.75rem;
+    font-weight: 600;
+    border-radius: 8px;
+    width: 100%;
+    transition: transform 0.2s;
+  }
+  .btn-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+  }
+  .divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0;
+  }
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .divider span {
+    padding: 0 1rem;
+    color: #a0aec0;
+    font-size: 0.875rem;
+  }
+  .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+  }
+  .errorlist li {
+    color: #fc8181;
+    font-size: 0.875rem;
+  }
+  .help-text {
+    color: #a0aec0;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+</style>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h2><i class="fas fa-user-plus"></i> Create Account</h2>
+      <p>Join us and build your professional portfolio</p>
+    </div>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name *</label>
+          {{ form.first_name }}
+          {% if form.first_name.errors %}
+            <ul class="errorlist">
+              {% for error in form.first_name.errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name *</label>
+          {{ form.last_name }}
+          {% if form.last_name.errors %}
+            <ul class="errorlist">
+              {% for error in form.last_name.errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="{{ form.username.id_for_label }}" class="form-label">Username *</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+          <ul class="errorlist">
+            {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+        <small class="help-text">{{ form.username.help_text }}</small>
+      </div>
+
+      <div class="mb-3">
+        <label for="{{ form.email.id_for_label }}" class="form-label">Email Address *</label>
+        {{ form.email }}
+        {% if form.email.errors %}
+          <ul class="errorlist">
+            {% for error in form.email.errors %}<li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label for="{{ form.password1.id_for_label }}" class="form-label">Password *</label>
+        {{ form.password1 }}
+        {% if form.password1.errors %}
+          <ul class="errorlist">
+            {% for error in form.password1.errors %}<li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+        <small class="help-text">{{ form.password1.help_text|safe }}</small>
+      </div>
+
+      <div class="mb-3">
+        <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password *</label>
+        {{ form.password2 }}
+        {% if form.password2.errors %}
+          <ul class="errorlist">
+            {% for error in form.password2.errors %}<li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="btn btn-warning btn-register">
+        <i class="fas fa-user-plus"></i> Create Account
+      </button>
+
+      <div class="divider">
+        <span>Already have an account?</span>
+      </div>
+
+      <div class="text-center">
+        <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">
+          <i class="fas fa-sign-in-alt"></i> Login Here
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}
+

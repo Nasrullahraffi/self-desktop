@@ -1,0 +1,285 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Edit Profile | {{ SITE_NAME }}{% endblock title %}
+
+{% block content %}
+<style>
+  .profile-form .bg-secondary input,
+  .profile-form .bg-secondary select,
+  .profile-form .bg-secondary textarea {
+    background:#2d3748;
+    color:#e2e8f0;
+    border:1px solid rgba(255,255,255,.1);
+  }
+  .profile-form .bg-secondary input:focus,
+  .profile-form .bg-secondary select:focus,
+  .profile-form .bg-secondary textarea:focus {
+    background:#374151;
+    border-color:#ff6b35;
+    box-shadow: 0 0 0 0.2rem rgba(255,107,53,.25);
+  }
+  .profile-form .bg-secondary label {color:#e2e8f0;}
+
+  .image-preview-container {
+    position: relative;
+    display: inline-block;
+  }
+  .image-preview {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 12px;
+    border: 3px solid #ff6b35;
+    object-fit: cover;
+  }
+  .change-image-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(255,107,53,0.9);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .change-image-btn:hover {
+    background: #ff6b35;
+    transform: scale(1.1);
+  }
+  .stats-preview {
+    background: rgba(255,107,53,0.1);
+    border-left: 3px solid #ff6b35;
+    padding: 1rem;
+    border-radius: 8px;
+  }
+</style>
+
+<div class="container mt-4 mb-5 profile-form">
+  <div class="row">
+    <div class="col-lg-10 mx-auto">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="text-warning h3 mb-0"><i class="fa fa-user-edit"></i> Edit Profile</h1>
+          <p class="text-white-50 small mb-0">Update your professional information and portfolio</p>
+        </div>
+        <a href="{% url 'home' %}" class="btn btn-sm btn-outline-light"><i class="fa fa-arrow-left"></i> Back to Home</a>
+      </div>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="row g-4">
+          <!-- Left Column -->
+          <div class="col-lg-8">
+            <!-- Basic Information -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-user"></i> Basic Information</h5>
+
+              <div class="mb-3">
+                <label for="{{ form.full_name.id_for_label }}" class="form-label text-white">Full Name *</label>
+                {{ form.full_name }}
+                {% if form.full_name.errors %}<div class="text-danger small">{{ form.full_name.errors }}</div>{% endif %}
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.tagline.id_for_label }}" class="form-label text-white">Professional Tagline *</label>
+                {{ form.tagline }}
+                <small class="text-white-50 d-block mt-1">e.g., "Full Stack Developer | UI/UX Enthusiast"</small>
+                {% if form.tagline.errors %}<div class="text-danger small">{{ form.tagline.errors }}</div>{% endif %}
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.bio.id_for_label }}" class="form-label text-white">Bio *</label>
+                {{ form.bio }}
+                <small class="text-white-50 d-block mt-1">Tell your story and what makes you unique</small>
+                {% if form.bio.errors %}<div class="text-danger small">{{ form.bio.errors }}</div>{% endif %}
+              </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-address-book"></i> Contact Information</h5>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.email.id_for_label }}" class="form-label text-white">Email</label>
+                  {{ form.email }}
+                  {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.phone.id_for_label }}" class="form-label text-white">Phone</label>
+                  {{ form.phone }}
+                  {% if form.phone.errors %}<div class="text-danger small">{{ form.phone.errors }}</div>{% endif %}
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.location.id_for_label }}" class="form-label text-white">Location</label>
+                {{ form.location }}
+                <small class="text-white-50 d-block mt-1">City, State/Country</small>
+                {% if form.location.errors %}<div class="text-danger small">{{ form.location.errors }}</div>{% endif %}
+              </div>
+            </div>
+
+            <!-- Professional Stats -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-chart-line"></i> Professional Stats</h5>
+
+              <div class="stats-preview mb-3">
+                <p class="text-white-50 small mb-1"><i class="fa fa-info-circle text-info"></i> These stats will be displayed on your homepage</p>
+              </div>
+
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="{{ form.years_experience.id_for_label }}" class="form-label text-white">
+                    <i class="fa fa-briefcase text-info"></i> Years Experience
+                  </label>
+                  {{ form.years_experience }}
+                  {% if form.years_experience.errors %}<div class="text-danger small">{{ form.years_experience.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="{{ form.projects_completed.id_for_label }}" class="form-label text-white">
+                    <i class="fa fa-tasks text-success"></i> Projects Completed
+                  </label>
+                  {{ form.projects_completed }}
+                  {% if form.projects_completed.errors %}<div class="text-danger small">{{ form.projects_completed.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="{{ form.happy_clients.id_for_label }}" class="form-label text-white">
+                    <i class="fa fa-smile text-warning"></i> Happy Clients
+                  </label>
+                  {{ form.happy_clients }}
+                  {% if form.happy_clients.errors %}<div class="text-danger small">{{ form.happy_clients.errors }}</div>{% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- SEO Settings -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-search"></i> SEO Settings</h5>
+
+              <div class="mb-3">
+                <label for="{{ form.meta_description.id_for_label }}" class="form-label text-white">Meta Description</label>
+                {{ form.meta_description }}
+                <small class="text-white-50 d-block mt-1">Max 160 characters for search engines</small>
+                {% if form.meta_description.errors %}<div class="text-danger small">{{ form.meta_description.errors }}</div>{% endif %}
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.meta_keywords.id_for_label }}" class="form-label text-white">Meta Keywords</label>
+                {{ form.meta_keywords }}
+                <small class="text-white-50 d-block mt-1">Comma-separated keywords</small>
+                {% if form.meta_keywords.errors %}<div class="text-danger small">{{ form.meta_keywords.errors }}</div>{% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="col-lg-4">
+            <!-- Profile Picture -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-camera"></i> Profile Picture</h5>
+
+              <div class="text-center mb-3">
+                <div class="image-preview-container">
+                  {% if object.profile_picture %}
+                    <img src="{{ object.profile_picture.url }}" alt="Profile" class="image-preview" id="profilePreview">
+                  {% else %}
+                    <img src="{% static 'core/images/profile.png' %}" alt="Default Profile" class="image-preview" id="profilePreview">
+                  {% endif %}
+                  <button type="button" class="change-image-btn" onclick="document.getElementById('{{ form.profile_picture.id_for_label }}').click()">
+                    <i class="fa fa-camera text-white"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.profile_picture.id_for_label }}" class="form-label text-white">Upload New Picture</label>
+                {{ form.profile_picture }}
+                <small class="text-white-50 d-block mt-1">{{ form.profile_picture.help_text }}</small>
+                {% if form.profile_picture.errors %}<div class="text-danger small">{{ form.profile_picture.errors }}</div>{% endif %}
+              </div>
+            </div>
+
+            <!-- Resume Upload -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-file-pdf"></i> Resume</h5>
+
+              {% if object.resume %}
+                <div class="alert alert-success small mb-3">
+                  <i class="fa fa-check-circle"></i> Resume uploaded
+                  <a href="{{ object.resume.url }}" target="_blank" class="text-white">View</a>
+                </div>
+              {% endif %}
+
+              <div class="mb-3">
+                <label for="{{ form.resume.id_for_label }}" class="form-label text-white">Upload Resume</label>
+                {{ form.resume }}
+                <small class="text-white-50 d-block mt-1">{{ form.resume.help_text }}</small>
+                {% if form.resume.errors %}<div class="text-danger small">{{ form.resume.errors }}</div>{% endif %}
+              </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-cog"></i> Settings</h5>
+
+              <div class="form-check form-switch">
+                {{ form.is_active }}
+                <label class="form-check-label text-white" for="{{ form.is_active.id_for_label }}">
+                  Profile Active/Visible
+                </label>
+              </div>
+            </div>
+
+            <!-- Tips -->
+            <div class="p-3 rounded" style="background:rgba(0,180,216,0.1); border-left:3px solid #00b4d8;">
+              <h6 class="text-info mb-2"><i class="fa fa-lightbulb"></i> Tips</h6>
+              <ul class="text-white-50 small mb-0" style="list-style:none; padding-left:0;">
+                <li class="mb-1"><i class="fa fa-check text-success me-2"></i>Use a professional headshot</li>
+                <li class="mb-1"><i class="fa fa-check text-success me-2"></i>Keep bio concise and engaging</li>
+                <li class="mb-1"><i class="fa fa-check text-success me-2"></i>Update stats regularly</li>
+                <li><i class="fa fa-check text-success me-2"></i>Optimize SEO for visibility</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Buttons -->
+        <div class="d-flex gap-2 justify-content-end mt-4">
+          <a href="{% url 'home' %}" class="btn btn-outline-light"><i class="fa fa-times"></i> Cancel</a>
+          <button type="submit" class="btn btn-warning"><i class="fa fa-save"></i> Save Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Profile Picture Preview
+  const profileInput = document.getElementById('{{ form.profile_picture.id_for_label }}');
+  const profilePreview = document.getElementById('profilePreview');
+
+  if (profileInput) {
+    profileInput.addEventListener('change', function(e) {
+      if (e.target.files && e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          profilePreview.src = event.target.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+  }
+});
+</script>
+{% endblock content %}
+

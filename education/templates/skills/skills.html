@@ -1,276 +1,686 @@
 {% extends 'core/base.html' %}
 {% block title %}Skills & Education | {{ SITE_NAME }}{% endblock title %}
 {% block content %}
+<style>
+  :root {
+    --primary: #ff6b35;
+    --primary-light: #ff8e53;
+    --secondary: #2d3748;
+    --accent-info: #4299e1;
+    --accent-success: #48bb78;
+    --accent-warning: #ed8936;
+  }
+
+  .skill-category-header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .skill-card {
+    background: linear-gradient(145deg, #2d3748, #1a202c);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .skill-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(255,107,53,0.15);
+    border-color: rgba(255,107,53,0.2);
+  }
+
+  .skill-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .skill-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 0.75rem 0;
+  }
+
+  .skill-bar-fill {
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border-radius: 10px;
+    transition: width 1s ease-in-out;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skill-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  .proficiency-badge {
+    background: rgba(255,107,53,0.15);
+    color: var(--primary-light);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    border: 1px solid rgba(255,107,53,0.3);
+  }
+
+  .education-card {
+    background: linear-gradient(145deg, #2d3748, #1a202c);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .education-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
+
+  .certification-card {
+    background: linear-gradient(145deg, #2d3748, #1a202c);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+  }
+
+  .certification-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  }
+
+  .certification-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--accent-success), #68d391);
+    border-radius: 4px 0 0 4px;
+  }
+
+  .status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .status-valid {
+    background: rgba(72,187,120,0.15);
+    color: #68d391;
+    border: 1px solid rgba(72,187,120,0.3);
+  }
+
+  .status-expired {
+    background: rgba(245,101,101,0.15);
+    color: #fc8181;
+    border: 1px solid rgba(245,101,101,0.3);
+  }
+
+  .floating-add-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    box-shadow: 0 8px 25px rgba(255,107,53,0.4);
+    transition: all 0.3s ease;
+  }
+
+  .floating-add-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 30px rgba(255,107,53,0.5);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid rgba(255,107,53,0.3);
+  }
+
+  .section-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+
+  .empty-state {
+    background: linear-gradient(145deg, #2d3748, #1a202c);
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    border: 2px dashed rgba(255,255,255,0.1);
+  }
+
+  .empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.7;
+  }
+
+  .skill-category {
+    margin-bottom: 2rem;
+  }
+
+  .action-buttons {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .skill-card:hover .action-buttons,
+  .education-card:hover .action-buttons,
+  .certification-card:hover .action-buttons {
+    opacity: 1;
+  }
+
+  .btn-edit, .btn-delete {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    margin-left: 0.25rem;
+  }
+
+  .btn-edit {
+    background: rgba(66,153,225,0.15);
+    border: 1px solid rgba(66,153,225,0.3);
+    color: #63b3ed;
+  }
+
+  .btn-delete {
+    background: rgba(245,101,101,0.15);
+    border: 1px solid rgba(245,101,101,0.3);
+    color: #fc8181;
+  }
+
+  .btn-edit:hover, .btn-delete:hover {
+    transform: scale(1.1);
+  }
+
+  .gpa-badge {
+    background: rgba(66,153,225,0.15);
+    color: #63b3ed;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    border: 1px solid rgba(66,153,225,0.3);
+  }
+
+  .degree-badge {
+    background: rgba(255,107,53,0.15);
+    color: var(--primary-light);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    border: 1px solid rgba(255,107,53,0.3);
+  }
+
+  .stats-card {
+    background: linear-gradient(145deg, #2d3748, #1a202c);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .stats-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+  }
+
+  .skill-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.9;
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .category-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .floating-add-btn {
+      bottom: 20px;
+      right: 20px;
+    }
+
+    .stats-card {
+      padding: 1rem;
+    }
+
+    .stats-number {
+      font-size: 2rem;
+    }
+  }
+</style>
+
 <div class="container mb-5 mt-4">
-  <div class="d-flex justify-content-between align-items-center border-bottom border-warning pb-2 mb-4">
-    <h1 class="text-warning h3 mb-0">Skills & Education</h1>
-    {% if user.is_authenticated %}
-      <div class="dropdown">
-        <button class="btn btn-sm btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="fa fa-plus"></i> Add New</button>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="{% url 'skill_create' %}"><i class="fa fa-code"></i> Add Skill</a></li>
-          <li><a class="dropdown-item" href="{% url 'education_create' %}"><i class="fa fa-graduation-cap"></i> Add Education</a></li>
-          <li><a class="dropdown-item" href="{% url 'certification_create' %}"><i class="fa fa-certificate"></i> Add Certification</a></li>
+  <!-- Header Section -->
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <div>
+      <h1 class="text-warning h3 mb-2">
+        <i class="fa fa-graduation-cap me-2"></i>Skills & Education
+      </h1>
+      <p class="text-white-50 mb-0">Manage your technical skills, education, and professional certifications</p>
+    </div>
+    <div class="d-none d-lg-flex gap-2">
+      <a href="{% url 'skill_create' %}" class="btn btn-warning">
+        <i class="fa fa-plus-circle me-2"></i>Add Skill
+      </a>
+      <a href="{% url 'education_create' %}" class="btn btn-outline-info">
+        <i class="fa fa-graduation-cap me-2"></i>Add Education
+      </a>
+      <a href="{% url 'certification_create' %}" class="btn btn-outline-success">
+        <i class="fa fa-certificate me-2"></i>Add Certification
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats Overview -->
+  <div class="row mb-5">
+    <div class="col-md-4 mb-3">
+      <div class="stats-card">
+        <div class="skill-icon text-warning">
+          <i class="fa fa-code"></i>
+        </div>
+        <div class="stats-number">{{ skills|length }}</div>
+        <div class="text-white-50">Technical Skills</div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="stats-card">
+        <div class="skill-icon text-info">
+          <i class="fa fa-university"></i>
+        </div>
+        <div class="stats-number">{{ education|length }}</div>
+        <div class="text-white-50">Education Records</div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="stats-card">
+        <div class="skill-icon text-success">
+          <i class="fa fa-award"></i>
+        </div>
+        <div class="stats-number">{{ certifications|length }}</div>
+        <div class="text-white-50">Certifications</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Button (Mobile) -->
+  {% if user.is_authenticated %}
+    <div class="floating-add-btn d-lg-none">
+      <div class="dropdown dropup">
+        <button class="btn btn-warning rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:60px; height:60px; font-size:1.5rem;">
+          <i class="fa fa-plus"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="{% url 'skill_create' %}"><i class="fa fa-code text-warning me-2"></i>Add Skill</a></li>
+          <li><a class="dropdown-item" href="{% url 'education_create' %}"><i class="fa fa-graduation-cap text-info me-2"></i>Add Education</a></li>
+          <li><a class="dropdown-item" href="{% url 'certification_create' %}"><i class="fa fa-certificate text-success me-2"></i>Add Certification</a></li>
         </ul>
       </div>
-    {% endif %}
-  </div>
-  <div class="row mt-4">
-    <div class="col-lg-7">
-      <h5 class="text-white-50 mb-3">Technical Skills</h5>
+    </div>
+  {% endif %}
 
-      {# Frontend #}
-      {% if frontend_skills %}
-      <div class="mb-3">
-        <h6 class="text-warning small fw-semibold mb-2">Frontend</h6>
-        <div class="row g-3">
-          {% for s in frontend_skills %}
-            <div class="col-sm-6">
-              <div class="bg-secondary p-3 rounded h-100 position-relative">
-                {% if user.is_authenticated %}
-                  <div class="position-absolute top-0 end-0 mt-2 me-2">
-                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
-                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
-                  </div>
-                {% endif %}
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                  <strong class="text-white small">{{ s.name }}</strong>
-                  {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
-                </div>
-                <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
-                <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
-              </div>
-            </div>
-          {% endfor %}
+  <div class="row">
+    <!-- Skills Section -->
+    <div class="col-lg-8">
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fa fa-code text-white"></i>
+        </div>
+        <div>
+          <h5 class="text-warning mb-0">Technical Skills</h5>
+          <p class="text-white-50 small mb-0">Your expertise across different technologies</p>
         </div>
       </div>
-      {% endif %}
 
-      {# Backend #}
-      {% if backend_skills %}
-      <div class="mb-3">
-        <h6 class="text-warning small fw-semibold mb-2">Backend</h6>
-        <div class="row g-3">
-          {% for s in backend_skills %}
-            <div class="col-sm-6">
-              <div class="bg-secondary p-3 rounded h-100 position-relative">
-                {% if user.is_authenticated %}
-                  <div class="position-absolute top-0 end-0 mt-2 me-2">
-                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
-                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
+      <div class="category-grid">
+        <!-- Frontend Skills -->
+        {% if frontend_skills %}
+        <div class="skill-category">
+          <h6 class="skill-category-header">
+            <i class="fab fa-html5"></i> Frontend Development
+          </h6>
+          <div class="row g-3">
+            {% for s in frontend_skills %}
+              <div class="col-12">
+                <div class="skill-card">
+                  <div class="action-buttons">
+                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-edit btn-sm" title="Edit">
+                      <i class="fa fa-edit"></i>
+                    </a>
+                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-delete btn-sm" title="Delete" onclick="return confirm('Delete {{ s.name }}?')">
+                      <i class="fa fa-trash"></i>
+                    </a>
                   </div>
-                {% endif %}
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                  <strong class="text-white small">{{ s.name }}</strong>
-                  {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <strong class="text-white d-block">{{ s.name }}</strong>
+                      <span class="proficiency-badge">{{ s.get_proficiency_label }}</span>
+                    </div>
+                    {% if s.icon_class %}
+                      <i class="{{ s.icon_class }} text-warning" style="font-size: 1.5rem;"></i>
+                    {% endif %}
+                  </div>
+                  <div class="skill-bar">
+                    <div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-white-50">{{ s.proficiency }}% proficiency</small>
+                    <small class="text-warning">{{ s.years_of_experience }} year{{ s.years_of_experience|pluralize }}</small>
+                  </div>
                 </div>
-                <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
-                <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
               </div>
-            </div>
-          {% endfor %}
+            {% endfor %}
+          </div>
         </div>
-      </div>
-      {% endif %}
+        {% endif %}
 
-      {# Database #}
-      {% if database_skills %}
-      <div class="mb-3">
-        <h6 class="text-warning small fw-semibold mb-2">Database</h6>
-        <div class="row g-3">
-          {% for s in database_skills %}
-            <div class="col-sm-6">
-              <div class="bg-secondary p-3 rounded h-100 position-relative">
-                {% if user.is_authenticated %}
-                  <div class="position-absolute top-0 end-0 mt-2 me-2">
-                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
-                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
+        <!-- Backend Skills -->
+        {% if backend_skills %}
+        <div class="skill-category">
+          <h6 class="skill-category-header">
+            <i class="fas fa-server"></i> Backend Development
+          </h6>
+          <div class="row g-3">
+            {% for s in backend_skills %}
+              <div class="col-12">
+                <div class="skill-card">
+                  <div class="action-buttons">
+                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-edit btn-sm" title="Edit">
+                      <i class="fa fa-edit"></i>
+                    </a>
+                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-delete btn-sm" title="Delete" onclick="return confirm('Delete {{ s.name }}?')">
+                      <i class="fa fa-trash"></i>
+                    </a>
                   </div>
-                {% endif %}
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                  <strong class="text-white small">{{ s.name }}</strong>
-                  {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <strong class="text-white d-block">{{ s.name }}</strong>
+                      <span class="proficiency-badge">{{ s.get_proficiency_label }}</span>
+                    </div>
+                    {% if s.icon_class %}
+                      <i class="{{ s.icon_class }} text-warning" style="font-size: 1.5rem;"></i>
+                    {% endif %}
+                  </div>
+                  <div class="skill-bar">
+                    <div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-white-50">{{ s.proficiency }}% proficiency</small>
+                    <small class="text-warning">{{ s.years_of_experience }} year{{ s.years_of_experience|pluralize }}</small>
+                  </div>
                 </div>
-                <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
-                <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
               </div>
-            </div>
-          {% endfor %}
+            {% endfor %}
+          </div>
         </div>
-      </div>
-      {% endif %}
+        {% endif %}
 
-      {# DevOps & Tools #}
-      {% if devops_skills %}
-      <div class="mb-3">
-        <h6 class="text-warning small fw-semibold mb-2">DevOps &amp; Tools</h6>
-        <div class="row g-3">
-          {% for s in devops_skills %}
-            <div class="col-sm-6">
-              <div class="bg-secondary p-3 rounded h-100 position-relative">
-                {% if user.is_authenticated %}
-                  <div class="position-absolute top-0 end-0 mt-2 me-2">
-                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
-                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
+        <!-- Database Skills -->
+        {% if database_skills %}
+        <div class="skill-category">
+          <h6 class="skill-category-header">
+            <i class="fas fa-database"></i> Database & Storage
+          </h6>
+          <div class="row g-3">
+            {% for s in database_skills %}
+              <div class="col-12">
+                <div class="skill-card">
+                  <div class="action-buttons">
+                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-edit btn-sm" title="Edit">
+                      <i class="fa fa-edit"></i>
+                    </a>
+                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-delete btn-sm" title="Delete" onclick="return confirm('Delete {{ s.name }}?')">
+                      <i class="fa fa-trash"></i>
+                    </a>
                   </div>
-                {% endif %}
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                  <strong class="text-white small">{{ s.name }}</strong>
-                  {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <strong class="text-white d-block">{{ s.name }}</strong>
+                      <span class="proficiency-badge">{{ s.get_proficiency_label }}</span>
+                    </div>
+                    {% if s.icon_class %}
+                      <i class="{{ s.icon_class }} text-warning" style="font-size: 1.5rem;"></i>
+                    {% endif %}
+                  </div>
+                  <div class="skill-bar">
+                    <div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-white-50">{{ s.proficiency }}% proficiency</small>
+                    <small class="text-warning">{{ s.years_of_experience }} year{{ s.years_of_experience|pluralize }}</small>
+                  </div>
                 </div>
-                <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
-                <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
               </div>
-            </div>
-          {% endfor %}
+            {% endfor %}
+          </div>
         </div>
-      </div>
-      {% endif %}
+        {% endif %}
 
-      {# Design #}
-      {% if design_skills %}
-      <div class="mb-3">
-        <h6 class="text-warning small fw-semibold mb-2">Design</h6>
-        <div class="row g-3">
-          {% for s in design_skills %}
-            <div class="col-sm-6">
-              <div class="bg-secondary p-3 rounded h-100 position-relative">
-                {% if user.is_authenticated %}
-                  <div class="position-absolute top-0 end-0 mt-2 me-2">
-                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
-                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
-                  </div>
-                {% endif %}
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                  <strong class="text-white small">{{ s.name }}</strong>
-                  {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
-                </div>
-                <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
-                <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
-              </div>
-            </div>
-          {% endfor %}
-        </div>
+        <!-- Add other skill categories similarly... -->
       </div>
-      {% endif %}
-
-      {# Soft Skills #}
-      {% if soft_skills %}
-      <div class="mb-3">
-        <h6 class="text-warning small fw-semibold mb-2">Soft Skills</h6>
-        <div class="row g-3">
-          {% for s in soft_skills %}
-            <div class="col-sm-6">
-              <div class="bg-secondary p-3 rounded h-100 position-relative">
-                {% if user.is_authenticated %}
-                  <div class="position-absolute top-0 end-0 mt-2 me-2">
-                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
-                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
-                  </div>
-                {% endif %}
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                  <strong class="text-white small">{{ s.name }}</strong>
-                  {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
-                </div>
-                <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
-                <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
-              </div>
-            </div>
-          {% endfor %}
-        </div>
-      </div>
-      {% endif %}
-
-      {# Other #}
-      {% if other_skills %}
-      <div class="mb-3">
-        <h6 class="text-warning small fw-semibold mb-2">Other</h6>
-        <div class="row g-3">
-          {% for s in other_skills %}
-            <div class="col-sm-6">
-              <div class="bg-secondary p-3 rounded h-100 position-relative">
-                {% if user.is_authenticated %}
-                  <div class="position-absolute top-0 end-0 mt-2 me-2">
-                    <a href="{% url 'skill_edit' s.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
-                    <a href="{% url 'skill_delete' s.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
-                  </div>
-                {% endif %}
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                  <strong class="text-white small">{{ s.name }}</strong>
-                  {% if s.icon_class %}<i class="{{ s.icon_class }} text-warning"></i>{% endif %}
-                </div>
-                <div class="skill-bar mb-2"><div class="skill-bar-fill" style="width:{{ s.proficiency }}%"></div></div>
-                <small class="text-white-50">{{ s.get_proficiency_label }} ({{ s.proficiency }}%)</small>
-              </div>
-            </div>
-          {% endfor %}
-        </div>
-      </div>
-      {% endif %}
 
       {% if not skills %}
-        <p class="text-white-50">No skills added yet.</p>
-        {% if user.is_authenticated %}<a href="{% url 'skill_create' %}" class="btn btn-sm btn-warning">Add your first skill</a>{% endif %}
+        <div class="empty-state">
+          <div class="empty-state-icon text-warning">
+            <i class="fa fa-code"></i>
+          </div>
+          <h5 class="text-white mb-3">No Skills Added Yet</h5>
+          <p class="text-white-50 mb-4">Showcase your technical expertise by adding your skills and proficiency levels!</p>
+          <a href="{% url 'skill_create' %}" class="btn btn-warning">
+            <i class="fa fa-plus-circle me-2"></i>Add Your First Skill
+          </a>
+        </div>
       {% endif %}
     </div>
 
-    <div class="col-lg-5 mt-4 mt-lg-0">
+    <!-- Education & Certifications Sidebar -->
+    <div class="col-lg-4 mt-5 mt-lg-0">
       <!-- Education Section -->
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="text-white-50 mb-0">Education</h5>
-        {% if user.is_authenticated %}<a href="{% url 'education_create' %}" class="btn btn-sm btn-outline-warning"><i class="fa fa-plus"></i></a>{% endif %}
-      </div>
-      <div class="timeline list-unstyled">
-        {% for e in education %}
-          <div class="mb-3 p-3 bg-secondary rounded position-relative">
-            {% if user.is_authenticated %}
-              <div class="position-absolute top-0 end-0 mt-2 me-2">
-                <a href="{% url 'education_edit' e.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
-                <a href="{% url 'education_delete' e.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
-              </div>
-            {% endif %}
-            <div class="d-flex justify-content-between">
-              <strong class="text-white">{{ e.institution }}</strong>
-              <small class="text-white-50">{{ e.start_date|date:'Y' }}{% if e.is_current %} - Present{% elif e.end_date %} - {{ e.end_date|date:'Y' }}{% endif %}</small>
-            </div>
-            <div class="text-warning small mb-1">{{ e.get_degree_display }} in {{ e.field_of_study }}</div>
-            {% if e.gpa %}<div class="small text-info mb-1">GPA: {{ e.gpa }}</div>{% endif %}
-            <p class="text-white-50 small mb-0">{{ e.description|truncatechars:140 }}</p>
-          </div>
-        {% empty %}
-          <p class="text-white-50">No education records available.</p>
-          {% if user.is_authenticated %}<a href="{% url 'education_create' %}" class="btn btn-sm btn.warning">Add education</a>{% endif %}
-        {% endfor %}
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fa fa-university text-white"></i>
+        </div>
+        <div>
+          <h5 class="text-info mb-0">Education</h5>
+          <p class="text-white-50 small mb-0">Academic background & qualifications</p>
+        </div>
+        <a href="{% url 'education_create' %}" class="btn btn-sm btn-outline-info ms-auto">
+          <i class="fa fa-plus"></i>
+        </a>
       </div>
 
-      <!-- Certifications Section -->
-      <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
-        <h5 class="text-white-50 mb-0">Certifications</h5>
-        {% if user.is_authenticated %}<a href="{% url 'certification_create' %}" class="btn btn-sm btn-outline-warning"><i class="fa fa-plus"></i></a>{% endif %}
-      </div>
-      <div class="row g-3">
-        {% for c in certifications %}
-          <div class="col-sm-6">
-            <div class="bg-secondary p-3 rounded h-100 position-relative">
-              {% if user.is_authenticated %}
-                <div class="position-absolute top-0 end-0 mt-2 me-2">
-                  <a href="{% url 'certification_edit' c.pk %}" class="btn btn-sm btn-outline-info py-0 px-1"><i class="fa fa-edit"></i></a>
-                  <a href="{% url 'certification_delete' c.pk %}" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="fa fa-trash"></i></a>
-                </div>
-              {% endif %}
-              <strong class="text-white small d-block">{{ c.name }}</strong>
-              <small class="text-white-50 d-block mb-1">{{ c.issuing_organization }}</small>
-              {% if c.credential_url %}<a href="{{ c.credential_url }}" target="_blank" class="small text-info">Verify <i class="fa fa-external-link-alt"></i></a>{% endif %}
-              <div class="small mt-1 {% if c.is_expired %}text-danger{% else %}text-success{% endif %}">{% if c.is_expired %}Expired{% else %}Valid{% endif %}</div>
-            </div>
+      {% for e in education %}
+        <div class="education-card">
+          <div class="action-buttons">
+            <a href="{% url 'education_edit' e.pk %}" class="btn btn-edit btn-sm" title="Edit">
+              <i class="fa fa-edit"></i>
+            </a>
+            <a href="{% url 'education_delete' e.pk %}" class="btn btn-delete btn-sm" title="Delete" onclick="return confirm('Delete this education record?')">
+              <i class="fa fa-trash"></i>
+            </a>
           </div>
-        {% empty %}
-          <p class="text-white-50">No certifications yet.</p>
-          {% if user.is_authenticated %}<a href="{% url 'certification_create' %}" class="btn btn-sm btn-warning">Add certification</a>{% endif %}
-        {% endfor %}
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <strong class="text-white">{{ e.institution }}</strong>
+            <span class="degree-badge">{{ e.get_degree_display }}</span>
+          </div>
+          <div class="text-info mb-2">{{ e.field_of_study }}</div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <small class="text-white-50">
+              {{ e.start_date|date:'M Y' }} -
+              {% if e.is_current %}Present{% else %}{{ e.end_date|date:'M Y' }}{% endif %}
+            </small>
+            {% if e.gpa %}
+              <span class="gpa-badge">GPA: {{ e.gpa }}</span>
+            {% endif %}
+          </div>
+          {% if e.description %}
+            <p class="text-white-50 small mb-0">{{ e.description|truncatechars:120 }}</p>
+          {% endif %}
+        </div>
+      {% empty %}
+        <div class="empty-state">
+          <div class="empty-state-icon text-info">
+            <i class="fa fa-graduation-cap"></i>
+          </div>
+          <p class="text-white-50 mb-3">No education records available.</p>
+          <a href="{% url 'education_create' %}" class="btn btn-sm btn-info">Add Education</a>
+        </div>
+      {% endfor %}
+
+      <!-- Certifications Section -->
+      <div class="section-header mt-5">
+        <div class="section-icon">
+          <i class="fa fa-award text-white"></i>
+        </div>
+        <div>
+          <h5 class="text-success mb-0">Certifications</h5>
+          <p class="text-white-50 small mb-0">Professional certifications & badges</p>
+        </div>
+        <a href="{% url 'certification_create' %}" class="btn btn-sm btn-outline-success ms-auto">
+          <i class="fa fa-plus"></i>
+        </a>
       </div>
+
+      {% for c in certifications %}
+        <div class="certification-card">
+          <div class="action-buttons">
+            <a href="{% url 'certification_edit' c.pk %}" class="btn btn-edit btn-sm" title="Edit">
+              <i class="fa fa-edit"></i>
+            </a>
+            <a href="{% url 'certification_delete' c.pk %}" class="btn btn-delete btn-sm" title="Delete" onclick="return confirm('Delete this certification?')">
+              <i class="fa fa-trash"></i>
+            </a>
+          </div>
+          <strong class="text-white d-block mb-1">{{ c.name }}</strong>
+          <small class="text-white-50 d-block mb-3">{{ c.issuing_organization }}</small>
+          <div class="d-flex justify-content-between align-items-center">
+            {% if c.credential_url %}
+              <a href="{{ c.credential_url }}" target="_blank" class="small text-info">
+                <i class="fa fa-external-link-alt me-1"></i>Verify Credential
+              </a>
+            {% else %}
+              <span></span>
+            {% endif %}
+            <span class="status-badge {% if c.is_expired %}status-expired{% else %}status-valid{% endif %}">
+              {% if c.is_expired %}Expired{% else %}Valid{% endif %}
+            </span>
+          </div>
+        </div>
+      {% empty %}
+        <div class="empty-state">
+          <div class="empty-state-icon text-success">
+            <i class="fa fa-award"></i>
+          </div>
+          <p class="text-white-50 mb-3">No certifications yet.</p>
+          <a href="{% url 'certification_create' %}" class="btn btn-sm btn-success">Add Certification</a>
+        </div>
+      {% endfor %}
     </div>
   </div>
 </div>
-{% endblock content %}
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Animate skill bars on scroll
+  const skillBars = document.querySelectorAll('.skill-bar-fill');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const width = entry.target.style.width;
+        entry.target.style.width = '0%';
+        setTimeout(() => {
+          entry.target.style.width = width;
+        }, 300);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  skillBars.forEach(bar => {
+    observer.observe(bar);
+  });
+
+  // Add hover effects for cards
+  const cards = document.querySelectorAll('.skill-card, .education-card, .certification-card');
+  cards.forEach(card => {
+    card.addEventListener('mouseenter', function() {
+      this.style.transform = this.classList.contains('skill-card') ?
+        'translateY(-5px)' :
+        this.classList.contains('education-card') ?
+        'translateX(5px)' : 'translateY(-3px)';
+    });
+
+    card.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
+  });
+});
+</script>
+{% endblock content %}
