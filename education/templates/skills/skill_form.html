@@ -1,79 +1,263 @@
 {% extends 'core/base.html' %}
-{% endblock content %}
-</div>
-  </div>
-    </div>
-      </div>
-        </form>
-          </div>
-            <a href="{% url 'skills' %}" class="btn btn-outline-light">Cancel</a>
-            <button type="submit" class="btn btn-warning"><i class="fa fa-save"></i> {% if object %}Update{% else %}Add{% endif %} Skill</button>
-          <div class="d-flex gap-2 mt-4">
-
-          </div>
-            </div>
-              {{ form.order }}
-              <label for="{{ form.order.id_for_label }}" class="form-label text-white">Display Order</label>
-            <div class="col-md-6 mb-3">
-            </div>
-              </div>
-                <label class="form-check-label text-white" for="{{ form.is_active.id_for_label }}">Active/Visible</label>
-                {{ form.is_active }}
-              <div class="form-check">
-            <div class="col-md-6 mb-3">
-          <div class="row">
-
-          </div>
-            {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
-            {{ form.description }}
-            <label for="{{ form.description.id_for_label }}" class="form-label text-white">Description</label>
-          <div class="mb-3">
-
-          </div>
-            <small class="text-white-50">{{ form.icon_class.help_text }}</small>
-            {% if form.icon_class.errors %}<div class="text-danger small">{{ form.icon_class.errors }}</div>{% endif %}
-            {{ form.icon_class }}
-            <label for="{{ form.icon_class.id_for_label }}" class="form-label text-white">Icon Class</label>
-          <div class="mb-3">
-
-          </div>
-            </div>
-              <small class="text-white-50">{{ form.years_experience.help_text }}</small>
-              {% if form.years_experience.errors %}<div class="text-danger small">{{ form.years_experience.errors }}</div>{% endif %}
-              {{ form.years_experience }}
-              <label for="{{ form.years_experience.id_for_label }}" class="form-label text-white">Years Experience</label>
-            <div class="col-md-6 mb-3">
-            </div>
-              <small class="text-white-50">{{ form.proficiency.help_text }}</small>
-              {% if form.proficiency.errors %}<div class="text-danger small">{{ form.proficiency.errors }}</div>{% endif %}
-              {{ form.proficiency }}
-              <label for="{{ form.proficiency.id_for_label }}" class="form-label text-white">Proficiency (%) *</label>
-            <div class="col-md-6 mb-3">
-          <div class="row">
-
-          </div>
-            {% if form.category.errors %}<div class="text-danger small">{{ form.category.errors }}</div>{% endif %}
-            {{ form.category }}
-            <label for="{{ form.category.id_for_label }}" class="form-label text-white">Category *</label>
-          <div class="mb-3">
-
-          </div>
-            {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors }}</div>{% endif %}
-            {{ form.name }}
-            <label for="{{ form.name.id_for_label }}" class="form-label text-white">Skill Name *</label>
-          <div class="mb-3">
-
-          {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
-          {% csrf_token %}
-        <form method="post">
-      <div class="bg-secondary p-4 rounded">
-      </div>
-        <a href="{% url 'skills' %}" class="btn btn-sm btn-outline-light"><i class="fa fa-arrow-left"></i> Back</a>
-        <h1 class="text-warning h3 mb-0">{% if object %}Edit Skill{% else %}Add New Skill{% endif %}</h1>
-      <div class="d-flex justify-content-between align-items-center mb-4">
-    <div class="col-lg-6 mx-auto">
-  <div class="row">
-<div class="container mt-4 mb-5">
-{% block content %}
 {% block title %}{% if object %}Edit Skill{% else %}Add Skill{% endif %} | {{ SITE_NAME }}{% endblock title %}
+
+{% block content %}
+<style>
+  .bg-secondary input, .bg-secondary select, .bg-secondary textarea {
+    background:#2d3748;
+    color:#e2e8f0;
+    border:1px solid rgba(255,255,255,.1);
+  }
+  .bg-secondary input:focus, .bg-secondary select:focus, .bg-secondary textarea:focus {
+    background:#374151;
+    border-color:#ff6b35;
+    box-shadow: 0 0 0 0.2rem rgba(255,107,53,.25);
+  }
+  .bg-secondary label {color:#e2e8f0;}
+  .form-range {
+    height: 8px;
+    background: #2d3748;
+    border-radius: 5px;
+    outline: none;
+  }
+  .form-range::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg,#ff6b35,#ff8e53);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .form-range::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg,#ff6b35,#ff8e53);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+  #proficiency-display, #proficiency-label {
+    display: inline-block;
+    min-width: 50px;
+    text-align: center;
+  }
+  .category-hint {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+    background: rgba(255,107,53,0.1);
+    border-left: 3px solid #ff6b35;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+  }
+</style>
+
+<div class="container mt-4 mb-5">
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-warning h3 mb-0">{% if object %}Edit Skill{% else %}Add New Skill{% endif %}</h1>
+        <a href="{% url 'skills' %}" class="btn btn-sm btn-outline-light"><i class="fa fa-arrow-left"></i> Back</a>
+      </div>
+      <div class="bg-secondary p-4 rounded">
+        <form method="post">
+          {% csrf_token %}
+          {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+          <div class="mb-3">
+            <label for="{{ form.name.id_for_label }}" class="form-label text-white">Skill Name *</label>
+            {{ form.name }}
+            {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.category.id_for_label }}" class="form-label text-white">Category *</label>
+            {{ form.category }}
+            {% if form.category.errors %}<div class="text-danger small">{{ form.category.errors }}</div>{% endif %}
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.proficiency.id_for_label }}" class="form-label text-white">
+                Proficiency *
+                <span id="proficiency-display" class="badge bg-warning text-dark ms-2">50%</span>
+                <span id="proficiency-label" class="badge bg-info text-dark ms-1">Intermediate</span>
+              </label>
+              {{ form.proficiency }}
+              <input type="range" class="form-range" id="proficiency-slider" min="0" max="100" value="50" step="5">
+              <small class="text-white-50 d-block mt-1">Drag the slider or type a value (0-100)</small>
+              {% if form.proficiency.errors %}<div class="text-danger small">{{ form.proficiency.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.icon_class.id_for_label }}" class="form-label text-white">
+                Icon Class (Optional)
+                <i id="icon-preview" class="ms-2 text-warning" style="font-size:1.5rem;"></i>
+              </label>
+              {{ form.icon_class }}
+              <small class="text-white-50 d-block mt-1">
+                e.g., fab fa-python, fab fa-js, fab fa-react
+                <a href="https://fontawesome.com/icons" target="_blank" class="text-info">Browse icons</a>
+              </small>
+              {% if form.icon_class.errors %}<div class="text-danger small">{{ form.icon_class.errors }}</div>{% endif %}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.description.id_for_label }}" class="form-label text-white">Description (Optional)</label>
+            {{ form.description }}
+            <small class="text-white-50 d-block mt-1">Brief description of your experience with this skill</small>
+            {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <div class="form-check form-switch">
+                {{ form.is_active }}
+                <label class="form-check-label text-white" for="{{ form.is_active.id_for_label }}">Active/Visible</label>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.order.id_for_label }}" class="form-label text-white">Display Order</label>
+              {{ form.order }}
+              <small class="text-white-50 d-block mt-1">Lower numbers appear first</small>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-warning"><i class="fa fa-save"></i> {% if object %}Update{% else %}Add{% endif %} Skill</button>
+            <a href="{% url 'skills' %}" class="btn btn-outline-light">Cancel</a>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tips Section -->
+      <div class="mt-4 p-3 rounded" style="background:rgba(0,180,216,0.1); border-left:3px solid #00b4d8;">
+        <h6 class="text-info mb-2"><i class="fa fa-lightbulb"></i> Tips for Adding Skills</h6>
+        <ul class="text-white-50 small mb-0" style="list-style:none; padding-left:0;">
+          <li class="mb-1"><i class="fa fa-check text-success me-2"></i>Be honest about your proficiency level</li>
+          <li class="mb-1"><i class="fa fa-check text-success me-2"></i>Use specific skill names (e.g., "React.js" instead of "Frontend")</li>
+          <li class="mb-1"><i class="fa fa-check text-success me-2"></i>Add icons for visual appeal - find them at <a href="https://fontawesome.com" target="_blank" class="text-info">FontAwesome</a></li>
+          <li class="mb-1"><i class="fa fa-check text-success me-2"></i>Lower order numbers appear first on your profile</li>
+          <li><i class="fa fa-check text-success me-2"></i>Include years of experience and projects in the description</li>
+        </ul>
+      </div>
+
+      <!-- Live Preview -->
+      <div class="mt-4 p-4 rounded" style="background:#1e1e1e; border:1px solid rgba(255,255,255,0.1);">
+        <h6 class="text-warning mb-3"><i class="fa fa-eye"></i> Live Preview</h6>
+        <div class="bg-secondary p-3 rounded">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <strong class="text-white small" id="preview-name">Skill Name</strong>
+            <i id="preview-icon" class="text-warning"></i>
+          </div>
+          <div class="skill-bar mb-2">
+            <div class="skill-bar-fill" id="preview-bar" style="width:50%"></div>
+          </div>
+          <small class="text-white-50" id="preview-level">Intermediate (50%)</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // DOM Elements
+  const proficiencyInput = document.getElementById('{{ form.proficiency.id_for_label }}');
+  const proficiencySlider = document.getElementById('proficiency-slider');
+  const proficiencyDisplay = document.getElementById('proficiency-display');
+  const proficiencyLabel = document.getElementById('proficiency-label');
+  const iconInput = document.getElementById('{{ form.icon_class.id_for_label }}');
+  const iconPreview = document.getElementById('icon-preview');
+  const nameInput = document.getElementById('{{ form.name.id_for_label }}');
+
+  // Preview elements
+  const previewName = document.getElementById('preview-name');
+  const previewIcon = document.getElementById('preview-icon');
+  const previewBar = document.getElementById('preview-bar');
+  const previewLevel = document.getElementById('preview-level');
+
+  function getProficiencyLabel(value) {
+    if (value >= 90) return 'Expert';
+    if (value >= 70) return 'Advanced';
+    if (value >= 50) return 'Intermediate';
+    return 'Beginner';
+  }
+
+  function updateProficiency(value) {
+    proficiencyInput.value = value;
+    proficiencySlider.value = value;
+    proficiencyDisplay.textContent = value + '%';
+    const label = getProficiencyLabel(parseInt(value));
+    proficiencyLabel.textContent = label;
+
+    // Update preview
+    previewBar.style.width = value + '%';
+    previewLevel.textContent = label + ' (' + value + '%)';
+  }
+
+  function updateIconPreview() {
+    const iconClass = iconInput.value.trim();
+    if (iconClass) {
+      iconPreview.className = iconClass + ' text-warning';
+      iconPreview.style.fontSize = '1.5rem';
+      previewIcon.className = iconClass + ' text-warning';
+    } else {
+      iconPreview.className = '';
+      previewIcon.className = '';
+    }
+  }
+
+  function updateNamePreview() {
+    const name = nameInput.value.trim() || 'Skill Name';
+    previewName.textContent = name;
+  }
+
+  // Initialize with current values
+  if (proficiencyInput.value) {
+    updateProficiency(proficiencyInput.value);
+  }
+  updateIconPreview();
+  updateNamePreview();
+
+  // Event listeners for proficiency
+  proficiencySlider.addEventListener('input', function() {
+    updateProficiency(this.value);
+  });
+
+  proficiencyInput.addEventListener('input', function() {
+    let value = parseInt(this.value) || 0;
+    value = Math.max(0, Math.min(100, value));
+    updateProficiency(value);
+  });
+
+  // Event listeners for icon
+  iconInput.addEventListener('input', updateIconPreview);
+
+  // Event listener for name
+  nameInput.addEventListener('input', updateNamePreview);
+
+  // Category-based icon suggestions
+  const categorySelect = document.getElementById('{{ form.category.id_for_label }}');
+  const iconSuggestions = {
+    'frontend': ['fab fa-html5', 'fab fa-css3-alt', 'fab fa-js', 'fab fa-react', 'fab fa-vuejs', 'fab fa-angular'],
+    'backend': ['fab fa-python', 'fab fa-node', 'fab fa-php', 'fab fa-java', 'fab fa-laravel'],
+    'database': ['fas fa-database', 'fas fa-server', 'fas fa-table'],
+    'devops': ['fab fa-docker', 'fab fa-git', 'fab fa-github', 'fab fa-jenkins', 'fab fa-aws'],
+    'design': ['fas fa-palette', 'fab fa-figma', 'fas fa-pen-nib', 'fab fa-sketch'],
+    'soft': ['fas fa-users', 'fas fa-comments', 'fas fa-lightbulb', 'fas fa-handshake']
+  };
+
+  if (categorySelect) {
+    categorySelect.addEventListener('change', function() {
+      const category = this.value;
+      if (iconSuggestions[category] && !iconInput.value) {
+        const suggestion = iconSuggestions[category][0];
+        iconInput.value = suggestion;
+        updateIconPreview();
+      }
+    });
+  }
+});
+</script>
+{% endblock content %}
 

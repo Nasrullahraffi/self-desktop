@@ -3,14 +3,72 @@
 {% block content %}
 <div class="container mt-4 mb-5">
   <div class="row">
-    <div class="col-lg-6 mx-auto">
-      <h1 class="text-warning h4 mb-3">{% if object %}Edit{% else %}Add{% endif %} Certification</h1>
+    <div class="col-lg-8 mx-auto">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-warning h3 mb-0">{% if object %}Edit{% else %}Add{% endif %} Certification</h1>
+        <a href="{% url 'skills' %}" class="btn btn-sm btn-outline-light"><i class="fa fa-arrow-left"></i> Back</a>
+      </div>
       <div class="bg-secondary p-4 rounded">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
           {% csrf_token %}
-          {{ form.as_p }}
+          {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+          <div class="mb-3">
+            <label for="{{ form.name.id_for_label }}" class="form-label text-white">Certification Name *</label>
+            {{ form.name }}
+            {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.issuing_organization.id_for_label }}" class="form-label text-white">Issuing Organization *</label>
+            {{ form.issuing_organization }}
+            {% if form.issuing_organization.errors %}<div class="text-danger small">{{ form.issuing_organization.errors }}</div>{% endif %}
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.issue_date.id_for_label }}" class="form-label text-white">Issue Date *</label>
+              {{ form.issue_date }}
+              {% if form.issue_date.errors %}<div class="text-danger small">{{ form.issue_date.errors }}</div>{% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.expiry_date.id_for_label }}" class="form-label text-white">Expiry Date</label>
+              {{ form.expiry_date }}
+              <small class="text-white-50 d-block mt-1">Leave blank if no expiration</small>
+              {% if form.expiry_date.errors %}<div class="text-danger small">{{ form.expiry_date.errors }}</div>{% endif %}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.credential_id.id_for_label }}" class="form-label text-white">Credential ID (Optional)</label>
+            {{ form.credential_id }}
+            <small class="text-white-50 d-block mt-1">Certificate ID or license number</small>
+            {% if form.credential_id.errors %}<div class="text-danger small">{{ form.credential_id.errors }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.credential_url.id_for_label }}" class="form-label text-white">Verification URL (Optional)</label>
+            {{ form.credential_url }}
+            <small class="text-white-50 d-block mt-1">Link to verify the certification</small>
+            {% if form.credential_url.errors %}<div class="text-danger small">{{ form.credential_url.errors }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.description.id_for_label }}" class="form-label text-white">Description</label>
+            {{ form.description }}
+            <small class="text-white-50 d-block mt-1">Skills gained and what you learned</small>
+            {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <div class="form-check form-switch">
+              {{ form.is_active }}
+              <label class="form-check-label text-white" for="{{ form.is_active.id_for_label }}">Active/Visible</label>
+            </div>
+          </div>
+
           <div class="d-flex gap-2 mt-4">
-            <button type="submit" class="btn btn-warning"><i class="fa fa-save"></i> Save</button>
+            <button type="submit" class="btn btn-warning"><i class="fa fa-save"></i> {% if object %}Update{% else %}Add{% endif %} Certification</button>
             <a href="{% url 'skills' %}" class="btn btn-outline-light">Cancel</a>
           </div>
         </form>
