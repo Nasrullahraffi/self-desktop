@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.conf import settings
 from .models import Profile, Project, SocialLink, Testimonial
-from .forms import ProjectForm
+from .forms import ProjectForm, ProfileForm
 
 
 def home_page(request):
@@ -114,6 +114,26 @@ class ProjectDeleteView(LoginRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, 'Project deleted successfully!')
         return super().delete(request, *args, **kwargs)
+
+
+# ==============================================================================
+# PROFILE UPDATE VIEW
+# ==============================================================================
+
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    """Update profile information with image upload"""
+    model = Profile
+    form_class = ProfileForm
+    template_name = 'core/profile_form.html'
+    success_url = reverse_lazy('home')
+
+    def get_object(self, queryset=None):
+        """Get the single profile instance"""
+        return Profile.objects.first()
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Profile updated successfully!')
+        return super().form_valid(form)
 
 
 # Error handlers

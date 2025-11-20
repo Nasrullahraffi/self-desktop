@@ -4,7 +4,19 @@
 <div class="container mt-4 mb-5">
   <div class="row g-4">
     <div class="col-lg-8">
-      <h1 class="text-warning h3 mb-2">{{ project.title }}</h1>
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <h1 class="text-warning h3 mb-2">{{ project.title }}</h1>
+        {% if user.is_authenticated %}
+          <div class="d-flex gap-2">
+            <a href="{% url 'project_edit' project.slug %}" class="btn btn-sm btn-info" title="Edit Project">
+              <i class="fa fa-edit"></i> Edit
+            </a>
+            <a href="{% url 'project_delete' project.slug %}" class="btn btn-sm btn-danger" title="Delete Project">
+              <i class="fa fa-trash"></i> Delete
+            </a>
+          </div>
+        {% endif %}
+      </div>
       <div class="mb-2 small text-white-50">Status: <span class="text-info">{{ project.status|title }}</span></div>
       {% if project.featured_image %}<img src="{{ project.featured_image.url }}" alt="{{ project.title }}" class="img-fluid rounded mb-3">{% endif %}
       <p class="text-white-50">{{ project.description|linebreaks }}</p>

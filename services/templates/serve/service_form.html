@@ -1,0 +1,293 @@
+{% extends 'core/base.html' %}
+{% block title %}{% if object %}Edit Service{% else %}Add Service{% endif %} | {{ SITE_NAME }}{% endblock title %}
+
+{% block content %}
+<style>
+  .service-form .bg-secondary input,
+  .service-form .bg-secondary select,
+  .service-form .bg-secondary textarea {
+    background:#2d3748;
+    color:#e2e8f0;
+    border:1px solid rgba(255,255,255,.1);
+  }
+  .service-form .bg-secondary input:focus,
+  .service-form .bg-secondary select:focus,
+  .service-form .bg-secondary textarea:focus {
+    background:#374151;
+    border-color:#ff6b35;
+    box-shadow: 0 0 0 0.2rem rgba(255,107,53,.25);
+  }
+  .service-form .bg-secondary label {color:#e2e8f0;}
+
+  .icon-preview-box {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg,#ff6b35,#ff8e53);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+  }
+  .service-preview {
+    background: #1e1e1e;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+</style>
+
+<div class="container mt-4 mb-5 service-form">
+  <div class="row">
+    <div class="col-lg-9 mx-auto">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-warning h3 mb-0">
+          <i class="fa fa-{% if object %}edit{% else %}plus{% endif %}"></i>
+          {% if object %}Edit Service{% else %}Add New Service{% endif %}
+        </h1>
+        <a href="{% url 'services' %}" class="btn btn-sm btn-outline-light"><i class="fa fa-arrow-left"></i> Back</a>
+      </div>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+        <div class="row g-4">
+          <div class="col-lg-8">
+            <!-- Basic Information -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-info-circle"></i> Service Details</h5>
+
+              <div class="mb-3">
+                <label for="{{ form.title.id_for_label }}" class="form-label text-white">Service Title *</label>
+                {{ form.title }}
+                {% if form.title.errors %}<div class="text-danger small">{{ form.title.errors }}</div>{% endif %}
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.slug.id_for_label }}" class="form-label text-white">Slug</label>
+                {{ form.slug }}
+                <small class="text-white-50 d-block mt-1">{{ form.slug.help_text }}</small>
+                {% if form.slug.errors %}<div class="text-danger small">{{ form.slug.errors }}</div>{% endif %}
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.short_description.id_for_label }}" class="form-label text-white">Short Description *</label>
+                {{ form.short_description }}
+                <small class="text-white-50 d-block mt-1">Brief one-liner for service cards</small>
+                {% if form.short_description.errors %}<div class="text-danger small">{{ form.short_description.errors }}</div>{% endif %}
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.description.id_for_label }}" class="form-label text-white">Detailed Description *</label>
+                {{ form.description }}
+                <small class="text-white-50 d-block mt-1">Full description with benefits and details</small>
+                {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+              </div>
+            </div>
+
+            <!-- Features -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-list-ul"></i> Service Features</h5>
+
+              <div class="mb-3">
+                <label for="{{ form.features.id_for_label }}" class="form-label text-white">Features & Highlights</label>
+                {{ form.features }}
+                <small class="text-white-50 d-block mt-1">{{ form.features.help_text }}</small>
+                {% if form.features.errors %}<div class="text-danger small">{{ form.features.errors }}</div>{% endif %}
+              </div>
+
+              <div class="alert alert-info small mb-0">
+                <strong>Example:</strong><br>
+                Custom responsive design<br>
+                SEO optimization included<br>
+                Mobile-first approach<br>
+                Free support for 30 days
+              </div>
+            </div>
+
+            <!-- Pricing -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-dollar-sign"></i> Pricing Information</h5>
+
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="{{ form.price_starting.id_for_label }}" class="form-label text-white">Starting Price</label>
+                  {{ form.price_starting }}
+                  {% if form.price_starting.errors %}<div class="text-danger small">{{ form.price_starting.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="{{ form.price_currency.id_for_label }}" class="form-label text-white">Currency</label>
+                  {{ form.price_currency }}
+                  {% if form.price_currency.errors %}<div class="text-danger small">{{ form.price_currency.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="{{ form.pricing_model.id_for_label }}" class="form-label text-white">Pricing Model</label>
+                  {{ form.pricing_model }}
+                  {% if form.pricing_model.errors %}<div class="text-danger small">{{ form.pricing_model.errors }}</div>{% endif %}
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.delivery_time.id_for_label }}" class="form-label text-white">Delivery Time</label>
+                {{ form.delivery_time }}
+                <small class="text-white-50 d-block mt-1">Typical project timeline</small>
+                {% if form.delivery_time.errors %}<div class="text-danger small">{{ form.delivery_time.errors }}</div>{% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <!-- Visual Settings -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-palette"></i> Visual Settings</h5>
+
+              <div class="text-center mb-3">
+                <div class="icon-preview-box mx-auto" id="iconPreviewBox">
+                  <i id="iconPreview" class="fas fa-code text-white"></i>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.icon_class.id_for_label }}" class="form-label text-white">Icon Class</label>
+                {{ form.icon_class }}
+                <small class="text-white-50 d-block mt-1">{{ form.icon_class.help_text }}</small>
+                {% if form.icon_class.errors %}<div class="text-danger small">{{ form.icon_class.errors }}</div>{% endif %}
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.color.id_for_label }}" class="form-label text-white">Color Theme</label>
+                {{ form.color }}
+                {% if form.color.errors %}<div class="text-danger small">{{ form.color.errors }}</div>{% endif %}
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.image.id_for_label }}" class="form-label text-white">Service Image</label>
+                {{ form.image }}
+                <small class="text-white-50 d-block mt-1">{{ form.image.help_text }}</small>
+                {% if form.image.errors %}<div class="text-danger small">{{ form.image.errors }}</div>{% endif %}
+              </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="bg-secondary p-4 rounded mb-4">
+              <h5 class="text-warning mb-3"><i class="fa fa-cog"></i> Settings</h5>
+
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  {{ form.is_featured }}
+                  <label class="form-check-label text-white" for="{{ form.is_featured.id_for_label }}">
+                    Featured Service
+                  </label>
+                </div>
+                <small class="text-white-50">{{ form.is_featured.help_text }}</small>
+              </div>
+
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  {{ form.is_active }}
+                  <label class="form-check-label text-white" for="{{ form.is_active.id_for_label }}">
+                    Active/Visible
+                  </label>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="{{ form.order.id_for_label }}" class="form-label text-white">Display Order</label>
+                {{ form.order }}
+                <small class="text-white-50 d-block mt-1">Lower numbers appear first</small>
+                {% if form.order.errors %}<div class="text-danger small">{{ form.order.errors }}</div>{% endif %}
+              </div>
+            </div>
+
+            <!-- Live Preview -->
+            <div class="service-preview">
+              <h6 class="text-warning mb-3"><i class="fa fa-eye"></i> Preview</h6>
+              <div class="text-center mb-2">
+                <div style="width:60px; height:60px; background:linear-gradient(135deg,#ff6b35,#ff8e53); border-radius:10px; display:inline-flex; align-items:center; justify-content:center;">
+                  <i id="previewIcon" class="fas fa-code text-white" style="font-size:1.5rem;"></i>
+                </div>
+              </div>
+              <h6 class="text-white text-center mb-2" id="previewTitle">Service Title</h6>
+              <p class="text-white-50 small text-center mb-2" id="previewShortDesc">Short description will appear here</p>
+              <div class="text-center">
+                <span class="badge bg-success" id="previewPrice">Price info</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="d-flex gap-2 justify-content-end mt-4">
+          <a href="{% url 'services' %}" class="btn btn-outline-light"><i class="fa fa-times"></i> Cancel</a>
+          <button type="submit" class="btn btn-warning">
+            <i class="fa fa-save"></i> {% if object %}Update{% else %}Create{% endif %} Service
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const iconInput = document.getElementById('{{ form.icon_class.id_for_label }}');
+  const iconPreview = document.getElementById('iconPreview');
+  const previewIcon = document.getElementById('previewIcon');
+  const titleInput = document.getElementById('{{ form.title.id_for_label }}');
+  const previewTitle = document.getElementById('previewTitle');
+  const shortDescInput = document.getElementById('{{ form.short_description.id_for_label }}');
+  const previewShortDesc = document.getElementById('previewShortDesc');
+  const priceInput = document.getElementById('{{ form.price_starting.id_for_label }}');
+  const currencyInput = document.getElementById('{{ form.price_currency.id_for_label }}');
+  const pricingModelInput = document.getElementById('{{ form.pricing_model.id_for_label }}');
+  const previewPrice = document.getElementById('previewPrice');
+
+  // Update icon preview
+  function updateIconPreview() {
+    const iconClass = iconInput.value.trim() || 'fas fa-code';
+    iconPreview.className = iconClass + ' text-white';
+    previewIcon.className = iconClass + ' text-white';
+    previewIcon.style.fontSize = '1.5rem';
+  }
+
+  // Update title preview
+  function updateTitlePreview() {
+    previewTitle.textContent = titleInput.value.trim() || 'Service Title';
+  }
+
+  // Update short description preview
+  function updateShortDescPreview() {
+    previewShortDesc.textContent = shortDescInput.value.trim() || 'Short description will appear here';
+  }
+
+  // Update price preview
+  function updatePricePreview() {
+    const price = priceInput.value;
+    const currency = currencyInput.value || 'USD';
+    const model = pricingModelInput.value || '';
+
+    if (price) {
+      previewPrice.textContent = `From ${currency} ${price}${model ? ' ' + model : ''}`;
+    } else {
+      previewPrice.textContent = 'Price on request';
+    }
+  }
+
+  // Initialize
+  updateIconPreview();
+  updateTitlePreview();
+  updateShortDescPreview();
+  updatePricePreview();
+
+  // Event listeners
+  if (iconInput) iconInput.addEventListener('input', updateIconPreview);
+  if (titleInput) titleInput.addEventListener('input', updateTitlePreview);
+  if (shortDescInput) shortDescInput.addEventListener('input', updateShortDescPreview);
+  if (priceInput) priceInput.addEventListener('input', updatePricePreview);
+  if (currencyInput) currencyInput.addEventListener('input', updatePricePreview);
+  if (pricingModelInput) pricingModelInput.addEventListener('input', updatePricePreview);
+});
+</script>
+{% endblock content %}
+

@@ -3,7 +3,82 @@ Project Management Forms
 """
 
 from django import forms
-from core.models import Project
+from core.models import Project, Profile
+
+
+class ProfileForm(forms.ModelForm):
+    """Form for editing profile with image upload"""
+
+    class Meta:
+        model = Profile
+        fields = [
+            'full_name', 'tagline', 'bio', 'profile_picture', 'resume',
+            'email', 'phone', 'location', 'years_experience',
+            'projects_completed', 'happy_clients', 'meta_description',
+            'meta_keywords', 'is_active'
+        ]
+        widgets = {
+            'full_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Your Full Name'
+            }),
+            'tagline': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Full Stack Developer | UI/UX Designer'
+            }),
+            'bio': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 5,
+                'placeholder': 'Tell us about yourself...'
+            }),
+            'profile_picture': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            }),
+            'resume': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': '.pdf,.doc,.docx'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'your.email@example.com'
+            }),
+            'phone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '+1 (555) 123-4567'
+            }),
+            'location': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'San Francisco, CA'
+            }),
+            'years_experience': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': '0'
+            }),
+            'projects_completed': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': '0'
+            }),
+            'happy_clients': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': '0'
+            }),
+            'meta_description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 2,
+                'placeholder': 'SEO meta description (max 160 characters)'
+            }),
+            'meta_keywords': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'developer, designer, freelancer (comma separated)'
+            }),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        help_texts = {
+            'profile_picture': 'Upload a professional headshot (JPG, PNG)',
+            'resume': 'Upload your resume (PDF format recommended)',
+            'meta_description': 'Brief description for search engines',
+        }
 
 
 class ProjectForm(forms.ModelForm):

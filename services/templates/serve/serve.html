@@ -2,17 +2,59 @@
 {% load static %}
 {% block title %}Services | {{ SITE_NAME }}{% endblock title %}
 {% block content %}
+<style>
+  .add-service-btn {
+    background: linear-gradient(135deg, #ff6b35, #ff8e53);
+    border: none;
+    box-shadow: 0 4px 15px rgba(255,107,53,0.3);
+    transition: all 0.3s ease;
+  }
+  .add-service-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255,107,53,0.5);
+  }
+  .floating-add-service {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+  }
+</style>
+
 <div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="text-warning h3 mb-0">Services</h1>
-    <a href="{% url 'contactus' %}" class="btn btn-sm btn-outline-warning">Request a Quote</a>
+  <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-warning pb-3">
+    <div>
+      <h1 class="text-warning h3 mb-1"><i class="fa fa-briefcase"></i> Services</h1>
+      <p class="text-white-50 small mb-0">Professional services I offer to clients</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'service_create' %}" class="btn btn-warning add-service-btn">
+        <i class="fa fa-plus-circle"></i> Add New Service
+      </a>
+      <a href="{% url 'contactus' %}" class="btn btn-outline-warning">
+        <i class="fa fa-envelope"></i> Request Quote
+      </a>
+    </div>
   </div>
+
+  <!-- Floating Add Button (Mobile) -->
+  <a href="{% url 'service_create' %}" class="btn btn-warning rounded-circle floating-add-service d-lg-none" style="width:60px; height:60px; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
+    <i class="fa fa-plus"></i>
+  </a>
   {% if featured_services %}
     <h5 class="text-white-50 mt-3">Featured</h5>
     <div class="row g-4 mb-4">
       {% for svc in featured_services %}
         <div class="col-sm-6 col-lg-4">
-          <div class="service-card h-100">
+          <div class="service-card h-100 position-relative">
+            <div class="position-absolute top-0 end-0 mt-2 me-2">
+              <a href="{% url 'service_edit' svc.slug %}" class="btn btn-sm btn-outline-info py-0 px-1" title="Edit Service">
+                <i class="fa fa-edit"></i>
+              </a>
+              <a href="{% url 'service_delete' svc.slug %}" class="btn btn-sm btn-outline-danger py-0 px-1" title="Delete Service">
+                <i class="fa fa-trash"></i>
+              </a>
+            </div>
             <div class="d-flex justify-content-between align-items-start mb-1">
               <h5 class="text-white mb-0">{{ svc.title }}</h5>
               <i class="{{ svc.icon_class }} text-warning"></i>
@@ -40,7 +82,15 @@
   <div class="row g-4">
     {% for svc in services %}
       <div class="col-sm-6 col-lg-4">
-        <div class="service-card h-100">
+        <div class="service-card h-100 position-relative">
+          <div class="position-absolute top-0 end-0 mt-2 me-2">
+            <a href="{% url 'service_edit' svc.slug %}" class="btn btn-sm btn-outline-info py-0 px-1" title="Edit Service">
+              <i class="fa fa-edit"></i>
+            </a>
+            <a href="{% url 'service_delete' svc.slug %}" class="btn btn-sm btn-outline-danger py-0 px-1" title="Delete Service">
+              <i class="fa fa-trash"></i>
+            </a>
+          </div>
           <div class="d-flex justify-content-between align-items-start mb-1">
             <h5 class="text-white mb-0">{{ svc.title }}</h5>
             <i class="{{ svc.icon_class }} text-primary"></i>
@@ -54,7 +104,16 @@
         </div>
       </div>
     {% empty %}
-      <div class="col-12"><p class="text-white-50">No services added yet.</p></div>
+      <div class="col-12">
+        <div class="text-center p-5 bg-secondary rounded">
+          <i class="fa fa-briefcase text-warning mb-3" style="font-size: 4rem;"></i>
+          <h4 class="text-white mb-3">No Services Yet</h4>
+          <p class="text-white-50 mb-4">Start showcasing the amazing services you offer by adding your first service!</p>
+          <a href="{% url 'service_create' %}" class="btn btn-warning btn-lg">
+            <i class="fa fa-plus-circle"></i> Add Your First Service
+          </a>
+        </div>
+      </div>
     {% endfor %}
   </div>
 </div>

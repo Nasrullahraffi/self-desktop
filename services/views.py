@@ -2,9 +2,13 @@
 Services App Views
 """
 
-from django.shortcuts import render, get_object_or_404
-from django.views.generic import ListView, DetailView
-from .models import Service, ServiceInquiry
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
+from django.urls import reverse_lazy
+from .models import Service
+from .forms import ServiceForm
 
 
 def services_pro(request):
@@ -41,4 +45,45 @@ class ServiceDetailView(DetailView):
 
     def get_queryset(self):
         return Service.objects.filter(is_active=True)
+
+
+# ==============================================================================
+# SERVICE CRUD VIEWS
+# ==============================================================================
+
+class ServiceCreateView(LoginRequiredMixin, CreateView):
+    """Create new service"""
+    model = Service
+    form_class = ServiceForm
+    template_name = 'serve/service_form.html'
+    success_url = reverse_lazy('services')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Service created successfully!')
+        return super().form_valid(form)
+
+
+class ServiceUpdateView(LoginRequiredMixin, UpdateView):
+    """Update existing service"""
+    model = Service
+    form_class = ServiceForm
+    template_name = 'serve/service_form.html'
+    success_url = reverse_lazy('services')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Service updated successfully!')
+        return super().form_valid(form)
+
+
+class ServiceDeleteView(LoginRequiredMixin, DeleteView):
+    """Delete service"""
+    model = Service
+    template_name = 'serve/service_confirm_delete.html'
+    success_url = reverse_lazy('services')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Service deleted successfully!')
+        return super().delete(request, *args, **kwargs)
+
+
 

@@ -1,19 +1,53 @@
 {% extends 'core/base.html' %}
 {% block title %}Skills & Education | {{ SITE_NAME }}{% endblock title %}
 {% block content %}
+<style>
+  .add-btn-group {
+    background: rgba(255,107,53,0.1);
+    border: 2px solid #ff6b35;
+    border-radius: 8px;
+    padding: 0.5rem;
+  }
+  .floating-add-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(255,107,53,0.4);
+  }
+</style>
+
 <div class="container mb-5 mt-4">
-  <div class="d-flex justify-content-between align-items-center border-bottom border-warning pb-2 mb-4">
-    <h1 class="text-warning h3 mb-0">Skills & Education</h1>
-    {% if user.is_authenticated %}
-      <div class="dropdown">
-        <button class="btn btn-sm btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="fa fa-plus"></i> Add New</button>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="{% url 'skill_create' %}"><i class="fa fa-code"></i> Add Skill</a></li>
-          <li><a class="dropdown-item" href="{% url 'education_create' %}"><i class="fa fa-graduation-cap"></i> Add Education</a></li>
-          <li><a class="dropdown-item" href="{% url 'certification_create' %}"><i class="fa fa-certificate"></i> Add Certification</a></li>
-        </ul>
-      </div>
-    {% endif %}
+  <div class="d-flex justify-content-between align-items-center border-bottom border-warning pb-3 mb-4">
+    <div>
+      <h1 class="text-warning h3 mb-1"><i class="fa fa-graduation-cap"></i> Skills & Education</h1>
+      <p class="text-white-50 small mb-0">Manage your technical skills, education, and certifications</p>
+    </div>
+    <div class="add-btn-group d-flex gap-2 flex-wrap">
+      <a href="{% url 'skill_create' %}" class="btn btn-warning btn-sm">
+        <i class="fa fa-plus-circle"></i> Add Skill
+      </a>
+      <a href="{% url 'education_create' %}" class="btn btn-info btn-sm">
+        <i class="fa fa-plus-circle"></i> Add Education
+      </a>
+      <a href="{% url 'certification_create' %}" class="btn btn-success btn-sm">
+        <i class="fa fa-plus-circle"></i> Add Certification
+      </a>
+    </div>
+  </div>
+
+  <!-- Floating Action Button (Mobile-friendly) -->
+  <div class="floating-add-btn d-lg-none">
+    <div class="dropdown dropup">
+      <button class="btn btn-warning rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:60px; height:60px; font-size:1.5rem;">
+        <i class="fa fa-plus"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="{% url 'skill_create' %}"><i class="fa fa-code text-warning"></i> Add Skill</a></li>
+        <li><a class="dropdown-item" href="{% url 'education_create' %}"><i class="fa fa-graduation-cap text-info"></i> Add Education</a></li>
+        <li><a class="dropdown-item" href="{% url 'certification_create' %}"><i class="fa fa-certificate text-success"></i> Add Certification</a></li>
+      </ul>
+    </div>
   </div>
   <div class="row mt-4">
     <div class="col-lg-7">
@@ -209,8 +243,14 @@
       {% endif %}
 
       {% if not skills %}
-        <p class="text-white-50">No skills added yet.</p>
-        {% if user.is_authenticated %}<a href="{% url 'skill_create' %}" class="btn btn-sm btn-warning">Add your first skill</a>{% endif %}
+        <div class="text-center p-5 bg-secondary rounded">
+          <i class="fa fa-code text-warning mb-3" style="font-size: 3rem;"></i>
+          <h5 class="text-white mb-3">No Skills Added Yet</h5>
+          <p class="text-white-50 mb-4">Showcase your expertise by adding your technical and soft skills!</p>
+          <a href="{% url 'skill_create' %}" class="btn btn-warning">
+            <i class="fa fa-plus-circle"></i> Add Your First Skill
+          </a>
+        </div>
       {% endif %}
     </div>
 
