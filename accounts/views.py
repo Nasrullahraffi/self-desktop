@@ -78,12 +78,12 @@ def dashboard(request):
     if created:
         messages.info(request, 'Profile created! Please update your information in Settings.')
 
-    # Get user's content counts
-    user_projects = Project.objects.filter(created_by=request.user) if hasattr(Project, 'created_by') else Project.objects.all()
-    user_skills = Skill.objects.all()  # Will be filtered by user later
-    user_education = Education.objects.all()
-    user_certifications = Certification.objects.all()
-    user_services = Service.objects.all()
+    # Get user's content counts (all filtered by user)
+    user_projects = Project.objects.filter(user=request.user)
+    user_skills = Skill.objects.filter(user=request.user)
+    user_education = Education.objects.filter(user=request.user)
+    user_certifications = Certification.objects.filter(user=request.user)
+    user_services = Service.objects.filter(user=request.user)
 
     context = {
         'title': 'Dashboard',

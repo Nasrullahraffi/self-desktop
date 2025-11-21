@@ -21,10 +21,14 @@ def site_settings(request):
 
 
 def profile_context(request):
-    """Add profile to all templates"""
+    """Add user-specific profile to all templates"""
 
-    profile = Profile.objects.filter(is_active=True).first()
-    social_links = SocialLink.objects.filter(is_active=True)
+    if request.user.is_authenticated:
+        profile = Profile.objects.filter(user=request.user, is_active=True).first()
+        social_links = SocialLink.objects.filter(user=request.user, is_active=True)
+    else:
+        profile = None
+        social_links = []
 
     return {
         'site_profile': profile,

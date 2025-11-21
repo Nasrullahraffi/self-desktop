@@ -66,12 +66,13 @@ class UserRegistrationForm(UserCreationForm):
 
 
 class UserLoginForm(AuthenticationForm):
-    """Custom login form with Bootstrap styling"""
+    """Custom login form with Bootstrap styling - supports email or username"""
 
     username = forms.CharField(
+        label='Email or Username',
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Username',
+            'placeholder': 'Email or Username',
             'autofocus': True
         })
     )

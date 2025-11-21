@@ -2,7 +2,7 @@
 Core App Views
 """
 
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
@@ -15,20 +15,25 @@ from .forms import ProjectForm, ProfileForm
 def home_page(request):
     """Homepage view with featured content"""
 
-    # Get profile (should only be one)
-    profile = Profile.objects.filter(is_active=True).first()
-
-    # Get featured projects
-    featured_projects = Project.objects.filter(
-        is_active=True,
-        is_featured=True
-    )[:6]
-
-    # Get social links
-    social_links = SocialLink.objects.filter(is_active=True)
-
-    # Get testimonials
-    testimonials = Testimonial.objects.filter(is_active=True)[:3]
+    # Get profile based on whether user is authenticated
+    if request.user.is_authenticated:
+        profile = Profile.objects.filter(user=request.user, is_active=True).first()
+        # Get user's featured projects
+        featured_projects = Project.objects.filter(
+            user=request.user,
+            is_active=True,
+            is_featured=True
+        )[:6]
+        # Get user's social links
+        social_links = SocialLink.objects.filter(user=request.user, is_active=True)
+        # Get user's testimonials
+        testimonials = Testimonial.objects.filter(user=request.user, is_active=True)[:3]
+    else:
+        # For non-authenticated users, show nothing or default content
+        profile = None
+        featured_projects = []
+        social_links = []
+        testimonials = []
 
     context = {
         'profile': profile,
@@ -43,31 +48,34 @@ def home_page(request):
     return render(request, 'core/core.html', context)
 
 
-class ProjectListView(ListView):
-    """List all projects"""
+class ProjectListView(LoginRequiredMixin, ListView):
+    """List all user's projects"""
     model = Project
     template_name = 'core/projects_list.html'
     context_object_name = 'projects'
     paginate_by = 9
 
     def get_queryset(self):
-        return Project.objects.filter(is_active=True)
+        return Project.objects.filter(user=self.request.user, is_active=True)
 
 
-class ProjectDetailView(DetailView):
+class ProjectDetailView(LoginRequiredMixin, DetailView):
     """Project detail view"""
     model = Project
     template_name = 'core/project_detail.html'
     context_object_name = 'project'
 
     def get_queryset(self):
-        return Project.objects.filter(is_active=True)
+        return Project.objects.filter(user=self.request.user, is_active=True)
 
 
 def about_page(request):
     """About page view"""
 
-    profile = Profile.objects.filter(is_active=True).first()
+    if request.user.is_authenticated:
+        profile = Profile.objects.filter(user=request.user, is_active=True).first()
+    else:
+        profile = None
 
     context = {
         'profile': profile,
@@ -89,6 +97,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('projects')
 
     def form_valid(self, form):
+        form.instance.user = self.request.user
         messages.success(self.request, 'Project created successfully!')
         return super().form_valid(form)
 
@@ -100,6 +109,9 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'core/project_form.html'
     success_url = reverse_lazy('projects')
 
+    def get_queryset(self):
+        return Project.objects.filter(user=self.request.user)
+
     def form_valid(self, form):
         messages.success(self.request, 'Project updated successfully!')
         return super().form_valid(form)
@@ -110,6 +122,9 @@ class ProjectDeleteView(LoginRequiredMixin, DeleteView):
     model = Project
     template_name = 'core/project_confirm_delete.html'
     success_url = reverse_lazy('projects')
+
+    def get_queryset(self):
+        return Project.objects.filter(user=self.request.user)
 
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, 'Project deleted successfully!')
@@ -128,8 +143,12 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('home')
 
     def get_object(self, queryset=None):
-        """Get the single profile instance"""
-        return Profile.objects.first()
+        """Get or create user's profile"""
+        profile, created = Profile.objects.get_or_create(
+            user=self.request.user,
+            defaults={'full_name': self.request.user.get_full_name() or self.request.user.username}
+        )
+        return profile
 
     def form_valid(self, form):
         messages.success(self.request, 'Profile updated successfully!')

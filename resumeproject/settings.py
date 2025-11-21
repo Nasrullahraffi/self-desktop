@@ -157,6 +157,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Authentication backends - Allow login with email or username
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.EmailOrUsernameBackend',  # Custom backend for email/username login
+    'django.contrib.auth.backends.ModelBackend',  # Default backend
+]
+
+# Require unique email for users
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

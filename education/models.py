@@ -4,6 +4,7 @@ Handles skills, education history, and certifications
 """
 
 from django.db import models
+from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator, URLValidator
 
 
@@ -19,6 +20,8 @@ class Skill(models.Model):
         ('soft', 'Soft Skills'),
         ('other', 'Other'),
     ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='skills', null=True, blank=True)
 
     name = models.CharField(max_length=100, help_text="Skill name")
     category = models.CharField(
@@ -66,7 +69,7 @@ class Skill(models.Model):
         ordering = ['order', 'category', '-proficiency']
 
     def __str__(self):
-        return f"{self.name} ({self.proficiency}%)"
+        return f"{self.name} ({self.proficiency}%) - {self.user.username}"
 
     def get_proficiency_label(self):
         """Return proficiency level as label"""
@@ -93,6 +96,8 @@ class Education(models.Model):
         ('bootcamp', 'Bootcamp'),
         ('other', 'Other'),
     ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='education', null=True, blank=True)
 
     institution = models.CharField(max_length=200, help_text="School/University name")
     degree = models.CharField(
@@ -144,11 +149,13 @@ class Education(models.Model):
         ordering = ['order', '-start_date']
 
     def __str__(self):
-        return f"{self.get_degree_display()} in {self.field_of_study} - {self.institution}"
+        return f"{self.get_degree_display()} in {self.field_of_study} - {self.institution} ({self.user.username})"
 
 
 class Certification(models.Model):
     """Professional certifications and courses"""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='certifications', null=True, blank=True)
 
     name = models.CharField(max_length=200, help_text="Certification name")
     issuing_organization = models.CharField(
@@ -194,6 +201,9 @@ class Certification(models.Model):
         verbose_name = "Certification"
         verbose_name_plural = "Certifications"
         ordering = ['order', '-issue_date']
+
+    def __str__(self):
+        return f"{self.name} - {self.issuing_organization} ({self.user.username})"
 
     def __str__(self):
         return f"{self.name} - {self.issuing_organization}"
