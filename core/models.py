@@ -4,17 +4,20 @@ Handles portfolio profile, projects, social links, and testimonials
 """
 
 from django.db import models
+from django.contrib.auth.models import User
 from django.core.validators import URLValidator, MinValueValidator, MaxValueValidator
 from django.utils.text import slugify
 from django.urls import reverse
 
 
 class Profile(models.Model):
-    """Main profile information - Should have only one instance"""
+    """Main profile information - One per user"""
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='portfolio_profile', null=True, blank=True)
 
     full_name = models.CharField(max_length=200, help_text="Your full name")
-    tagline = models.CharField(max_length=200, help_text="Professional tagline/title")
-    bio = models.TextField(help_text="Short bio/about yourself")
+    tagline = models.CharField(max_length=200, blank=True, help_text="Professional tagline/title")
+    bio = models.TextField(blank=True, help_text="Short bio/about yourself")
     profile_picture = models.ImageField(
         upload_to='profile/',
         blank=True,
@@ -66,17 +69,11 @@ class Profile(models.Model):
 
     class Meta:
         verbose_name = "Profile"
-        verbose_name_plural = "Profile"
+        verbose_name_plural = "Profiles"
         ordering = ['-created_at']
 
     def __str__(self):
-        return self.full_name
-
-    def save(self, *args, **kwargs):
-        # Ensure only one profile exists
-        if not self.pk and Profile.objects.exists():
-            raise ValueError('Only one Profile instance is allowed')
-        return super().save(*args, **kwargs)
+        return f"{self.full_name} ({self.user.username})"
 
 
 class Project(models.Model):
@@ -88,8 +85,10 @@ class Project(models.Model):
         ('planned', 'Planned'),
     ]
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects', null=True, blank=True)
+
     title = models.CharField(max_length=200, help_text="Project title")
-    slug = models.SlugField(max_length=200, unique=True, blank=True)
+    slug = models.SlugField(max_length=200, blank=True)
     description = models.TextField(help_text="Project description")
     short_description = models.CharField(
         max_length=200,
@@ -172,13 +171,20 @@ class Project(models.Model):
         verbose_name = "Project"
         verbose_name_plural = "Projects"
         ordering = ['order', '-created_at']
+        unique_together = [['user', 'slug']]
 
     def __str__(self):
-        return self.title
+        return f"{self.title} ({self.user.username})"
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            base_slug = slugify(self.title)
+            slug = base_slug
+            counter = 1
+            while Project.objects.filter(user=self.user, slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         return super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -204,6 +210,8 @@ class SocialLink(models.Model):
         ('other', 'Other'),
     ]
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='social_links', null=True, blank=True)
+
     platform = models.CharField(max_length=50, choices=PLATFORM_CHOICES)
     url = models.URLField(validators=[URLValidator()])
     icon_class = models.CharField(
@@ -220,7 +228,7 @@ class SocialLink(models.Model):
         ordering = ['order', 'platform']
 
     def __str__(self):
-        return f"{self.get_platform_display()}"
+        return f"{self.user.username} - {self.get_platform_display()}"
 
     def save(self, *args, **kwargs):
         # Auto-set icon class based on platform
@@ -241,6 +249,8 @@ class SocialLink(models.Model):
 
 class Testimonial(models.Model):
     """Client/Colleague Testimonials"""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='testimonials', null=True, blank=True)
 
     name = models.CharField(max_length=200, help_text="Person's name")
     position = models.CharField(max_length=200, help_text="Job title/position")
@@ -267,6 +277,6 @@ class Testimonial(models.Model):
         ordering = ['order', '-created_at']
 
     def __str__(self):
-        return f"{self.name} - {self.company}"
+        return f"{self.name} - {self.company} ({self.user.username})"
 
 

@@ -4,177 +4,761 @@
 
 {% block content %}
 <style>
-  .project-form .bg-secondary input,
-  .project-form .bg-secondary select,
-  .project-form .bg-secondary textarea {
-    background:#2d3748;
-    color:#e2e8f0;
-    border:1px solid rgba(255,255,255,.1);
+  :root {
+    --primary: #ff6b35;
+    --primary-light: #ff8e53;
+    --primary-dark: #e55a2b;
+    --secondary: #1a1a1a;
+    --accent: #2d3748;
+    --text-primary: #ffffff;
+    --text-secondary: #a0aec0;
+    --gradient-primary: linear-gradient(135deg, #ff6b35, #ff8e53);
+    --gradient-dark: linear-gradient(135deg, #1a1a1a, #2d1b1b);
+    --shadow-primary: 0 10px 30px rgba(255, 107, 53, 0.3);
+    --shadow-dark: 0 15px 40px rgba(0, 0, 0, 0.4);
   }
-  .project-form .bg-secondary input:focus,
-  .project-form .bg-secondary select:focus,
-  .project-form .bg-secondary textarea:focus {
-    background:#374151;
-    border-color:#ff6b35;
-    box-shadow: 0 0 0 0.2rem rgba(255,107,53,.25);
-  }
-  .project-form .bg-secondary label {color:#e2e8f0;}
 
-  .image-upload-area {
-    border: 2px dashed rgba(255,107,53,0.5);
-    border-radius: 12px;
+  .form-hero {
+    background: var(--gradient-dark);
+    padding: 3rem 0;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .form-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+      radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+  }
+
+  .page-title {
+    font-size: 3rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+    animation: slideInUp 1s ease;
+  }
+
+  .page-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    animation: slideInUp 1s ease 0.2s both;
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .project-form .form-section {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
     padding: 2rem;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-form .form-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .project-form .form-section:hover::before {
+    transform: scaleX(1);
+  }
+
+  .project-form .form-section:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-dark);
+    transform: translateY(-5px);
+  }
+
+  .section-title {
+    color: var(--primary-light);
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-title i {
+    font-size: 1.1rem;
+  }
+
+  .form-label {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .required-star {
+    color: var(--primary);
+    font-size: 1.2rem;
+  }
+
+  .form-control, .form-select, .form-textarea {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 2px solid rgba(255, 255, 255, 0.15) !important;
+    color: var(--text-primary) !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1rem !important;
+    transition: all 0.3s ease !important;
+    font-size: 0.95rem;
+  }
+
+  .form-control:focus, .form-select:focus, .form-textarea:focus {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 107, 53, 0.25) !important;
+    color: var(--text-primary) !important;
+    transform: translateY(-2px);
+  }
+
+  .form-textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+
+  .form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23a0aec0' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.75rem center !important;
+    background-size: 16px 12px !important;
+  }
+
+  .help-text {
+    color: var(--text-secondary) !important;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .error-message {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .error-message::before {
+    content: '⚠';
+    font-size: 0.8rem;
+  }
+
+  /* Image Upload Styling */
+  .image-upload-area {
+    border: 3px dashed rgba(255, 107, 53, 0.4);
+    border-radius: 20px;
+    padding: 3rem 2rem;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.03);
+    position: relative;
+    overflow: hidden;
   }
+
+  .image-upload-area::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.1), transparent);
+    transition: left 0.6s ease;
+  }
+
+  .image-upload-area:hover::before {
+    left: 100%;
+  }
+
   .image-upload-area:hover {
-    border-color: #ff6b35;
-    background: rgba(255,107,53,0.05);
+    border-color: var(--primary);
+    background: rgba(255, 107, 53, 0.05);
+    transform: translateY(-3px);
   }
+
+  .upload-icon {
+    font-size: 3.5rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+  }
+
+  .image-upload-area:hover .upload-icon {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+
   .image-preview-container {
     position: relative;
     display: inline-block;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-dark);
+    transition: all 0.3s ease;
+    max-width: 100%;
   }
+
+  .image-preview-container:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-primary);
+  }
+
   .image-preview {
     max-width: 100%;
     max-height: 300px;
-    border-radius: 12px;
-    border: 3px solid #ff6b35;
+    border-radius: 20px;
+    border: 3px solid var(--primary);
+    transition: all 0.3s ease;
   }
+
   .remove-image {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(220, 53, 69, 0.9);
+    top: 12px;
+    right: 12px;
+    background: rgba(220, 53, 69, 0.95);
     color: white;
     border: none;
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    font-size: 0.9rem;
+  }
+
+  .remove-image:hover {
+    background: #dc3545;
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+  }
+
+  /* Switch Styling */
+  .form-check-input {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    width: 3rem;
+    height: 1.5rem;
+    cursor: pointer;
+  }
+
+  .form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .form-check-input:focus {
+    box-shadow: 0 0 0 0.25rem rgba(255, 107, 53, 0.25);
+  }
+
+  .form-check-label {
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-left: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Tips Section */
+  .tips-section {
+    background: rgba(0, 180, 216, 0.08);
+    border: 1px solid rgba(0, 180, 216, 0.3);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .tips-section:hover {
+    border-color: #00b4d8;
+    transform: translateY(-2px);
+  }
+
+  .tips-title {
+    color: #00b4d8;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .tips-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .tips-list li {
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+  }
+
+  .tips-list li:hover {
+    color: var(--text-primary);
+  }
+
+  .tips-list li:last-child {
+    margin-bottom: 0;
+  }
+
+  .tips-list li i {
+    color: #00b4d8;
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+  }
+
+  .tips-list li:hover i {
+    transform: scale(1.2);
+  }
+
+  /* Button Styling */
+  .btn-form-primary {
+    background: var(--gradient-primary);
+    border: none;
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 15px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-form-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn-form-primary:hover::before {
+    left: 100%;
+  }
+
+  .btn-form-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-primary);
+    color: white;
+  }
+
+  .btn-form-outline {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: var(--text-primary);
+    background: transparent;
+    padding: 0.75rem 2rem;
+    border-radius: 15px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .btn-form-outline:hover {
+    border-color: var(--primary);
+    background: rgba(255, 107, 53, 0.1);
+    color: var(--primary-light);
+    transform: translateY(-3px);
+  }
+
+  /* Progress Indicator */
+  .form-progress {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+  }
+
+  .progress-step::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: -50%;
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 1;
+  }
+
+  .progress-step:first-child::before {
+    display: none;
+  }
+
+  .step-number {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+  }
+
+  .step-active .step-number {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    transform: scale(1.1);
+  }
+
+  .step-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .step-active .step-label {
+    color: var(--primary-light);
+    font-weight: 600;
+  }
+
+  /* Animation for form sections */
+  .form-section {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: slideInUp 0.6s ease forwards;
+  }
+
+  .form-section:nth-child(1) { animation-delay: 0.1s; }
+  .form-section:nth-child(2) { animation-delay: 0.2s; }
+  .form-section:nth-child(3) { animation-delay: 0.3s; }
+  .form-section:nth-child(4) { animation-delay: 0.4s; }
+
+  /* Character Counter */
+  .char-counter {
+    text-align: right;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    transition: color 0.3s ease;
+  }
+
+  .char-counter.warning {
+    color: #ff6b35;
+  }
+
+  .char-counter.danger {
+    color: #dc3545;
+  }
+
+  @media (max-width: 768px) {
+    .page-title { font-size: 2rem; }
+    .form-section { padding: 1.5rem; }
+    .image-upload-area { padding: 2rem 1rem; }
+    .btn-form-primary, .btn-form-outline { padding: 0.75rem 1.5rem; }
   }
 </style>
 
-<div class="container mt-4 mb-5 project-form">
-  <div class="row">
-    <div class="col-lg-10 mx-auto">
+<!-- Form Hero Section -->
+<section class="form-hero">
+  <div class="container">
+    <div class="text-center text-white">
+      <h1 class="page-title">
+        <i class="fa fa-{% if object %}edit{% else %}plus-circle{% endif %}"></i>
+        {% if object %}Edit Project{% else %}Create New Project{% endif %}
+      </h1>
+      <p class="page-subtitle">
+        {% if object %}Update your project details and showcase your work{% else %}Add a new project to your portfolio{% endif %}
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Project Form -->
+<div class="container mb-5 project-form">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <!-- Header Actions -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h1 class="text-warning h3 mb-0">
-            <i class="fa fa-{% if object %}edit{% else %}plus{% endif %}"></i>
-            {% if object %}Edit Project{% else %}Create New Project{% endif %}
-          </h1>
-          <p class="text-white-50 small mb-0">Showcase your amazing work</p>
+          <h2 class="text-white h4 mb-1">Project Details</h2>
+          <p class="text-white-50 mb-0">Fill in the information below to showcase your work</p>
         </div>
-        <a href="{% url 'projects' %}" class="btn btn-sm btn-outline-light"><i class="fa fa-arrow-left"></i> Back</a>
+        <a href="{% url 'projects' %}" class="btn-form-outline">
+          <i class="fa fa-arrow-left"></i> Back to Projects
+        </a>
       </div>
 
-      <form method="post" enctype="multipart/form-data" id="projectForm">
+      <!-- Progress Indicator -->
+      <div class="form-progress">
+        <div class="progress-step step-active" data-step="1">
+          <div class="step-number">1</div>
+          <span class="step-label">Basic Info</span>
+        </div>
+        <div class="progress-step" data-step="2">
+          <div class="step-number">2</div>
+          <span class="step-label">Links & Media</span>
+        </div>
+        <div class="progress-step" data-step="3">
+          <div class="step-number">3</div>
+          <span class="step-label">Settings</span>
+        </div>
+      </div>
+
+      <form method="post" enctype="multipart/form-data" id="projectForm" class="needs-validation" novalidate>
         {% csrf_token %}
-        {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa fa-exclamation-triangle me-2"></i>
+            {{ form.non_field_errors }}
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+          </div>
+        {% endif %}
 
         <div class="row g-4">
+          <!-- Left Column -->
           <div class="col-lg-8">
-            <!-- Basic Info -->
-            <div class="bg-secondary p-4 rounded mb-4">
-              <h5 class="text-warning mb-3"><i class="fa fa-info-circle"></i> Project Information</h5>
+            <!-- Basic Information -->
+            <div class="form-section" data-step="1">
+              <h3 class="section-title">
+                <i class="fa fa-info-circle"></i>
+                Project Information
+              </h3>
 
-              <div class="mb-3">
-                <label for="{{ form.title.id_for_label }}" class="form-label text-white">Project Title *</label>
-                {{ form.title }}
-                {% if form.title.errors %}<div class="text-danger small">{{ form.title.errors }}</div>{% endif %}
-              </div>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label for="{{ form.title.id_for_label }}" class="form-label">
+                    <i class="fa fa-heading"></i>
+                    Project Title <span class="required-star">*</span>
+                  </label>
+                  {{ form.title }}
+                  <div class="char-counter" id="titleCounter">0/100</div>
+                  {% if form.title.errors %}
+                    <div class="error-message">{{ form.title.errors }}</div>
+                  {% endif %}
+                </div>
 
-              <div class="mb-3">
-                <label for="{{ form.slug.id_for_label }}" class="form-label text-white">Slug</label>
-                {{ form.slug }}
-                <small class="text-white-50 d-block mt-1">{{ form.slug.help_text }}</small>
-                {% if form.slug.errors %}<div class="text-danger small">{{ form.slug.errors }}</div>{% endif %}
-              </div>
+                <div class="col-12">
+                  <label for="{{ form.slug.id_for_label }}" class="form-label">
+                    <i class="fa fa-link"></i>
+                    Slug
+                  </label>
+                  {{ form.slug }}
+                  <div class="help-text">
+                    <i class="fa fa-info-circle"></i>
+                    {{ form.slug.help_text }}
+                  </div>
+                  {% if form.slug.errors %}
+                    <div class="error-message">{{ form.slug.errors }}</div>
+                  {% endif %}
+                </div>
 
-              <div class="mb-3">
-                <label for="{{ form.short_description.id_for_label }}" class="form-label text-white">Short Description</label>
-                {{ form.short_description }}
-                <small class="text-white-50 d-block mt-1">Brief summary for project cards</small>
-                {% if form.short_description.errors %}<div class="text-danger small">{{ form.short_description.errors }}</div>{% endif %}
-              </div>
+                <div class="col-12">
+                  <label for="{{ form.short_description.id_for_label }}" class="form-label">
+                    <i class="fa fa-align-left"></i>
+                    Short Description
+                  </label>
+                  {{ form.short_description }}
+                  <div class="help-text">
+                    <i class="fa fa-lightbulb"></i>
+                    Brief summary that will appear on project cards and listings
+                  </div>
+                  <div class="char-counter" id="shortDescCounter">0/200</div>
+                  {% if form.short_description.errors %}
+                    <div class="error-message">{{ form.short_description.errors }}</div>
+                  {% endif %}
+                </div>
 
-              <div class="mb-3">
-                <label for="{{ form.description.id_for_label }}" class="form-label text-white">Full Description *</label>
-                {{ form.description }}
-                <small class="text-white-50 d-block mt-1">Detailed project description, challenges, and solutions</small>
-                {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
-              </div>
+                <div class="col-12">
+                  <label for="{{ form.description.id_for_label }}" class="form-label">
+                    <i class="fa fa-file-alt"></i>
+                    Full Description <span class="required-star">*</span>
+                  </label>
+                  {{ form.description }}
+                  <div class="help-text">
+                    <i class="fa fa-lightbulb"></i>
+                    Detailed project description, challenges faced, solutions implemented, and key features
+                  </div>
+                  <div class="char-counter" id="descCounter">0/5000</div>
+                  {% if form.description.errors %}
+                    <div class="error-message">{{ form.description.errors }}</div>
+                  {% endif %}
+                </div>
 
-              <div class="mb-3">
-                <label for="{{ form.technologies.id_for_label }}" class="form-label text-white">Technologies Used *</label>
-                {{ form.technologies }}
-                <small class="text-white-50 d-block mt-1">{{ form.technologies.help_text }}</small>
-                {% if form.technologies.errors %}<div class="text-danger small">{{ form.technologies.errors }}</div>{% endif %}
+                <div class="col-12">
+                  <label for="{{ form.technologies.id_for_label }}" class="form-label">
+                    <i class="fa fa-code"></i>
+                    Technologies Used <span class="required-star">*</span>
+                  </label>
+                  {{ form.technologies }}
+                  <div class="help-text">
+                    <i class="fa fa-info-circle"></i>
+                    {{ form.technologies.help_text }}
+                  </div>
+                  {% if form.technologies.errors %}
+                    <div class="error-message">{{ form.technologies.errors }}</div>
+                  {% endif %}
+                </div>
               </div>
             </div>
 
-            <!-- Links -->
-            <div class="bg-secondary p-4 rounded mb-4">
-              <h5 class="text-warning mb-3"><i class="fa fa-link"></i> Project Links</h5>
+            <!-- Project Links -->
+            <div class="form-section" data-step="2">
+              <h3 class="section-title">
+                <i class="fa fa-link"></i>
+                Project Links
+              </h3>
 
-              <div class="mb-3">
-                <label for="{{ form.github_url.id_for_label }}" class="form-label text-white">
-                  <i class="fab fa-github"></i> GitHub Repository
-                </label>
-                {{ form.github_url }}
-                {% if form.github_url.errors %}<div class="text-danger small">{{ form.github_url.errors }}</div>{% endif %}
-              </div>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label for="{{ form.github_url.id_for_label }}" class="form-label">
+                    <i class="fab fa-github"></i> GitHub Repository
+                  </label>
+                  {{ form.github_url }}
+                  {% if form.github_url.errors %}
+                    <div class="error-message">{{ form.github_url.errors }}</div>
+                  {% endif %}
+                </div>
 
-              <div class="mb-3">
-                <label for="{{ form.live_url.id_for_label }}" class="form-label text-white">
-                  <i class="fa fa-external-link-alt"></i> Live Demo URL
-                </label>
-                {{ form.live_url }}
-                {% if form.live_url.errors %}<div class="text-danger small">{{ form.live_url.errors }}</div>{% endif %}
-              </div>
+                <div class="col-12">
+                  <label for="{{ form.live_url.id_for_label }}" class="form-label">
+                    <i class="fa fa-external-link-alt"></i> Live Demo URL
+                  </label>
+                  {{ form.live_url }}
+                  {% if form.live_url.errors %}
+                    <div class="error-message">{{ form.live_url.errors }}</div>
+                  {% endif %}
+                </div>
 
-              <div class="mb-3">
-                <label for="{{ form.demo_url.id_for_label }}" class="form-label text-white">
-                  <i class="fa fa-video"></i> Video Demo URL
-                </label>
-                {{ form.demo_url }}
-                {% if form.demo_url.errors %}<div class="text-danger small">{{ form.demo_url.errors }}</div>{% endif %}
+                <div class="col-12">
+                  <label for="{{ form.demo_url.id_for_label }}" class="form-label">
+                    <i class="fa fa-video"></i> Video Demo URL
+                  </label>
+                  {{ form.demo_url }}
+                  {% if form.demo_url.errors %}
+                    <div class="error-message">{{ form.demo_url.errors }}</div>
+                  {% endif %}
+                </div>
               </div>
             </div>
 
-            <!-- Timeline -->
-            <div class="bg-secondary p-4 rounded mb-4">
-              <h5 class="text-warning mb-3"><i class="fa fa-calendar"></i> Project Timeline</h5>
+            <!-- Project Timeline -->
+            <div class="form-section" data-step="2">
+              <h3 class="section-title">
+                <i class="fa fa-calendar-alt"></i>
+                Project Timeline
+              </h3>
 
-              <div class="row">
-                <div class="col-md-4 mb-3">
-                  <label for="{{ form.status.id_for_label }}" class="form-label text-white">Status *</label>
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label for="{{ form.status.id_for_label }}" class="form-label">
+                    <i class="fa fa-tasks"></i>
+                    Status <span class="required-star">*</span>
+                  </label>
                   {{ form.status }}
-                  {% if form.status.errors %}<div class="text-danger small">{{ form.status.errors }}</div>{% endif %}
+                  {% if form.status.errors %}
+                    <div class="error-message">{{ form.status.errors }}</div>
+                  {% endif %}
                 </div>
-                <div class="col-md-4 mb-3">
-                  <label for="{{ form.start_date.id_for_label }}" class="form-label text-white">Start Date</label>
+
+                <div class="col-md-4">
+                  <label for="{{ form.start_date.id_for_label }}" class="form-label">
+                    <i class="fa fa-play"></i> Start Date
+                  </label>
                   {{ form.start_date }}
-                  {% if form.start_date.errors %}<div class="text-danger small">{{ form.start_date.errors }}</div>{% endif %}
+                  {% if form.start_date.errors %}
+                    <div class="error-message">{{ form.start_date.errors }}</div>
+                  {% endif %}
                 </div>
-                <div class="col-md-4 mb-3">
-                  <label for="{{ form.end_date.id_for_label }}" class="form-label text-white">End Date</label>
+
+                <div class="col-md-4">
+                  <label for="{{ form.end_date.id_for_label }}" class="form-label">
+                    <i class="fa fa-flag"></i> End Date
+                  </label>
                   {{ form.end_date }}
-                  {% if form.end_date.errors %}<div class="text-danger small">{{ form.end_date.errors }}</div>{% endif %}
+                  {% if form.end_date.errors %}
+                    <div class="error-message">{{ form.end_date.errors }}</div>
+                  {% endif %}
                 </div>
               </div>
             </div>
           </div>
 
+          <!-- Right Column -->
           <div class="col-lg-4">
             <!-- Featured Image -->
-            <div class="bg-secondary p-4 rounded mb-4">
-              <h5 class="text-warning mb-3"><i class="fa fa-image"></i> Featured Image</h5>
+            <div class="form-section" data-step="2">
+              <h3 class="section-title">
+                <i class="fa fa-image"></i>
+                Featured Image
+              </h3>
 
               <div class="mb-3" id="imageUploadArea">
                 {% if object and object.featured_image %}
@@ -186,9 +770,9 @@
                   </div>
                 {% else %}
                   <div class="image-upload-area" onclick="document.getElementById('{{ form.featured_image.id_for_label }}').click()">
-                    <i class="fa fa-cloud-upload-alt text-warning" style="font-size: 3rem;"></i>
-                    <p class="text-white mt-2 mb-0">Click to upload image</p>
-                    <small class="text-white-50">JPG, PNG or GIF</small>
+                    <i class="fa fa-cloud-upload-alt upload-icon"></i>
+                    <p class="text-white mt-2 mb-1 fw-semibold">Click to upload image</p>
+                    <small class="text-white-50">JPG, PNG, GIF • Max 5MB</small>
                   </div>
                   <div class="image-preview-container mb-3 d-none" id="imagePreviewContainer">
                     <img src="" alt="Preview" class="image-preview" id="imagePreview">
@@ -198,61 +782,111 @@
                   </div>
                 {% endif %}
                 {{ form.featured_image }}
-                <small class="text-white-50 d-block mt-2">{{ form.featured_image.help_text }}</small>
-                {% if form.featured_image.errors %}<div class="text-danger small">{{ form.featured_image.errors }}</div>{% endif %}
+                <div class="help-text mt-2">
+                  <i class="fa fa-info-circle"></i>
+                  {{ form.featured_image.help_text }}
+                </div>
+                {% if form.featured_image.errors %}
+                  <div class="error-message">{{ form.featured_image.errors }}</div>
+                {% endif %}
               </div>
             </div>
 
-            <!-- Settings -->
-            <div class="bg-secondary p-4 rounded mb-4">
-              <h5 class="text-warning mb-3"><i class="fa fa-cog"></i> Settings</h5>
+            <!-- Project Settings -->
+            <div class="form-section" data-step="3">
+              <h3 class="section-title">
+                <i class="fa fa-cog"></i>
+                Project Settings
+              </h3>
 
-              <div class="mb-3">
+              <div class="mb-4">
                 <div class="form-check form-switch">
                   {{ form.is_featured }}
-                  <label class="form-check-label text-white" for="{{ form.is_featured.id_for_label }}">
+                  <label class="form-check-label" for="{{ form.is_featured.id_for_label }}">
                     <i class="fa fa-star text-warning"></i> Featured Project
                   </label>
                 </div>
-                <small class="text-white-50 d-block mt-1">{{ form.is_featured.help_text }}</small>
+                <div class="help-text">
+                  <i class="fa fa-info-circle"></i>
+                  {{ form.is_featured.help_text }}
+                </div>
               </div>
 
-              <div class="mb-3">
+              <div class="mb-4">
                 <div class="form-check form-switch">
                   {{ form.is_active }}
-                  <label class="form-check-label text-white" for="{{ form.is_active.id_for_label }}">
+                  <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
                     <i class="fa fa-eye text-info"></i> Active/Visible
                   </label>
                 </div>
               </div>
 
               <div class="mb-3">
-                <label for="{{ form.order.id_for_label }}" class="form-label text-white">Display Order</label>
+                <label for="{{ form.order.id_for_label }}" class="form-label">
+                  <i class="fa fa-sort-numeric-down"></i> Display Order
+                </label>
                 {{ form.order }}
-                <small class="text-white-50 d-block mt-1">Lower numbers appear first</small>
-                {% if form.order.errors %}<div class="text-danger small">{{ form.order.errors }}</div>{% endif %}
+                <div class="help-text">
+                  <i class="fa fa-info-circle"></i>
+                  Lower numbers appear first in project listings
+                </div>
+                {% if form.order.errors %}
+                  <div class="error-message">{{ form.order.errors }}</div>
+                {% endif %}
               </div>
             </div>
 
-            <!-- Tips -->
-            <div class="p-3 rounded" style="background:rgba(0,180,216,0.1); border-left:3px solid #00b4d8;">
-              <h6 class="text-info mb-2"><i class="fa fa-lightbulb"></i> Tips</h6>
-              <ul class="text-white-50 small mb-0" style="list-style:none; padding-left:0;">
-                <li class="mb-1"><i class="fa fa-check text-success me-2"></i>Use high-quality screenshots</li>
-                <li class="mb-1"><i class="fa fa-check text-success me-2"></i>Highlight key features</li>
-                <li class="mb-1"><i class="fa fa-check text-success me-2"></i>Include live demo links</li>
-                <li><i class="fa fa-check text-success me-2"></i>List all technologies used</li>
+            <!-- Tips Section -->
+            <div class="tips-section">
+              <h4 class="tips-title">
+                <i class="fa fa-lightbulb"></i>
+                Pro Tips
+              </h4>
+              <ul class="tips-list">
+                <li>
+                  <i class="fa fa-check-circle"></i>
+                  <span>Use high-quality screenshots that showcase your project</span>
+                </li>
+                <li>
+                  <i class="fa fa-check-circle"></i>
+                  <span>Highlight the key features and technologies used</span>
+                </li>
+                <li>
+                  <i class="fa fa-check-circle"></i>
+                  <span>Include live demo links when available</span>
+                </li>
+                <li>
+                  <i class="fa fa-check-circle"></i>
+                  <span>Be specific about your role and contributions</span>
+                </li>
+                <li>
+                  <i class="fa fa-check-circle"></i>
+                  <span>List all relevant technologies and frameworks</span>
+                </li>
               </ul>
             </div>
           </div>
         </div>
 
-        <!-- Submit -->
-        <div class="d-flex gap-2 justify-content-end mt-4">
-          <a href="{% url 'projects' %}" class="btn btn-outline-light"><i class="fa fa-times"></i> Cancel</a>
-          <button type="submit" class="btn btn-warning">
-            <i class="fa fa-save"></i> {% if object %}Update{% else %}Create{% endif %} Project
-          </button>
+        <!-- Form Actions -->
+        <div class="form-section mt-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <small class="text-white-50">
+                <i class="fa fa-info-circle me-1"></i>
+                Fields marked with <span class="required-star">*</span> are required
+              </small>
+            </div>
+            <div class="d-flex gap-3">
+              <a href="{% url 'projects' %}" class="btn-form-outline">
+                <i class="fa fa-times"></i> Cancel
+              </a>
+              <button type="submit" class="btn-form-primary">
+                <i class="fa fa-save"></i>
+                {% if object %}Update Project{% else %}Create Project{% endif %}
+              </button>
+            </div>
+          </div>
         </div>
       </form>
     </div>
@@ -264,6 +898,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const imageInput = document.getElementById('{{ form.featured_image.id_for_label }}');
   const imagePreview = document.getElementById('imagePreview');
   const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+  const imageUploadArea = document.querySelector('.image-upload-area');
 
   // Hide the default file input
   imageInput.style.display = 'none';
@@ -271,22 +906,238 @@ document.addEventListener('DOMContentLoaded', function() {
   // Image preview on file select
   imageInput.addEventListener('change', function(e) {
     if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+
+      // Validate file size (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        showNotification('File size must be less than 5MB', 'error');
+        this.value = '';
+        return;
+      }
+
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        showNotification('Please select a valid image file (JPG, PNG, GIF)', 'error');
+        this.value = '';
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = function(event) {
         imagePreview.src = event.target.result;
         imagePreviewContainer.classList.remove('d-none');
+        if (imageUploadArea) {
+          imageUploadArea.style.display = 'none';
+        }
+        showNotification('Image uploaded successfully!', 'success');
       };
-      reader.readAsDataURL(e.target.files[0]);
+      reader.readAsDataURL(file);
     }
   });
+
+  // Character counters
+  const titleInput = document.getElementById('{{ form.title.id_for_label }}');
+  const shortDescInput = document.getElementById('{{ form.short_description.id_for_label }}');
+  const descInput = document.getElementById('{{ form.description.id_for_label }}');
+
+  function setupCounter(input, counterId, maxLength) {
+    const counter = document.getElementById(counterId);
+    if (input && counter) {
+      const updateCounter = () => {
+        const count = input.value.length;
+        counter.textContent = `${count}/${maxLength}`;
+
+        // Update counter color based on usage
+        counter.className = 'char-counter';
+        if (count > maxLength * 0.8) {
+          counter.classList.add('warning');
+        }
+        if (count > maxLength) {
+          counter.classList.add('danger');
+        }
+      };
+
+      input.addEventListener('input', updateCounter);
+      updateCounter(); // Initialize
+    }
+  }
+
+  setupCounter(titleInput, 'titleCounter', 100);
+  setupCounter(shortDescInput, 'shortDescCounter', 200);
+  setupCounter(descInput, 'descCounter', 5000);
+
+  // Auto-generate slug from title
+  const slugInput = document.getElementById('{{ form.slug.id_for_label }}');
+
+  if (titleInput && slugInput) {
+    titleInput.addEventListener('input', function() {
+      if (!slugInput.dataset.manual) {
+        const slug = this.value
+          .toLowerCase()
+          .trim()
+          .replace(/[^\w\s-]/g, '')
+          .replace(/[\s_-]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        slugInput.value = slug;
+      }
+    });
+
+    slugInput.addEventListener('input', function() {
+      this.dataset.manual = 'true';
+    });
+  }
+
+  // Progress indicator
+  const progressSteps = document.querySelectorAll('.progress-step');
+  const formSections = document.querySelectorAll('.form-section');
+
+  function updateProgress() {
+    let activeStep = 1;
+
+    formSections.forEach(section => {
+      const inputs = section.querySelectorAll('input, textarea, select');
+      let hasValue = false;
+
+      inputs.forEach(input => {
+        if (input.value && input.type !== 'file') {
+          hasValue = true;
+        }
+      });
+
+      if (hasValue) {
+        const step = parseInt(section.dataset.step);
+        if (step > activeStep) activeStep = step;
+      }
+    });
+
+    progressSteps.forEach(step => {
+      const stepNum = parseInt(step.dataset.step);
+      if (stepNum <= activeStep) {
+        step.classList.add('step-active');
+      } else {
+        step.classList.remove('step-active');
+      }
+    });
+  }
+
+  // Listen for input changes
+  document.querySelectorAll('input, textarea, select').forEach(input => {
+    input.addEventListener('input', updateProgress);
+    input.addEventListener('change', updateProgress);
+  });
+
+  updateProgress(); // Initial update
+
+  // Form validation with enhanced feedback
+  const form = document.getElementById('projectForm');
+  form.addEventListener('submit', function(e) {
+    let isValid = true;
+
+    // Clear previous validation
+    document.querySelectorAll('.is-invalid').forEach(el => {
+      el.classList.remove('is-invalid');
+    });
+
+    // Check required fields
+    const requiredFields = form.querySelectorAll('[required]');
+    requiredFields.forEach(field => {
+      if (!field.value.trim()) {
+        field.classList.add('is-invalid');
+        isValid = false;
+
+        // Add shake animation
+        field.style.animation = 'shake 0.5s ease-in-out';
+        setTimeout(() => {
+          field.style.animation = '';
+        }, 500);
+      }
+    });
+
+    if (!isValid) {
+      e.preventDefault();
+      showNotification('Please fill in all required fields', 'error');
+
+      // Scroll to first error
+      const firstError = form.querySelector('.is-invalid');
+      if (firstError) {
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  });
+
+  // Add focus effects
+  const formElements = document.querySelectorAll('.form-control, .form-select, .form-textarea');
+  formElements.forEach(element => {
+    element.addEventListener('focus', function() {
+      this.parentElement.classList.add('focused');
+    });
+
+    element.addEventListener('blur', function() {
+      this.parentElement.classList.remove('focused');
+    });
+  });
+
+  // Notification system
+  function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+      <i class="fa fa-${type === 'success' ? 'check' : 'exclamation-triangle'} me-2"></i>
+      ${message}
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+    `;
+
+    document.body.appendChild(notification);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.remove();
+      }
+    }, 5000);
+  }
 });
 
 function clearImage() {
   const imageInput = document.getElementById('{{ form.featured_image.id_for_label }}');
   const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+  const imageUploadArea = document.querySelector('.image-upload-area');
+
   imageInput.value = '';
   imagePreviewContainer.classList.add('d-none');
+
+  if (imageUploadArea) {
+    imageUploadArea.style.display = 'block';
+  }
+
+  // Show notification
+  const event = new Event('input');
+  imageInput.dispatchEvent(event);
 }
+
+// Add shake animation for invalid fields
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+
+  .form-control.is-invalid, .form-select.is-invalid, .form-textarea.is-invalid {
+    border-color: #dc3545 !important;
+  }
+
+  .focused .form-label {
+    color: var(--primary-light) !important;
+  }
+
+  .form-section {
+    transition: all 0.3s ease;
+  }
+`;
+document.head.appendChild(style);
 </script>
 {% endblock content %}
-

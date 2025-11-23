@@ -257,10 +257,20 @@ SOCIAL_MEDIA = {
 # AUTHENTICATION SETTINGS
 # ==============================================================================
 
+# Authentication backends - Email login (primary)
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.EmailOrUsernameBackend',  # Custom backend for email login
+    'django.contrib.auth.backends.ModelBackend',  # Fallback to default
+]
+
 # Login/Logout URLs
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'home'
+
+# Email is required for authentication
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

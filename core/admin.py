@@ -11,12 +11,15 @@ from .models import Profile, Project, SocialLink, Testimonial
 class ProfileAdmin(admin.ModelAdmin):
     """Admin interface for Profile"""
 
-    list_display = ['full_name', 'tagline', 'email', 'years_experience', 'is_active', 'updated_at']
-    list_filter = ['is_active', 'created_at']
-    search_fields = ['full_name', 'email', 'bio']
+    list_display = ['full_name', 'user', 'tagline', 'email', 'years_experience', 'is_active', 'updated_at']
+    list_filter = ['is_active', 'created_at', 'user']
+    search_fields = ['full_name', 'email', 'bio', 'user__username', 'user__email']
     readonly_fields = ['created_at', 'updated_at']
 
     fieldsets = (
+        ('User', {
+            'fields': ('user',)
+        }),
         ('Basic Information', {
             'fields': ('full_name', 'tagline', 'bio', 'profile_picture', 'resume')
         }),
@@ -35,11 +38,18 @@ class ProfileAdmin(admin.ModelAdmin):
         }),
     )
 
-    def has_add_permission(self, request):
-        """Only allow one profile instance"""
-        if Profile.objects.exists():
-            return False
-        return super().has_add_permission(request)
+    def get_queryset(self, request):
+        """Filter profiles for non-superusers"""
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(user=request.user)
+
+    def save_model(self, request, obj, form, change):
+        """Auto-assign user if not set"""
+        if not change and not obj.user:  # If creating new object and user not set
+            obj.user = request.user
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Project)
@@ -47,16 +57,19 @@ class ProjectAdmin(admin.ModelAdmin):
     """Admin interface for Projects"""
 
     list_display = [
-        'title', 'status', 'is_featured', 'github_stars_display',
+        'title', 'user', 'status', 'is_featured', 'github_stars_display',
         'technologies_preview', 'is_active', 'order', 'updated_at'
     ]
-    list_filter = ['status', 'is_featured', 'is_active', 'created_at']
-    search_fields = ['title', 'description', 'technologies', 'github_repo_name']
+    list_filter = ['user', 'status', 'is_featured', 'is_active', 'created_at']
+    search_fields = ['title', 'description', 'technologies', 'github_repo_name', 'user__username']
     prepopulated_fields = {'slug': ('title',)}
     readonly_fields = ['github_stars', 'github_forks', 'github_language', 'created_at', 'updated_at']
     list_editable = ['order', 'is_featured', 'is_active']
 
     fieldsets = (
+        ('User', {
+            'fields': ('user',)
+        }),
         ('Basic Information', {
             'fields': ('title', 'slug', 'description', 'short_description', 'status')
         }),
@@ -83,6 +96,19 @@ class ProjectAdmin(admin.ModelAdmin):
     )
 
     actions = ['make_featured', 'remove_featured', 'activate_projects', 'deactivate_projects']
+
+    def get_queryset(self, request):
+        """Filter projects for non-superusers"""
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(user=request.user)
+
+    def save_model(self, request, obj, form, change):
+        """Auto-assign user if not set"""
+        if not change and not obj.user:  # If creating new object and user not set
+            obj.user = request.user
+        super().save_model(request, obj, form, change)
 
     def github_stars_display(self, obj):
         """Display GitHub stars with icon"""
@@ -129,13 +155,16 @@ class ProjectAdmin(admin.ModelAdmin):
 class SocialLinkAdmin(admin.ModelAdmin):
     """Admin interface for Social Links"""
 
-    list_display = ['platform', 'url_preview', 'icon_class', 'is_active', 'order']
-    list_filter = ['platform', 'is_active']
-    search_fields = ['platform', 'url']
+    list_display = ['platform', 'user', 'url_preview', 'icon_class', 'is_active', 'order']
+    list_filter = ['user', 'platform', 'is_active']
+    search_fields = ['platform', 'url', 'user__username']
     list_editable = ['is_active', 'order']
     ordering = ['order', 'platform']
 
     fieldsets = (
+        ('User', {
+            'fields': ('user',)
+        }),
         ('Social Link', {
             'fields': ('platform', 'url', 'icon_class')
         }),
@@ -143,6 +172,19 @@ class SocialLinkAdmin(admin.ModelAdmin):
             'fields': ('is_active', 'order')
         }),
     )
+
+    def get_queryset(self, request):
+        """Filter social links for non-superusers"""
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(user=request.user)
+
+    def save_model(self, request, obj, form, change):
+        """Auto-assign user if not set"""
+        if not change and not obj.user:
+            obj.user = request.user
+        super().save_model(request, obj, form, change)
 
     def url_preview(self, obj):
         """Show clickable URL"""
@@ -154,13 +196,16 @@ class SocialLinkAdmin(admin.ModelAdmin):
 class TestimonialAdmin(admin.ModelAdmin):
     """Admin interface for Testimonials"""
 
-    list_display = ['name', 'position', 'company', 'rating_display', 'is_active', 'order', 'created_at']
-    list_filter = ['rating', 'is_active', 'created_at']
-    search_fields = ['name', 'company', 'position', 'testimonial']
+    list_display = ['name', 'user', 'position', 'company', 'rating_display', 'is_active', 'order', 'created_at']
+    list_filter = ['user', 'rating', 'is_active', 'created_at']
+    search_fields = ['name', 'company', 'position', 'testimonial', 'user__username']
     list_editable = ['is_active', 'order']
     readonly_fields = ['created_at']
 
     fieldsets = (
+        ('User', {
+            'fields': ('user',)
+        }),
         ('Person Information', {
             'fields': ('name', 'position', 'company', 'avatar')
         }),
@@ -171,6 +216,19 @@ class TestimonialAdmin(admin.ModelAdmin):
             'fields': ('is_active', 'order', 'created_at')
         }),
     )
+
+    def get_queryset(self, request):
+        """Filter testimonials for non-superusers"""
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(user=request.user)
+
+    def save_model(self, request, obj, form, change):
+        """Auto-assign user if not set"""
+        if not change and not obj.user:
+            obj.user = request.user
+        super().save_model(request, obj, form, change)
 
     def rating_display(self, obj):
         """Display rating as stars"""

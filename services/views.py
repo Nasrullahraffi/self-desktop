@@ -2,7 +2,7 @@
 Services App Views
 """
 
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
@@ -14,8 +14,12 @@ from .forms import ServiceForm
 def services_pro(request):
     """Services page view"""
 
-    services = Service.objects.filter(is_active=True)
-    featured_services = services.filter(is_featured=True)
+    if request.user.is_authenticated:
+        services = Service.objects.filter(user=request.user, is_active=True)
+        featured_services = services.filter(is_featured=True)
+    else:
+        services = []
+        featured_services = []
 
     context = {
         'services': services,
@@ -27,24 +31,24 @@ def services_pro(request):
     return render(request, 'serve/serve.html', context)
 
 
-class ServiceListView(ListView):
-    """List all services"""
+class ServiceListView(LoginRequiredMixin, ListView):
+    """List all user's services"""
     model = Service
     template_name = 'serve/services_list.html'
     context_object_name = 'services'
 
     def get_queryset(self):
-        return Service.objects.filter(is_active=True)
+        return Service.objects.filter(user=self.request.user, is_active=True)
 
 
-class ServiceDetailView(DetailView):
+class ServiceDetailView(LoginRequiredMixin, DetailView):
     """Service detail view"""
     model = Service
     template_name = 'serve/service_detail.html'
     context_object_name = 'service'
 
     def get_queryset(self):
-        return Service.objects.filter(is_active=True)
+        return Service.objects.filter(user=self.request.user, is_active=True)
 
 
 # ==============================================================================
@@ -59,6 +63,7 @@ class ServiceCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('services')
 
     def form_valid(self, form):
+        form.instance.user = self.request.user
         messages.success(self.request, 'Service created successfully!')
         return super().form_valid(form)
 
@@ -70,6 +75,9 @@ class ServiceUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'serve/service_form.html'
     success_url = reverse_lazy('services')
 
+    def get_queryset(self):
+        return Service.objects.filter(user=self.request.user)
+
     def form_valid(self, form):
         messages.success(self.request, 'Service updated successfully!')
         return super().form_valid(form)
@@ -80,6 +88,9 @@ class ServiceDeleteView(LoginRequiredMixin, DeleteView):
     model = Service
     template_name = 'serve/service_confirm_delete.html'
     success_url = reverse_lazy('services')
+
+    def get_queryset(self):
+        return Service.objects.filter(user=self.request.user)
 
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, 'Service deleted successfully!')

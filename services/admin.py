@@ -12,15 +12,18 @@ class ServiceAdmin(admin.ModelAdmin):
     """Admin interface for Services"""
 
     list_display = [
-        'title', 'icon_preview', 'price_display', 'delivery_time',
+        'title', 'user', 'icon_preview', 'price_display', 'delivery_time',
         'is_featured', 'is_active', 'order', 'updated_at'
     ]
-    list_filter = ['is_featured', 'is_active', 'created_at']
-    search_fields = ['title', 'description', 'features']
+    list_filter = ['user', 'is_featured', 'is_active', 'created_at']
+    search_fields = ['title', 'description', 'features', 'user__username']
     prepopulated_fields = {'slug': ('title',)}
     list_editable = ['is_featured', 'is_active', 'order']
 
     fieldsets = (
+        ('User', {
+            'fields': ('user',)
+        }),
         ('Service Information', {
             'fields': ('title', 'slug', 'short_description', 'description')
         }),
@@ -39,6 +42,19 @@ class ServiceAdmin(admin.ModelAdmin):
     )
 
     actions = ['make_featured', 'remove_featured']
+
+    def get_queryset(self, request):
+        """Filter services for non-superusers"""
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(user=request.user)
+
+    def save_model(self, request, obj, form, change):
+        """Auto-assign user if not set"""
+        if not change and not obj.user:
+            obj.user = request.user
+        super().save_model(request, obj, form, change)
 
     def icon_preview(self, obj):
         """Display icon"""

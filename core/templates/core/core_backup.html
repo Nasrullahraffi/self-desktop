@@ -1,0 +1,750 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}{% if profile %}{{ profile.full_name }} | {{ SITE_TAGLINE }}{% else %}{{ SITE_NAME }}{% endif %}{% endblock title %}
+{% block meta %}
+{% if profile %}
+<meta name="description" content="{{ profile.meta_description|default:profile.tagline|default:SITE_TAGLINE }}">
+{% else %}
+<meta name="description" content="{{ SITE_TAGLINE }}">
+{% endif %}
+{% endblock meta %}
+
+{% block content %}
+<style>
+  :root {
+    --primary: #ff6b35;
+    --primary-light: #ff8e53;
+    --primary-dark: #e55a2b;
+    --secondary: #1a1a1a;
+    --accent: #2d3748;
+    --text-primary: #ffffff;
+    --text-secondary: #a0aec0;
+    --gradient-primary: linear-gradient(135deg, #ff6b35, #ff8e53);
+    --gradient-dark: linear-gradient(135deg, #1a1a1a, #2d1b1b);
+    --shadow-primary: 0 10px 30px rgba(255, 107, 53, 0.3);
+    --shadow-dark: 0 15px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .hero-section {
+    background: var(--gradient-dark);
+    position: relative;
+    overflow: hidden;
+    padding: 4rem 0;
+  }
+
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+      radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+
+  .profile-image-container {
+    position: relative;
+    display: inline-block;
+    border-radius: 50%;
+    padding: 8px;
+    background: var(--gradient-primary);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.7); }
+    70% { box-shadow: 0 0 0 20px rgba(255, 107, 53, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
+  }
+
+  .profile-image {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #1a1a1a;
+    transition: transform 0.3s ease;
+  }
+
+  .profile-image:hover {
+    transform: scale(1.05);
+  }
+
+  .main-title {
+    font-family: 'Satisfy', cursive;
+    font-size: 3.5rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    animation: slideInUp 1s ease;
+  }
+
+  .tagline {
+    font-size: 1.5rem;
+    color: var(--primary-light);
+    margin-bottom: 1.5rem;
+    animation: slideInUp 1s ease 0.2s both;
+  }
+
+  .bio-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    animation: slideInUp 1s ease 0.4s both;
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .stat-card:hover::before {
+    left: 100%;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    animation: slideInUp 1s ease 0.6s both;
+  }
+
+  .btn-primary-custom {
+    background: var(--gradient-primary);
+    border: none;
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary-custom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn-primary-custom:hover::before {
+    left: 100%;
+  }
+
+  .btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .btn-outline-custom {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-custom:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+  }
+
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .project-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .project-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .project-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-dark);
+  }
+
+  .project-status {
+    display: inline-block;
+    padding: 0.25rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .status-completed { background: rgba(72, 187, 120, 0.2); color: #48bb78; }
+  .status-in-progress { background: rgba(237, 137, 54, 0.2); color: #ed8936; }
+  .status-planning { background: rgba(66, 153, 225, 0.2); color: #4299e1; }
+
+  .tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+
+  .tech-tag {
+    background: rgba(255, 107, 53, 0.1);
+    color: var(--primary-light);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    border: 1px solid rgba(255, 107, 53, 0.3);
+  }
+
+  .project-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .social-link {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .social-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .social-link:hover::before {
+    opacity: 1;
+  }
+
+  .social-link i {
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s ease;
+  }
+
+  .social-link:hover {
+    transform: translateY(-3px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .social-link:hover i {
+    color: white;
+  }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .testimonial-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .testimonial-card::before {
+    content: '"';
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 4rem;
+    color: rgba(255, 107, 53, 0.2);
+    font-family: serif;
+  }
+
+  .testimonial-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-dark);
+  }
+
+  .testimonial-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .testimonial-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary);
+  }
+
+  .stars {
+    color: #ffd700;
+    margin-bottom: 1rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    margin: 2rem 0;
+  }
+
+  .empty-state-icon {
+    font-size: 4rem;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    opacity: 0.7;
+  }
+
+  .floating-edit {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+  }
+
+  @media (max-width: 768px) {
+    .main-title { font-size: 2.5rem; }
+    .tagline { font-size: 1.2rem; }
+    .section-title { font-size: 2rem; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: repeat(3, 1fr); }
+    .cta-buttons { justify-content: center; }
+  }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-4 text-center">
+        <div class="profile-image-container">
+          {% if profile and profile.profile_picture %}
+            <img src="{{ profile.profile_picture.url }}" alt="{{ profile.full_name }}" class="profile-image">
+          {% else %}
+            <img src="{% static 'core/images/profile.png' %}" alt="Profile" class="profile-image">
+          {% endif %}
+        </div>
+        {% if user.is_authenticated %}
+          <div class="mt-3">
+            <a href="{% url 'profile_edit' %}" class="btn btn-outline-custom">
+              <i class="fa fa-edit me-2"></i>Edit Profile
+            </a>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="col-lg-8 text-white mt-4 mt-lg-0">
+        <h1 class="main-title">
+          {% if profile %}{{ profile.full_name }}{% else %}Nasrullah @arbon{% endif %}
+        </h1>
+
+        <h2 class="tagline">
+          {% if profile %}{{ profile.tagline }}{% else %}Full Stack Developer | Python & Django Specialist | Cloud Solutions Architect{% endif %}
+        </h2>
+
+        <p class="bio-text">
+          {% if profile %}{{ profile.bio|linebreaks }}{% else %}
+          Experienced Full Stack Developer with 7+ years of expertise in building scalable web applications and RESTful APIs.
+          Specialized in Python frameworks including Django, Flask, and FastAPI, with extensive experience in containerization
+          using Docker and orchestration with Kubernetes. Proficient in modern frontend technologies and database management
+          across both SQL and NoSQL solutions. Passionate about clean code, performance optimization, and delivering
+          robust solutions that exceed client expectations.
+          {% endif %}
+        </p>
+
+        <div class="cta-buttons">
+          <a href="{% url 'contactus' %}" class="btn-primary-custom">Get In Touch</a>
+          <a href="{% url 'contactus' %}" class="btn-outline-custom">Hire Me</a>
+          {% if profile and profile.resume %}
+            <a href="{{ profile.resume.url }}" class="btn-outline-custom" target="_blank">
+              <i class="fa fa-download me-2"></i>Download Resume
+            </a>
+          {% endif %}
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number">
+              {% if profile %}{{ profile.years_experience }}{% else %}7+{% endif %}
+            </div>
+            <div class="stat-label">Years Experience</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">
+              {% if profile %}{{ profile.projects_completed }}{% else %}50+{% endif %}
+            </div>
+            <div class="stat-label">Projects</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">
+              {% if profile %}{{ profile.happy_clients }}{% else %}35+{% endif %}
+            </div>
+            <div class="stat-label">Happy Clients</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Projects Section -->
+<section class="container py-5">
+  <h2 class="section-title text-white">Featured Projects</h2>
+
+  {% if featured_projects %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <p class="text-white-50 mb-0">Showcasing my best work and recent accomplishments</p>
+      <div class="d-flex gap-2">
+        <a href="{% url 'project_create' %}" class="btn-primary-custom">
+          <i class="fa fa-plus-circle me-2"></i>Add Project
+        </a>
+        <a href="{% url 'projects' %}" class="btn-outline-custom">View All</a>
+      </div>
+    </div>
+
+    <div class="projects-grid">
+      {% for proj in featured_projects %}
+        <div class="project-card">
+          <h4 class="text-white mb-2">{{ proj.title }}</h4>
+          <span class="project-status status-{{ proj.status|lower }}">{{ proj.status|title }}</span>
+
+          <p class="text-white-50 mb-3">
+            {{ proj.short_description|default:proj.description|truncatechars:140 }}
+          </p>
+
+          <div class="tech-tags">
+            {% for tech in proj.get_technologies_list %}
+              <span class="tech-tag">{{ tech }}</span>
+            {% endfor %}
+          </div>
+
+          <div class="project-actions">
+            {% if proj.github_url %}
+              <a href="{{ proj.github_url }}" target="_blank" class="btn-outline-custom btn-sm">
+                <i class="fab fa-github me-1"></i>Code
+              </a>
+            {% endif %}
+            {% if proj.live_url %}
+              <a href="{{ proj.live_url }}" target="_blank" class="btn-primary-custom btn-sm">
+                <i class="fa fa-external-link-alt me-1"></i>Live Demo
+              </a>
+            {% endif %}
+            <a href="{{ proj.get_absolute_url }}" class="btn-outline-custom btn-sm">
+              <i class="fa fa-info-circle me-1"></i>Details
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <i class="fa fa-folder-plus"></i>
+      </div>
+      <h3 class="text-white mb-3">No Projects Yet</h3>
+      <p class="text-white-50 mb-4">Start showcasing your amazing work by adding your first project!</p>
+      <a href="{% url 'project_create' %}" class="btn-primary-custom">
+        <i class="fa fa-plus-circle me-2"></i>Add Your First Project
+      </a>
+    </div>
+  {% endif %}
+</section>
+
+<!-- Social Links Section -->
+<section class="container py-5">
+  <h2 class="section-title text-white">Let's Connect</h2>
+  <p class="text-center text-white-50 mb-4">Follow me on social media for updates and insights</p>
+
+  <div class="social-links">
+    {% if social_links %}
+      {% for link in social_links %}
+        <a href="{{ link.url }}" target="_blank" class="social-link" aria-label="{{ link.platform|title }}">
+          <i class="{{ link.icon_class }}"></i>
+        </a>
+      {% endfor %}
+    {% else %}
+      <a href="https://github.com/yourusername" target="_blank" class="social-link" aria-label="GitHub">
+        <i class="fab fa-github"></i>
+      </a>
+      <a href="https://linkedin.com/in/yourprofile" target="_blank" class="social-link" aria-label="LinkedIn">
+        <i class="fab fa-linkedin"></i>
+      </a>
+      <a href="https://twitter.com/yourhandle" target="_blank" class="social-link" aria-label="Twitter">
+        <i class="fab fa-twitter"></i>
+      </a>
+      <a href="https://stackoverflow.com/users/yourid" target="_blank" class="social-link" aria-label="Stack Overflow">
+        <i class="fab fa-stack-overflow"></i>
+      </a>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="container py-5">
+  <h2 class="section-title text-white">Client Testimonials</h2>
+
+  {% if testimonials %}
+    <div class="testimonials-grid">
+      {% for t in testimonials %}
+        <div class="testimonial-card">
+          <div class="testimonial-header">
+            {% if t.avatar %}
+              <img src="{{ t.avatar.url }}" alt="{{ t.name }}" class="testimonial-avatar">
+            {% endif %}
+            <div>
+              <h5 class="text-white mb-1">{{ t.name }}</h5>
+              <p class="text-white-50 small mb-0">
+                {{ t.position }}{% if t.company %} @ {{ t.company }}{% endif %}
+              </p>
+            </div>
+          </div>
+
+          <div class="stars">
+            {% for i in "12345" %}
+              <i class="fas fa-star{% if forloop.counter > t.rating %}-o{% endif %}"></i>
+            {% endfor %}
+          </div>
+
+          <p class="text-white-50 mb-0">
+            "{{ t.testimonial|truncatechars:200 }}"
+          </p>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-header">
+          <div>
+            <h5 class="text-white mb-1">Sarah Mitchell</h5>
+            <p class="text-white-50 small mb-0">CTO @ TechSolutions Inc.</p>
+          </div>
+        </div>
+        <div class="stars">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+        </div>
+        <p class="text-white-50 mb-0">
+          "Exceptional developer who delivered our complex e-commerce platform ahead of schedule. Highly recommend for Django projects."
+        </p>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-header">
+          <div>
+            <h5 class="text-white mb-1">Michael Rodriguez</h5>
+            <p class="text-white-50 small mb-0">Product Manager @ DataFlow Systems</p>
+          </div>
+        </div>
+        <div class="stars">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+        </div>
+        <p class="text-white-50 mb-0">
+          "Transformed our data visualization capabilities with a scalable FastAPI solution. Professional and highly skilled."
+        </p>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-header">
+          <div>
+            <h5 class="text-white mb-1">Jennifer Wallace</h5>
+            <p class="text-white-50 small mb-0">Startup Founder @ InnovateLabs</p>
+          </div>
+        </div>
+        <div class="stars">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+        </div>
+        <p class="text-white-50 mb-0">
+          "Outstanding work on our microservices architecture. Expert knowledge of Docker and Kubernetes implementation."
+        </p>
+      </div>
+    </div>
+  {% endif %}
+</section>
+
+<!-- Floating Edit Button -->
+{% if user.is_authenticated %}
+  <div class="floating-edit">
+    <a href="{% url 'profile_edit' %}" class="btn-primary-custom" style="width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+      <i class="fa fa-edit"></i>
+    </a>
+  </div>
+{% endif %}
+
+<script>
+  // Add scroll animations
+  document.addEventListener('DOMContentLoaded', function() {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    // Observe all cards for animation
+    document.querySelectorAll('.project-card, .testimonial-card, .stat-card').forEach(card => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(30px)';
+      card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(card);
+    });
+  });
+</script>
+{% endblock content %}

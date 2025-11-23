@@ -1,0 +1,163 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}{{ user.username }} - Profile | {{ SITE_NAME }}{% endblock title %}
+
+{% block content %}
+<!-- Profile Hero -->
+<section class="profile-hero">
+  <div class="container">
+    <div class="text-center text-white position-relative">
+      <div class="profile-avatar-container">
+        {% if user_profile.profile_picture %}
+          <img src="{{ user_profile.profile_picture.url }}" alt="{{ user.username }}" class="profile-avatar">
+        {% else %}
+          <div class="profile-avatar">
+            {{ user.username|first|upper }}
+          </div>
+        {% endif %}
+      </div>
+      <h1 class="display-4 fw-bold mb-2">{{ user.get_full_name|default:user.username }}</h1>
+      <p class="lead text-white-50 mb-3">{{ user_profile.bio|default:"No bio available" }}</p>
+      <div class="d-flex gap-2 justify-content-center">
+        <a href="{% url 'profile_settings' %}" class="btn btn-outline-light">
+          <i class="fa fa-edit"></i> Edit Profile
+        </a>
+        <a href="{% url 'dashboard' %}" class="btn btn-nav-primary">
+          <i class="fa fa-tachometer-alt"></i> Go to Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Profile Content -->
+<div class="container mb-5">
+  <div class="row g-4">
+    <!-- Left Column: Stats -->
+    <div class="col-lg-4">
+      <!-- User Info Card -->
+      <div class="profile-card">
+        <h3 class="section-title">
+          <i class="fa fa-user"></i>
+          User Information
+        </h3>
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="fa fa-envelope"></i>
+          </div>
+          <div>
+            <div class="info-label">Email</div>
+            <div class="info-value">{{ user.email|default:"Not provided" }}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="fa fa-calendar"></i>
+          </div>
+          <div>
+            <div class="info-label">Joined</div>
+            <div class="info-value">{{ user.date_joined|date:"F Y" }}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="fa fa-map-marker-alt"></i>
+          </div>
+          <div>
+            <div class="info-label">Location</div>
+            <div class="info-value">{{ user_profile.location|default:"Not specified" }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="row g-3">
+        <div class="col-6">
+          <div class="stats-card">
+            <div class="stats-number">{{ projects.count }}</div>
+            <div class="stats-label">Projects</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="stats-card">
+            <div class="stats-number">{{ skills.count }}</div>
+            <div class="stats-label">Skills</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="stats-card">
+            <div class="stats-number">{{ education.count }}</div>
+            <div class="stats-label">Education</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="stats-card">
+            <div class="stats-number">{{ services.count }}</div>
+            <div class="stats-label">Services</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Projects & Skills -->
+    <div class="col-lg-8">
+      <!-- Recent Projects -->
+      <div class="profile-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="section-title mb-0">
+            <i class="fa fa-folder"></i>
+            Recent Projects
+          </h3>
+          <a href="{% url 'projects' %}" class="btn btn-sm btn-outline-light">
+            View All <i class="fa fa-arrow-right ms-1"></i>
+          </a>
+        </div>
+        {% if projects %}
+          {% for project in projects %}
+            <div class="project-mini-card">
+              <h5 class="project-title">{{ project.title }}</h5>
+              <p class="project-description">{{ project.short_description|default:project.description|truncatewords:20 }}</p>
+              {% if project.technologies %}
+                <div>
+                  <span class="project-tech">{{ project.technologies }}</span>
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-white-50">No projects yet. <a href="{% url 'project_create' %}" class="text-decoration-none" style="color: var(--primary-light);">Add your first project</a></p>
+        {% endif %}
+      </div>
+
+      <!-- Skills Overview -->
+      <div class="profile-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="section-title mb-0">
+            <i class="fa fa-code"></i>
+            Top Skills
+          </h3>
+          <a href="{% url 'skills' %}" class="btn btn-sm btn-outline-light">
+            View All <i class="fa fa-arrow-right ms-1"></i>
+          </a>
+        </div>
+        {% if skills %}
+          <div class="row g-3">
+            {% for skill in skills|slice:":12" %}
+              <div class="col-md-4 col-6">
+                <div class="project-tech d-block text-center">
+                  {% if skill.icon_class %}<i class="{{ skill.icon_class }} me-1"></i>{% endif %}
+                  {{ skill.name }}
+                  <small class="d-block text-white-50" style="font-size: 0.7rem;">{{ skill.proficiency }}%</small>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-white-50">No skills added yet. <a href="{% url 'skill_create' %}" class="text-decoration-none text-warning">Add your first skill</a></p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+

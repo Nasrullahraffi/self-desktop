@@ -4,6 +4,7 @@ Handles services offered, pricing, and features
 """
 
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.urls import reverse
 
@@ -11,8 +12,10 @@ from django.urls import reverse
 class Service(models.Model):
     """Services offered"""
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='services', null=True, blank=True)
+
     title = models.CharField(max_length=200, help_text="Service title")
-    slug = models.SlugField(max_length=200, unique=True, blank=True)
+    slug = models.SlugField(max_length=200, blank=True)
     short_description = models.CharField(
         max_length=200,
         help_text="Brief description for cards"
@@ -88,13 +91,20 @@ class Service(models.Model):
         verbose_name = "Service"
         verbose_name_plural = "Services"
         ordering = ['order', 'title']
+        unique_together = [['user', 'slug']]
 
     def __str__(self):
-        return self.title
+        return f"{self.title} ({self.user.username})"
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            base_slug = slugify(self.title)
+            slug = base_slug
+            counter = 1
+            while Service.objects.filter(user=self.user, slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         return super().save(*args, **kwargs)
 
     def get_absolute_url(self):

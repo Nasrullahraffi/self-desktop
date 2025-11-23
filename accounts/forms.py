@@ -10,14 +10,16 @@ from .models import UserProfile
 
 
 class UserRegistrationForm(UserCreationForm):
-    """User registration form with email"""
+    """User registration form with email (email is used for login)"""
 
     email = forms.EmailField(
         required=True,
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Email address'
-        })
+            'placeholder': 'Email address',
+            'autofocus': True
+        }),
+        help_text='Required. You will use this email to log in.'
     )
     first_name = forms.CharField(
         max_length=30,
@@ -38,16 +40,14 @@ class UserRegistrationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
-        widgets = {
-            'username': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Username'
-            }),
-        }
+        fields = ('email', 'first_name', 'last_name', 'password1', 'password2')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Remove username field as we'll generate it from email
+        if 'username' in self.fields:
+            del self.fields['username']
+
         self.fields['password1'].widget.attrs.update({
             'class': 'form-control',
             'placeholder': 'Password'
@@ -60,20 +60,39 @@ class UserRegistrationForm(UserCreationForm):
     def clean_email(self):
         """Check if email already exists"""
         email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
+        if email and User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError('This email is already registered.')
-        return email
+        return email.lower()
+
+    def save(self, commit=True):
+        """Generate username from email and save user"""
+        user = super().save(commit=False)
+        # Generate unique username from email
+        email = self.cleaned_data['email']
+        base_username = email.split('@')[0]
+        username = base_username
+        counter = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{base_username}{counter}"
+            counter += 1
+        user.username = username
+        user.email = email
+        if commit:
+            user.save()
+        return user
 
 
 class UserLoginForm(AuthenticationForm):
-    """Custom login form with Bootstrap styling"""
+    """Custom login form with Bootstrap styling - authenticate using email"""
 
     username = forms.CharField(
-        widget=forms.TextInput(attrs={
+        label='Email',
+        widget=forms.EmailInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Username',
+            'placeholder': 'Enter your email',
             'autofocus': True
-        })
+        }),
+        help_text='Enter the email you used to register'
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
