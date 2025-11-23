@@ -2,7 +2,7 @@
 Education App Views
 """
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
@@ -209,13 +209,6 @@ class CertificationDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return Certification.objects.filter(user=self.request.user)
-
-    def delete(self, request, *args, **kwargs):
-        messages.success(self.request, 'Certification deleted successfully!')
-        return super().delete(request, *args, **kwargs)
-    model = Certification
-    template_name = 'skills/certification_confirm_delete.html'
-    success_url = reverse_lazy('skills')
 
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, 'Certification deleted successfully!')

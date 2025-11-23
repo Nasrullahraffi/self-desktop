@@ -157,16 +157,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Authentication backends - Allow login with email or username
-AUTHENTICATION_BACKENDS = [
-    'accounts.backends.EmailOrUsernameBackend',  # Custom backend for email/username login
-    'django.contrib.auth.backends.ModelBackend',  # Default backend
-]
-
-# Require unique email for users
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -267,10 +257,20 @@ SOCIAL_MEDIA = {
 # AUTHENTICATION SETTINGS
 # ==============================================================================
 
+# Authentication backends - Email login (primary)
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.EmailOrUsernameBackend',  # Custom backend for email login
+    'django.contrib.auth.backends.ModelBackend',  # Fallback to default
+]
+
 # Login/Logout URLs
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'home'
+
+# Email is required for authentication
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

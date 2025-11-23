@@ -4,11 +4,10 @@ Authentication and User Management
 """
 
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.views import LoginView, LogoutView
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView
 from django.urls import reverse_lazy
 from .forms import (
     UserRegistrationForm,
@@ -28,9 +27,10 @@ class UserRegisterView(CreateView):
     def form_valid(self, form):
         """Save user and log them in"""
         response = super().form_valid(form)
+        email = form.cleaned_data.get("email")
         messages.success(
             self.request,
-            f'Account created successfully for {form.cleaned_data.get("username")}! Please log in.'
+            f'Account created successfully! Please log in using your email: {email}'
         )
         return response
 

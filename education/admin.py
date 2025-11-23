@@ -20,6 +20,9 @@ class SkillAdmin(admin.ModelAdmin):
     list_editable = ['is_featured', 'is_active', 'order']
 
     fieldsets = (
+        ('User', {
+            'fields': ('user',)
+        }),
         ('Skill Information', {
             'fields': ('name', 'category', 'proficiency', 'description')
         }),
@@ -32,6 +35,19 @@ class SkillAdmin(admin.ModelAdmin):
     )
 
     actions = ['make_featured', 'remove_featured']
+
+    def get_queryset(self, request):
+        """Filter skills for non-superusers"""
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(user=request.user)
+
+    def save_model(self, request, obj, form, change):
+        """Auto-assign user if not set"""
+        if not change and not obj.user:
+            obj.user = request.user
+        super().save_model(request, obj, form, change)
 
     def proficiency_bar(self, obj):
         """Display proficiency as progress bar"""
@@ -83,6 +99,9 @@ class EducationAdmin(admin.ModelAdmin):
     date_hierarchy = 'start_date'
 
     fieldsets = (
+        ('User', {
+            'fields': ('user',)
+        }),
         ('Education Details', {
             'fields': ('institution', 'degree', 'field_of_study', 'description')
         }),
@@ -96,6 +115,19 @@ class EducationAdmin(admin.ModelAdmin):
             'fields': ('is_active', 'order')
         }),
     )
+
+    def get_queryset(self, request):
+        """Filter education for non-superusers"""
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(user=request.user)
+
+    def save_model(self, request, obj, form, change):
+        """Auto-assign user if not set"""
+        if not change and not obj.user:
+            obj.user = request.user
+        super().save_model(request, obj, form, change)
 
     def date_range(self, obj):
         """Display date range"""
@@ -115,16 +147,19 @@ class CertificationAdmin(admin.ModelAdmin):
     """Admin interface for Certifications"""
 
     list_display = [
-        'name', 'issuing_organization', 'issue_date', 'expiry_status',
+        'name', 'user', 'issuing_organization', 'issue_date', 'expiry_status',
         'credential_link', 'is_active', 'order'
     ]
-    list_filter = ['issuing_organization', 'is_active', 'issue_date']
-    search_fields = ['name', 'issuing_organization', 'credential_id', 'description']
+    list_filter = ['user', 'issuing_organization', 'is_active', 'issue_date']
+    search_fields = ['name', 'issuing_organization', 'credential_id', 'description', 'user__username']
     list_editable = ['is_active', 'order']
     date_hierarchy = 'issue_date'
     readonly_fields = ['expiry_status_detail']
 
     fieldsets = (
+        ('User', {
+            'fields': ('user',)
+        }),
         ('Certification Details', {
             'fields': ('name', 'issuing_organization', 'description')
         }),
@@ -138,6 +173,19 @@ class CertificationAdmin(admin.ModelAdmin):
             'fields': ('is_active', 'order')
         }),
     )
+
+    def get_queryset(self, request):
+        """Filter certifications for non-superusers"""
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(user=request.user)
+
+    def save_model(self, request, obj, form, change):
+        """Auto-assign user if not set"""
+        if not change and not obj.user:
+            obj.user = request.user
+        super().save_model(request, obj, form, change)
 
     def expiry_status(self, obj):
         """Show expiry status with color"""
